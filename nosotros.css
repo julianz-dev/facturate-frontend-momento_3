@@ -1,0 +1,1165 @@
+/*========================================
+=             PALETA DE COLORES          =
+========================================*/
+:root {
+    --azul-oscuro: #0b1f3a;
+    --azul-claro: #5bc0eb;
+    --verde: #37a169;
+    --gris-oscuro: #1f2937;
+    --gris-medio: #5b6472;
+    --gris-claro: #dfe5ec;
+    --gris-fondo: #f4f8fb;
+    --blanco: #ffffff;
+}
+
+/*========================================
+=             ESTILOS GENERALES          =
+========================================*/
+
+/* Reset general para evitar estilos por defecto del navegador */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Estilos generales del sitio */
+body {
+    background-color: var(--gris-fondo);
+    font-family: Arial, Helvetica, sans-serif;
+    color: var(--gris-oscuro);
+}
+
+/*========================================
+=       PÁGINA PRINCIPAL: NOSOTROS       =
+========================================*/
+
+/*========================================
+=                HEADER                  =
+========================================*/
+
+header {
+    background-color: var(--blanco);
+    border-bottom: 1px solid var(--gris-claro);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.navbar {
+    padding: 20px 0;
+    background-color: var(--blanco);
+}
+
+.navbar-brand img {
+    width: 180px;
+    height: auto;
+}
+
+.nav-link {
+    color: var(--gris-oscuro);
+    font-size: 16px;
+    font-weight: 500;
+    margin: 0 15px;
+}
+
+.nav-link:hover {
+    color: var(--azul-claro);
+}
+
+.login {
+    background-color: var(--azul-claro);
+    color: var(--blanco);
+    text-decoration: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+.login:hover {
+    opacity: 0.8;
+}
+
+.navbar-toggler {
+    border: 2px solid var(--gris-medio);
+}
+
+.navbar-toggler:focus {
+    box-shadow: none;
+}
+
+/*========================================
+=                 HERO                   =
+========================================*/
+
+/* Sección principal de presentación */
+
+.hero {
+    width: 90%;
+    max-width: 1200px;
+    margin: 100px auto;
+}
+
+/* Columna de texto */
+.hero-texto {
+    padding-right: 40px;
+}
+
+/* Título principal */
+.hero-texto h1 {
+    font-size: 64px;
+    color: var(--azul-oscuro);
+    line-height: 1.1;
+    margin-bottom: 30px;
+}
+
+/* Descripción */
+.hero-texto p {
+    font-size: 20px;
+    color: var(--gris-medio);
+    line-height: 1.6;
+    margin-bottom: 40px;
+}
+
+/* Columna de imagen */
+.hero-imagen {
+    text-align: center;
+}
+
+/* Imagen principal */
+.hero-imagen img {
+    width: 100%;
+    max-width: 500px;
+    height: auto;
+    border-radius: 12px;
+}
+
+/*========================================
+=        MISIÓN Y VISIÓN                 =
+========================================*/
+
+/* Contenedor principal */
+.compromiso-cartas {
+    width: 90%;
+    max-width: 1200px;
+    margin: 120px auto;
+}
+
+.compromiso-contenido {
+    display: flex;
+    gap: 30px;
+    align-items: stretch;
+}
+
+/* Título de la sección */
+.compromiso-cartas h2 {
+    text-align: center;
+    font-size: 48px;
+    color: var(--azul-oscuro);
+    margin-bottom: 60px;
+}
+
+/* Tarjetas */
+.mision,
+.vision {
+    background-color: var(--blanco);
+    padding: 40px 30px;
+    border-radius: 20px;
+    flex: 1;
+}
+
+/* Títulos de las tarjetas */
+.mision h3,
+.vision h3 {
+    color: var(--azul-oscuro);
+    font-size: 24px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Texto */
+.mision p,
+.vision p {
+    color: var(--gris-medio);
+    line-height: 1.7;
+    font-size: 18px;
+}
+
+/*========================================
+=                VALORES                 =
+========================================*/
+
+.valores {
+    width: 90%;
+    max-width: 1200px;
+    margin: 120px auto;
+}
+
+.valor {
+    text-align: center;
+}
+
+.valor h3 {
+    font-size: 24px;
+    color: var(--azul-oscuro);
+    margin-bottom: 20px;
+}
+
+.valor p {
+    color: var(--gris-medio);
+    font-size: 18px;
+    line-height: 1.7;
+}
+
+.valor i {
+    font-size: 40px;
+    color: var(--azul-claro);
+    margin-bottom: 25px;
+
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background-color: var(--blanco);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    margin: 0 auto 25px auto;
+
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/*========================================
+=          PROBLEMA A RESOLVER           =
+========================================*/
+
+/* Contenedor principal */
+.problema {
+    width: 90%;
+    max-width: 1200px;
+    margin: 120px auto;
+}
+
+/* Imagen */
+.problema-imagen img {
+    width: 100%;
+    height: auto;
+    border-radius: 20px;
+}
+
+/* Título */
+.problema-texto h2 {
+    font-size: 48px;
+    color: var(--azul-oscuro);
+    margin-bottom: 25px;
+}
+
+/* Descripción principal */
+.problema-texto>p {
+    font-size: 20px;
+    color: var(--gris-medio);
+    line-height: 1.7;
+    margin-bottom: 30px;
+}
+
+/* Lista */
+.problema-texto ul {
+    padding-left: 25px;
+}
+
+/* Elementos de la lista */
+.problema-texto li {
+    font-size: 18px;
+    color: var(--gris-oscuro);
+    line-height: 1.8;
+    margin-bottom: 10px;
+}
+
+/*========================================
+=        BENEFICIOS FACTURATE            =
+========================================*/
+
+/* Contenedor principal */
+.beneficios {
+    width: 90%;
+    max-width: 1200px;
+    margin: 120px auto;
+    text-align: center;
+}
+
+/* Título */
+.beneficios h2 {
+    font-size: 48px;
+    color: var(--azul-oscuro);
+    margin-bottom: 25px;
+}
+
+/* Texto principal */
+.beneficios>p {
+    font-size: 20px;
+    color: var(--gris-medio);
+    line-height: 1.7;
+    max-width: 800px;
+    margin: 0 auto 70px auto;
+}
+
+/* Contenedor de tarjetas */
+.beneficios-cartas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+}
+
+/* Tarjetas */
+.beneficio {
+    flex: 1 1 350px;
+    background-color: var(--blanco);
+    padding: 40px 30px;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.beneficio img {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    margin-bottom: 25px;
+}
+
+.beneficio h3 {
+    font-size: 24px;
+    color: var(--azul-oscuro);
+    margin-bottom: 20px;
+}
+
+.beneficio p {
+    color: var(--gris-medio);
+    font-size: 18px;
+    line-height: 1.7;
+}
+
+/*========================================
+=         ENFOQUE ESTRATÉGICO            =
+========================================*/
+
+/* Contenedor principal */
+.enfoque {
+    width: 90%;
+    max-width: 1200px;
+    margin: 120px auto;
+    text-align: center;
+}
+
+/* Título */
+.enfoque h2 {
+    font-size: 48px;
+    color: var(--azul-oscuro);
+    margin-bottom: 25px;
+}
+
+/* Texto introductorio */
+.enfoque>p {
+    font-size: 20px;
+    color: var(--gris-medio);
+    line-height: 1.7;
+    max-width: 850px;
+    margin: 0 auto 70px auto;
+}
+
+/* Contenedor de tarjetas */
+.enfoque-cartas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+}
+
+/* Tarjetas */
+.enfoque-item {
+    flex: 1 1 250px;
+    background-color: var(--blanco);
+    padding: 35px 30px;
+    border-radius: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* Título de tarjeta */
+.enfoque-item h3 {
+    font-size: 24px;
+    color: var(--azul-oscuro);
+    margin-bottom: 15px;
+}
+
+/* Texto */
+.enfoque-item p {
+    font-size: 18px;
+    color: var(--gris-medio);
+    line-height: 1.7;
+}
+
+/*========================================
+=                 CTA                    =
+========================================*/
+
+/* Contenedor principal */
+
+.cta {
+    width: 90%;
+    max-width: 1200px;
+    margin: 120px auto;
+    padding: 80px 60px;
+
+    background-color: var(--azul-oscuro);
+    border-radius: 30px;
+
+    text-align: center;
+}
+
+/* Título */
+.cta h2 {
+    font-size: 48px;
+    color: var(--blanco);
+    margin-bottom: 25px;
+}
+
+/* Texto */
+.cta p {
+    font-size: 20px;
+    color: rgba(255, 255, 255, 0.85);
+    line-height: 1.7;
+    max-width: 750px;
+    margin: 0 auto 40px auto;
+}
+
+/* Botón */
+.cta a {
+    display: inline-block;
+    background-color: var(--verde);
+    color: var(--blanco);
+    text-decoration: none;
+    padding: 16px 32px;
+    border-radius: 10px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* Hover */
+.cta a:hover {
+    background-color: var(--verde);
+    color: var(--blanco);
+    opacity: 0.9;
+}
+
+/*========================================
+=                FOOTER                  =
+========================================*/
+
+/* Pie de página */
+.footer {
+    background-color: var(--azul-oscuro);
+    padding: 40px 0 20px;
+}
+
+/* Contenido principal del footer */
+.footer-contenido {
+    width: 90%;
+    max-width: 1200px;
+    margin: auto;
+
+    display: flex;
+    justify-content: space-between;
+    gap: 60px;
+}
+
+.footer-contenido article {
+    flex: 1;
+}
+
+/* Marca */
+.footer-marca img {
+    width: 180px;
+    margin-bottom: 25px;
+}
+
+/* Textos generales */
+.footer p {
+    color: var(--gris-claro);
+    line-height: 1.7;
+}
+
+.footer h3 {
+    color: var(--blanco);
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+/* Lista de contacto */
+.footer ul {
+    list-style: none;
+}
+
+.footer li {
+    color: var(--gris-claro);
+    margin-bottom: 15px;
+}
+
+.footer a {
+    color: var(--azul-claro);
+    text-decoration: none;
+}
+
+/* Copyright */
+.footer-copy {
+    width: 90%;
+    max-width: 1200px;
+    margin: 50px auto 0;
+    padding-top: 30px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+
+    border-top: 1px solid var(--azul-claro);
+    font-size: 14px;
+}
+
+/*========================================
+=            BOTÓN WHATSAPP              =
+========================================*/
+
+/* Botón flotante de WhatsApp */
+.btn-whatsapp {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.btn-whatsapp img {
+    width: 60px;
+    height: auto;
+}
+
+/*========================================
+=      RESPONSIVE - MÓVILES PEQUEÑOS     =
+========================================*/
+
+@media (max-width: 480px) {
+
+    /*========================================
+    =                 HERO                  =
+    ========================================*/
+
+    .hero {
+        flex-direction: column;
+        gap: 30px;
+        margin: 40px auto;
+    }
+
+    .hero-texto h1 {
+        font-size: 36px;
+    }
+
+    .hero-texto p {
+        font-size: 16px;
+    }
+
+    .hero-imagen {
+        width: 90%;
+        margin: 0 auto;
+    }
+
+    /*========================================
+    =          MISIÓN Y VISIÓN               =
+    ========================================*/
+
+    .compromiso-cartas {
+        margin: 80px auto;
+    }
+
+    .compromiso-cartas h2 {
+        font-size: 36px;
+        margin-bottom: 40px;
+    }
+
+    .compromiso-contenido {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .mision,
+    .vision {
+        padding: 30px 20px;
+    }
+
+    .mision h3,
+    .vision h3 {
+        font-size: 22px;
+    }
+
+    .mision p,
+    .vision p {
+        font-size: 16px;
+    }
+
+    /*========================================
+    =                VALORES                 =
+    ========================================*/
+
+    .valores {
+        margin: 80px auto;
+    }
+
+    .valor i {
+        width: 70px;
+        height: 70px;
+        font-size: 32px;
+    }
+
+    .valor h3 {
+        font-size: 22px;
+        margin-bottom: 15px;
+    }
+
+    .valor p {
+        font-size: 16px;
+        line-height: 1.6;
+    }
+
+    /*========================================
+    =          PROBLEMA A RESOLVER           =
+    ========================================*/
+
+    .problema {
+        margin: 80px auto;
+    }
+
+    .problema-imagen {
+        margin-bottom: 30px;
+    }
+
+    .problema-texto h2 {
+        font-size: 36px;
+        margin-bottom: 20px;
+    }
+
+    .problema-texto>p {
+        font-size: 16px;
+        margin-bottom: 20px;
+    }
+
+    .problema-texto ul {
+        padding-left: 20px;
+    }
+
+    .problema-texto li {
+        font-size: 16px;
+        line-height: 1.6;
+    }
+
+    /*========================================
+=        BENEFICIOS FACTURATE            =
+========================================*/
+
+    .beneficios {
+        margin: 80px auto;
+    }
+
+    .beneficios h2 {
+        font-size: 36px;
+    }
+
+    .beneficios>p {
+        font-size: 16px;
+        margin-bottom: 40px;
+    }
+
+    .beneficios-cartas {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .beneficio {
+        padding: 30px 20px;
+    }
+
+    .beneficio img {
+        width: 70px;
+        height: 70px;
+    }
+
+    .beneficio h3 {
+        font-size: 22px;
+    }
+
+    .beneficio p {
+        font-size: 16px;
+        line-height: 1.6;
+    }
+
+    /*========================================
+    =         ENFOQUE ESTRATÉGICO            =
+    ========================================*/
+
+    .enfoque {
+        margin: 80px auto;
+    }
+
+    .enfoque h2 {
+        font-size: 36px;
+    }
+
+    .enfoque>p {
+        font-size: 16px;
+        margin-bottom: 40px;
+    }
+
+    .enfoque-cartas {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .enfoque-item {
+        padding: 30px 20px;
+    }
+
+    .enfoque-item h3 {
+        font-size: 22px;
+    }
+
+    .enfoque-item p {
+        font-size: 16px;
+        line-height: 1.6;
+    }
+
+    /*========================================
+    =                 CTA                    =
+    ========================================*/
+
+    .cta {
+        margin: 80px auto;
+        padding: 50px 25px;
+    }
+
+    .cta h2 {
+        font-size: 36px;
+    }
+
+    .cta p {
+        font-size: 16px;
+        margin-bottom: 30px;
+    }
+
+    .cta a {
+        padding: 14px 24px;
+        font-size: 16px;
+    }
+
+    /*========================================
+    =                FOOTER                  =
+    ========================================*/
+
+    .footer-contenido {
+        flex-direction: column;
+        gap: 30px;
+    }
+
+    .footer-marca img {
+        width: 150px;
+    }
+
+    .footer h3 {
+        font-size: 20px;
+    }
+
+    .footer-copy {
+        flex-direction: column;
+        text-align: center;
+        gap: 10px;
+    }
+
+    .footer-copy p {
+        font-size: 13px;
+    }
+}
+
+/*========================================
+=      RESPONSIVE - CELULARES GRANDES    =
+========================================*/
+
+@media (min-width: 481px) and (max-width: 767px) {
+
+    /*========================================
+=                 HERO                   =
+========================================*/
+
+    .hero {
+        flex-direction: column;
+        margin: 60px auto;
+        gap: 40px;
+    }
+
+    .hero-texto h1 {
+        font-size: 52px;
+    }
+
+    .hero-texto p {
+        font-size: 18px;
+    }
+
+    .hero-imagen {
+        width: 80%;
+        margin: 0 auto;
+    }
+
+    /*========================================
+=          MISIÓN Y VISIÓN               =
+========================================*/
+
+    .compromiso-cartas {
+        margin: 100px auto;
+    }
+
+    .compromiso-cartas h2 {
+        font-size: 42px;
+    }
+
+    .compromiso-contenido {
+        flex-direction: column;
+        gap: 25px;
+    }
+
+    .mision,
+    .vision {
+        padding: 35px 25px;
+    }
+
+    .mision h3,
+    .vision h3 {
+        font-size: 24px;
+    }
+
+    .mision p,
+    .vision p {
+        font-size: 18px;
+    }
+
+    /*========================================
+=                VALORES                 =
+========================================*/
+
+    .valores {
+        margin: 100px auto;
+    }
+
+    .valor i {
+        width: 80px;
+        height: 80px;
+        font-size: 36px;
+    }
+
+    .valor h3 {
+        font-size: 24px;
+    }
+
+    .valor p {
+        font-size: 18px;
+    }
+
+    /*========================================
+=          PROBLEMA A RESOLVER           =
+========================================*/
+
+    .problema {
+        margin: 100px auto;
+    }
+
+    .problema-imagen {
+        margin-bottom: 40px;
+    }
+
+    .problema-texto h2 {
+        font-size: 42px;
+    }
+
+    .problema-texto>p {
+        font-size: 18px;
+    }
+
+    .problema-texto li {
+        font-size: 18px;
+    }
+
+    /*========================================
+=        BENEFICIOS FACTURATE            =
+========================================*/
+
+    .beneficios {
+        margin: 100px auto;
+    }
+
+    .beneficios h2 {
+        font-size: 42px;
+    }
+
+    .beneficios>p {
+        font-size: 18px;
+        margin-bottom: 50px;
+    }
+
+    .beneficios-cartas {
+        flex-direction: column;
+        gap: 25px;
+    }
+
+    .beneficio {
+        padding: 35px 25px;
+    }
+
+    .beneficio img {
+        width: 75px;
+        height: 75px;
+    }
+
+    .beneficio h3 {
+        font-size: 24px;
+    }
+
+    .beneficio p {
+        font-size: 18px;
+    }
+
+    /*========================================
+=         ENFOQUE ESTRATÉGICO            =
+========================================*/
+
+    .enfoque {
+        margin: 100px auto;
+    }
+
+    .enfoque h2 {
+        font-size: 42px;
+    }
+
+    .enfoque>p {
+        font-size: 18px;
+        margin-bottom: 50px;
+    }
+
+    .enfoque-cartas {
+        flex-direction: column;
+        gap: 25px;
+    }
+
+    .enfoque-item {
+        padding: 35px 25px;
+    }
+
+    .enfoque-item h3 {
+        font-size: 24px;
+    }
+
+    .enfoque-item p {
+        font-size: 18px;
+    }
+
+    /*========================================
+=                 CTA                    =
+========================================*/
+
+    .cta {
+        margin: 100px auto;
+        padding: 60px 40px;
+    }
+
+    .cta h2 {
+        font-size: 42px;
+    }
+
+    .cta p {
+        font-size: 18px;
+    }
+
+    .cta a {
+        font-size: 18px;
+    }
+
+    /*========================================
+=                FOOTER                  =
+========================================*/
+
+    .footer-contenido {
+        flex-direction: column;
+        gap: 35px;
+    }
+
+    .footer-copy {
+        flex-direction: column;
+        text-align: center;
+        gap: 10px;
+    }
+}
+
+/*========================================
+=          RESPONSIVE - TABLETS          =
+========================================*/
+
+@media (min-width: 768px) and (max-width: 1024px) {
+
+    /*========================================
+=                 HERO                   =
+========================================*/
+
+    .hero {
+        margin: 80px auto;
+    }
+
+    .hero-texto h1 {
+        font-size: 54px;
+    }
+
+    .hero-texto p {
+        font-size: 18px;
+    }
+
+    .hero-imagen img {
+        max-width: 420px;
+    }
+
+    /*========================================
+=          MISIÓN Y VISIÓN               =
+========================================*/
+
+    .compromiso-cartas {
+        margin: 100px auto;
+    }
+
+    .compromiso-cartas h2 {
+        font-size: 44px;
+    }
+
+    .compromiso-contenido {
+        gap: 20px;
+    }
+
+    .mision,
+    .vision {
+        padding: 30px 25px;
+    }
+
+    .mision h3,
+    .vision h3 {
+        font-size: 24px;
+    }
+
+    .mision p,
+    .vision p {
+        font-size: 17px;
+    }
+
+    /*========================================
+=                VALORES                 =
+========================================*/
+
+    .valores {
+        margin: 100px auto;
+    }
+
+    .valor i {
+        width: 80px;
+        height: 80px;
+        font-size: 36px;
+    }
+
+    /*========================================
+=          PROBLEMA A RESOLVER           =
+========================================*/
+
+    .problema {
+        margin: 100px auto;
+    }
+
+    .problema-texto h2 {
+        font-size: 44px;
+    }
+
+    .problema-texto>p {
+        font-size: 18px;
+    }
+
+    .problema-texto li {
+        font-size: 17px;
+    }
+
+    /*========================================
+=        BENEFICIOS FACTURATE            =
+========================================*/
+
+    .beneficios {
+        margin: 100px auto;
+    }
+
+    .beneficios h2 {
+        font-size: 44px;
+    }
+
+    .beneficios>p {
+        font-size: 18px;
+    }
+
+    .beneficio {
+        flex: 1 1 300px;
+    }
+
+    /*========================================
+=         ENFOQUE ESTRATÉGICO            =
+========================================*/
+
+    .enfoque {
+        margin: 100px auto;
+    }
+
+    .enfoque h2 {
+        font-size: 44px;
+    }
+
+    .enfoque>p {
+        font-size: 18px;
+    }
+
+    .enfoque-item {
+        flex: 1 1 300px;
+    }
+
+    /*========================================
+=                 CTA                    =
+========================================*/
+
+    .cta {
+        margin: 100px auto;
+        padding: 70px 50px;
+    }
+
+    .cta h2 {
+        font-size: 44px;
+    }
+
+    .cta p {
+        font-size: 18px;
+    }
+
+    /*========================================
+=                FOOTER                  =
+========================================*/
+
+    .footer-contenido {
+        gap: 30px;
+    }
+
+    .footer-copy {
+        gap: 15px;
+    }
+
+}

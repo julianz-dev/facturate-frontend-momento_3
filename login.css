@@ -1,0 +1,237 @@
+/*----------------- Hoja de estilos de la página de login. Reutiliza algunos estilos del index, como el encabezado y el pie de página.-----------------*/
+
+:root {
+    --azul-oscuro: #0b1f3a;
+    --azul-claro: #5bc0eb;
+    --verde: #37a169;
+    --gris-oscuro: #1f2937;
+    --gris-medio: #5b6472;
+    --gris-claro: #dfe5ec;
+    --gris-fondo: #f4f8fb;
+    --blanco: #ffffff;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--gris-fondo);
+    font-family: Arial, Helvetica, sans-serif;
+    color: var(--gris-oscuro);
+}
+
+/*========================================
+=                HEADER                  =
+========================================*/
+
+header {
+    background-color: var(--blanco);
+    border-bottom: 1px solid var(--gris-claro);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.navbar {
+    padding: 20px 0;
+    background-color: var(--blanco);
+}
+
+.navbar-brand img {
+    width: 180px;
+    height: auto;
+}
+
+.nav-link {
+    color: var(--gris-oscuro);
+    font-size: 16px;
+    font-weight: 500;
+    margin: 0 15px;
+}
+
+.nav-link:hover {
+    color: var(--azul-claro);
+}
+
+.login {
+    background-color: var(--azul-claro);
+    color: var(--blanco);
+    text-decoration: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+.login:hover {
+    opacity: 0.8;
+}
+
+.navbar-toggler {
+    border: 2px solid var(--gris-medio);
+}
+
+.navbar-toggler:focus {
+    box-shadow: none;
+}
+
+label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: bold;
+    color: var(--gris-oscuro);
+}
+
+/*Tarjeta principal*/
+.login-card {
+    width: 90%;
+    max-width: 1000px;
+    margin: 60px auto;
+    background-color: #fcfcfc;
+    border-radius: 25px;
+    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.login-info {
+    background-color: var(--azul-oscuro);
+    color: var(--blanco);
+    padding: 80px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.login-info h1 {
+    font-size: 56px;
+    font-weight: bold;
+    line-height: 1.2;
+    margin-bottom: 30px;
+}
+
+.login-info p {
+    font-size: 20px;
+    line-height: 1.7;
+    color: var(--gris-claro);
+}
+
+.login-formulario {
+    background-color: var(--gris-fondo);
+    padding: 80px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.login-formulario h2 {
+    font-size: 48px;
+    color: var(--azul-oscuro);
+    margin-bottom: 20px;
+}
+
+.login-formulario>p {
+    color: var(--gris-medio);
+    font-size: 18px;
+    margin-bottom: 40px;
+}
+
+/*Campos del formulario*/
+input {
+    width: 100%;
+    padding: 14px;
+    border: 1px solid var(--gris-claro);
+    border-radius: 10px;
+    font-size: 16px;
+    background-color: var(--blanco);
+}
+
+/*Resalta el campo cuando recibe el foco*/
+input:focus,
+select:focus {
+    border-color: var(--azul-claro);
+    outline: none;
+}
+
+/*Botón de inicio de sesión*/
+.boton-login {
+    width: 100%;
+    background-color: var(--azul-claro);
+    color: var(--blanco);
+    border: none;
+    padding: 16px;
+    border-radius: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/*Efecto al pasar el cursor*/
+.boton-login:hover {
+    opacity: 0.9;
+}
+
+/*Enlace de registro*/
+.login-registro {
+    text-align: center;
+    margin-top: 15px;
+}
+
+.login-registro p {
+    color: var(--gris-medio);
+}
+
+.login-registro a {
+    color: var(--azul-claro);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.login-registro a:hover {
+    text-decoration: underline;
+}
+
+/*Footer*/
+.login-footer {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    padding: 15px 20px 30px;
+    font-size: 14px;
+}
+
+.login-footer p {
+    color: var(--gris-medio);
+    margin: 0;
+}
+
+/*Diseño responsivo para dispositivos móviles*/
+@media (max-width: 480px) {
+
+    .login-info {
+        padding: 40px;
+    }
+
+    .login-info h1 {
+        font-size: 42px;
+    }
+
+
+    /*Reducir el espacio interno del formulario*/
+    .login-formulario {
+        padding: 40px;
+    }
+
+    /*Reducir el tamaño del título del formulario*/
+    .login-formulario h2 {
+        font-size: 36px;
+    }
+
+    /*Reducir el tamaño del texto descriptivo del panel azul*/
+    .login-info p {
+        font-size: 16px;
+    }
+
+}

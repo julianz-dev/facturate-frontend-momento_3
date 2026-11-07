@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar sesión</title>
+    <link rel="icon" type="image/png" href="Imagenes/favicon.png">
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- CSS personalizado -->
+    <link rel="stylesheet" href="login.css">
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header>
+
+        <nav class="navbar navbar-expand-lg">
+
+            <section class="container">
+
+                <a class="navbar-brand" href="index.html#inicio">
+                    <img src="Imagenes/logo-facturate.png" alt="Logo de Facturate">
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuFacturate">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <section class="collapse navbar-collapse" id="menuFacturate">
+                    <ul class="navbar-nav mx-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="index.html#inicio">Inicio</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="index.html#funcionalidades">Funcionalidades</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="nosotros.html">Nosotros</a>
+                        </li>
+                        <!-- Visible solo en móviles -->
+                        <li class="nav-item d-lg-none">
+                            <a class="nav-link" href="registro.html">Crear cuenta</a>
+                        </li>
+                    </ul>
+
+                    <!-- Visible solo en escritorio -->
+                    <a class="login d-none d-lg-inline-block" href="registro.html">
+                        Crear cuenta
+                    </a>
+
+                </section>
+
+            </section>
+
+        </nav>
+    </header>
+
+    <!-- Main -->
+    <main class="container-fluid">
+
+        <section class="login-card">
+
+            <section class="row min-vh-100">
+
+                <!-- Panel izquierdo -->
+                <section class="col-lg-5 login-info">
+                    <h1>Bienvenido de nuevo.</h1>
+                    <p>
+                        Accede a tu cuenta y continúa gestionando
+                        ventas, clientes, inventario y reportes
+                        desde un solo lugar.
+                    </p>
+                </section>
+
+                <!-- Formulario -->
+                <section class="col-lg-7 login-formulario">
+                    <h2>Iniciar sesión</h2>
+                    <p>Ingresa tus credenciales para acceder a Facturate.</p>
+                    <form action="#" method="post" class="row g-4">
+                        <article class="col-12">
+                            <label for="email">Correo electrónico</label>
+                            <input id="email" name="email" type="email" autocomplete="email"
+                                placeholder="ejemplo@facturate.com" required>
+                        </article>
+                        <article class="col-12">
+                            <label for="password">Contraseña</label>
+                            <input id="password" name="password" type="password" autocomplete="current-password"
+                                minlength="8" maxlength="32" required>
+                        </article>
+                        <article class="col-12">
+                            <button class="boton-login" type="submit">Iniciar sesión</button>
+                        </article>
+                        <article class="col-12 login-registro">
+                            <p>
+                                ¿No tienes una cuenta?
+                                <a href="registro.html">Crear cuenta</a>
+                            </p>
+                        </article>
+                    </form>
+                </section>
+
+            </section>
+
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="login-footer">
+        <p>© 2026 Facturate. Todos los derechos reservados.</p>
+        <p>Proyecto Integrador CESDE</p>
+        <p>Sistema de Recaudo Digital</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>

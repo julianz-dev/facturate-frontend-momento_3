@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear cuenta | Facturate</title>
+    <link rel="icon" type="image/png" href="Imagenes/favicon.png">
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <!-- CSS personalizado -->
+    <link rel="stylesheet" href="registro.css">
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header>
+
+        <nav class="navbar navbar-expand-lg">
+
+            <section class="container">
+
+                <a class="navbar-brand" href="index.html#inicio">
+                    <img src="Imagenes/logo-facturate.png" alt="Logo de Facturate">
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuFacturate">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <section class="collapse navbar-collapse" id="menuFacturate">
+                    <ul class="navbar-nav mx-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="index.html#inicio">Inicio</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="index.html#funcionalidades">Funcionalidades</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="nosotros.html">Nosotros</a>
+                        </li>
+                        <!-- Visible solo en móviles -->
+                        <li class="nav-item d-lg-none">
+                            <a class="nav-link" href="login.html">Iniciar sesión</a>
+                        </li>
+                    </ul>
+                    <!-- Visible solo en escritorio -->
+                    <a class="login d-none d-lg-inline-block" href="login.html">Iniciar sesión</a>
+
+                </section>
+
+            </section>
+
+        </nav>
+
+    </header>
+
+    <!-- Main -->
+    <main class="container-fluid">
+        <!--contenedor fluido de Bootstrap (para que siempre mida el 100% del ancho de pantalla)-->
+        <section class="registro-card">
+            <section class="row min-vh-100">
+                <!--Row para albergar columnas(col-). min-vh-100 aunque la seccion tenga muy poco texto o esté vacía, va a medir como mínimo todo el alto de la pantalla del usuario-->
+
+                <!-- Introducción -->
+                <section class="col-lg-5 registro-info d-flex flex-column justify-content-center px-5">
+
+                    <h1 class="display-4 fw-bold mb-4"> Organiza tu negocio desde el primer registro.</h1>
+                    <p>
+                        Guarda los datos principales de tu negocio y prepara el acceso
+                        para consultar ventas, recaudos, inventario y reportes.
+                    </p>
+                    <ul>
+                        <li> Registro claro para pequeños comercios.</li>
+                        <li> Campos listos para conectar con una base de datos.</li>
+                        <li>Navegación directa hacia la página principal.</li>
+                    </ul>
+
+                </section>
+
+                <!-- Formulario -->
+                <section class="col-lg-7 registro-formulario">
+
+                    <h2>Crea tu cuenta</h2>
+                    <p>
+                        Completa la información para iniciar en Facturate.
+                    </p>
+                    <form action="#" method="post" class="row g-4"> <!--grid Bootstrap.-->
+
+                        <!-- Campos -->
+                        <article class="col-md-6">
+                            <label for="nombre">Nombre</label>
+                            <input id="nombre" name="nombre" type="text" autocomplete="given-name" required>
+                        </article>
+                        <article class="col-md-6">
+                            <label for="apellido">Apellido</label>
+                            <input id="apellido" name="apellido" type="text" autocomplete="family-name" required>
+                        </article>
+                        <article class="col-12">
+                            <label for="negocio">Nombre del negocio</label>
+                            <input id="negocio" name="negocio" type="text" autocomplete="organization" required>
+                        </article>
+                        <article class="col-md-6">
+                            <label for="tipo-negocio">Tipo de negocio</label>
+                            <select id="tipo-negocio" name="tipo_negocio" required>
+                                <option value="" disabled selected>Selecciona una opción</option>
+                                <option value="tienda">Tienda</option>
+                                <option value="restaurante">Restaurante</option>
+                                <option value="papeleria">Papelería</option>
+                                <option value="servicios">Servicios</option>
+                                <option value="ferreteria">Ferretería</option>
+                                <option value="otro">Otro</option>
+                            </select>
+                        </article>
+                        <article class="col-md-6">
+                            <label for="telefono">Teléfono</label>
+                            <input id="telefono" name="telefono" type="tel" autocomplete="tel" pattern="[0-9]{10}"
+                                placeholder="3001234567" required>
+                        </article>
+                        <article class="col-12">
+                            <label for="email">Correo electrónico</label>
+                            <input id="email" name="email" type="email" autocomplete="email"
+                                placeholder="ejemplo@facturate.com" required>
+                        </article>
+                        <article class="col-md-6">
+                            <label for="password">Contraseña</label>
+                            <input id="password" name="password" type="password" autocomplete="new-password"
+                                minlength="8" maxlength="32" required>
+                        </article>
+                        <article class="col-md-6">
+                            <label for="confirmar-password">Confirmar contraseña</label>
+                            <input id="confirmar-password" name="confirmar_password" type="password"
+                                autocomplete="new-password" minlength="8" maxlength="32" required>
+                        </article>
+
+                        <!--Términos y condiciones-->
+                        <article class="col-12">
+                            <label class="registro-legal" for="terminos">
+                                <input id="terminos" name="terminos" type="checkbox" required>
+                                Al enviar el formulario, acepto los
+                                <a href="#">Términos y condiciones</a>
+                                ,
+                                <a href="#">Política de privacidad</a>
+                                y
+                                <a href="#">Acuerdo de Procesamiento de Datos (DPA)</a>
+                                de Facturate.
+                            </label>
+                        </article>
+
+                        <!-- Botón -->
+                        <article class="col-12">
+                            <button class="boton-registro" type="submit">Crear cuenta </button>
+                        </article>
+
+                        <!-- Inicio de sesión -->
+                        <article class="col-12 registro-login">
+                            <p>¿Ya tienes una cuenta?
+                                <a href="login.html">Iniciar sesión</a>
+                            </p>
+                        </article>
+
+                    </form>
+
+                </section>
+            </section>
+        </section>
+    </main>
+
+    <!--Footer-->
+    <footer class="registro-footer">
+        <p>© 2026 Facturate. Todos los derechos reservados.</p>
+        <p>Proyecto Integrador CESDE</p>
+        <p>Sistema de Recaudo Digital</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
