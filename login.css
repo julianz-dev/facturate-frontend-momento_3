@@ -235,3 +235,11 @@ select:focus {
     }
 
 }
+
+/* Mensaje de error del inicio de sesión */
+.mensaje-error-login {
+    color: #dc3545;
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin: 0;
+}

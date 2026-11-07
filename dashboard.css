@@ -1,0 +1,602 @@
+
+/*========================================
+=       ESTILOS DEL DASHBOARD FACTURATE  =
+========================================*/
+
+:root {
+    --azul-oscuro: #0b1f3a;
+    --azul-claro: #5bc0eb;
+    --azul-hover: #38a9d5;
+    --gris-oscuro: #1f2937;
+    --gris-medio: #5b6472;
+    --gris-claro: #dfe5ec;
+    --gris-fondo: #f4f8fb;
+    --blanco: #ffffff;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--gris-fondo);
+    font-family: Arial, Helvetica, sans-serif;
+    color: var(--gris-oscuro);
+}
+
+/*========================================
+=             ESTRUCTURA GENERAL         =
+========================================*/
+
+.dashboard-layout {
+    display: grid;
+    grid-template-columns: 255px minmax(0, 1fr);
+    min-height: 100vh;
+}
+
+/*========================================
+=               MENÚ LATERAL             =
+========================================*/
+
+.sidebar {
+    background-color: var(--azul-oscuro);
+    color: var(--blanco);
+    min-height: 100vh;
+    padding: 25px 18px;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-header {
+    margin-bottom: 45px;
+}
+
+.dashboard-brand {
+    display: block;
+    background-color: var(--blanco);
+    padding: 10px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.dashboard-brand img {
+    width: 100%;
+    max-width: 180px;
+    height: auto;
+}
+
+.sidebar-navigation {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.sidebar-label {
+    color: #a9b8c9;
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    margin: 0 10px 12px;
+}
+
+.sidebar-link {
+    display: block;
+    color: #dce6f0;
+    text-decoration: none;
+    padding: 13px 15px;
+    border-radius: 8px;
+    font-size: 15px;
+    transition: background-color 0.2s ease;
+}
+
+.sidebar-link:hover,
+.sidebar-link.active {
+    background-color: rgba(91, 192, 235, 0.2);
+    color: var(--blanco);
+}
+
+.sidebar-footer {
+    margin-top: auto;
+    padding-top: 30px;
+}
+
+.sidebar-footer p {
+    color: #a9b8c9;
+    font-size: 12px;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.btn-cerrar-sesion {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    background-color: transparent;
+    color: var(--blanco);
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s ease;
+}
+
+.btn-cerrar-sesion:hover {
+    background-color: rgba(255, 255, 255, 0.12);
+}
+
+/*========================================
+=              CONTENIDO PRINCIPAL       =
+========================================*/
+
+.dashboard-main {
+    min-width: 0;
+}
+
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--blanco);
+    padding: 20px 35px;
+    border-bottom: 1px solid var(--gris-claro);
+}
+
+.topbar-subtitle {
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    color: var(--gris-medio);
+    margin-bottom: 5px;
+}
+
+.topbar-heading h1 {
+    font-size: 24px;
+    color: var(--azul-oscuro);
+    margin: 0;
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.user-avatar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background-color: var(--azul-claro);
+    color: var(--blanco);
+    font-weight: bold;
+}
+
+.user-details {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.user-details strong {
+    font-size: 14px;
+}
+
+.user-details span {
+    color: var(--gris-medio);
+    font-size: 12px;
+}
+
+/*========================================
+=              ÁREA DE TRABAJO           =
+========================================*/
+
+.dashboard-content {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 30px;
+}
+
+.page-intro {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.page-intro h2,
+.section-heading h2 {
+    color: var(--azul-oscuro);
+    font-size: 25px;
+    font-weight: bold;
+    margin-bottom: 7px;
+}
+
+.page-intro p,
+.section-heading p {
+    color: var(--gris-medio);
+    margin: 0;
+    font-size: 14px;
+}
+
+.btn-dashboard {
+    display: inline-block;
+    background-color: var(--azul-claro);
+    color: var(--blanco);
+    text-decoration: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-weight: bold;
+    transition: background-color 0.2s ease;
+}
+
+.btn-dashboard:hover {
+    background-color: var(--azul-hover);
+    color: var(--blanco);
+}
+
+/*========================================
+=             TARJETAS DE INDICADORES    =
+========================================*/
+
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+    margin-bottom: 40px;
+}
+
+.metric-card {
+    background-color: var(--blanco);
+    border: 1px solid var(--gris-claro);
+    border-radius: 12px;
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.metric-label {
+    color: var(--gris-medio);
+    font-size: 14px;
+}
+
+.metric-value {
+    color: var(--azul-oscuro);
+    font-size: 27px;
+}
+
+.metric-description {
+    color: var(--gris-medio);
+    font-size: 12px;
+}
+
+/*========================================
+=            ÁREA DE NUEVA VENTA         =
+========================================*/
+
+.workspace-section {
+    margin-bottom: 40px;
+}
+
+.section-heading {
+    margin-bottom: 22px;
+}
+
+.workspace-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.8fr);
+    gap: 20px;
+    align-items: start;
+}
+
+.sale-catalog {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/*========================================
+=              TARJETAS GENERALES        =
+========================================*/
+
+.dashboard-card {
+    background-color: var(--blanco);
+    border: 1px solid var(--gris-claro);
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.03);
+}
+
+.card-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 22px;
+}
+
+.card-heading h3,
+.card-heading h2 {
+    color: var(--azul-oscuro);
+    font-size: 18px;
+    font-weight: bold;
+    margin: 0;
+}
+
+.step-number {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: #e8f6fc;
+    color: var(--azul-oscuro);
+    font-size: 13px;
+    font-weight: bold;
+}
+
+/*========================================
+=          CAMPOS Y FORMULARIOS          =
+========================================*/
+
+.dashboard-card label {
+    display: block;
+    margin-bottom: 9px;
+    font-size: 14px;
+    font-weight: bold;
+    color: var(--gris-oscuro);
+}
+
+.dashboard-card input,
+.dashboard-card select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--gris-claro);
+    border-radius: 8px;
+    font-size: 14px;
+    color: var(--gris-oscuro);
+    background-color: var(--blanco);
+}
+
+.dashboard-card input:focus,
+.dashboard-card select:focus {
+    border-color: var(--azul-claro);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(91, 192, 235, 0.15);
+}
+
+/*========================================
+=            CATÁLOGO DE PRODUCTOS       =
+========================================*/
+
+.product-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.empty-state {
+    color: var(--gris-medio);
+    font-size: 13px;
+    text-align: center;
+    padding: 25px 12px;
+    background-color: var(--gris-fondo);
+    border-radius: 8px;
+    margin: 0;
+}
+
+/*========================================
+=                CARRITO                =
+========================================*/
+
+.cart-card {
+    position: sticky;
+    top: 20px;
+}
+
+.cart-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.cart-summary {
+    border-top: 1px solid var(--gris-claro);
+    margin-top: 20px;
+    padding-top: 15px;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+    font-size: 14px;
+}
+
+.summary-row span {
+    color: var(--gris-medio);
+}
+
+.summary-row strong {
+    color: var(--gris-oscuro);
+}
+
+.summary-total {
+    border-top: 1px solid var(--gris-claro);
+    padding-top: 17px;
+    margin-top: 17px;
+    font-size: 17px;
+}
+
+.summary-total strong {
+    color: var(--azul-oscuro);
+    font-size: 20px;
+}
+
+.btn-finalizar-venta {
+    width: 100%;
+    background-color: var(--azul-claro);
+    color: var(--blanco);
+    padding: 14px;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: bold;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+.btn-finalizar-venta:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.card-note {
+    color: var(--gris-medio);
+    font-size: 11px;
+    text-align: center;
+    margin: 12px 0 0;
+}
+
+/*========================================
+=           HISTORIAL DE VENTAS          =
+========================================*/
+
+.history-card {
+    margin-bottom: 30px;
+}
+
+.history-card .card-heading {
+    margin-bottom: 20px;
+}
+
+.history-card .card-heading p {
+    color: var(--gris-medio);
+    font-size: 13px;
+    margin: 7px 0 0;
+}
+
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.history-table th,
+.history-table td {
+    padding: 15px;
+    border-bottom: 1px solid var(--gris-claro);
+    text-align: left;
+}
+
+.history-table th {
+    background-color: var(--gris-fondo);
+    color: var(--gris-medio);
+    font-weight: bold;
+}
+
+.empty-table {
+    text-align: center !important;
+    color: var(--gris-medio);
+    padding: 30px !important;
+}
+
+/*========================================
+=             DISEÑO RESPONSIVO          =
+========================================*/
+
+@media (max-width: 1100px) {
+
+    .metrics-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .workspace-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .cart-card {
+        position: static;
+    }
+
+}
+
+@media (max-width: 760px) {
+
+    .dashboard-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .sidebar {
+        min-height: auto;
+        padding: 15px;
+    }
+
+    .sidebar-header {
+        margin-bottom: 20px;
+    }
+
+    .dashboard-brand {
+        max-width: 200px;
+        margin: 0 auto;
+    }
+
+    .sidebar-navigation {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .sidebar-label {
+        grid-column: 1 / -1;
+    }
+
+    .sidebar-footer {
+        margin-top: 20px;
+        padding-top: 15px;
+    }
+
+    .topbar {
+        padding: 18px;
+    }
+
+    .dashboard-content {
+        padding: 20px;
+    }
+
+}
+
+@media (max-width: 480px) {
+
+    .topbar-heading h1 {
+        font-size: 20px;
+    }
+
+    .user-details {
+        display: none;
+    }
+
+    .page-intro {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .metrics-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-card {
+        padding: 18px;
+    }
+
+    .product-list {
+        grid-template-columns: 1fr;
+    }
+
+}
