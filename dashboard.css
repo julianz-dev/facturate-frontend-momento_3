@@ -613,6 +613,122 @@ body {
 }
 
 /*========================================
+=       CONTROLES DEL CARRITO            =
+========================================*/
+
+.cart-item-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.btn-cantidad {
+    width: 30px;
+    height: 30px;
+    border: 1px solid var(--gris-claro);
+    border-radius: 6px;
+    background-color: var(--gris-fondo);
+    color: var(--azul-oscuro);
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.btn-cantidad:hover:not(:disabled) {
+    background-color: var(--azul-claro);
+    color: var(--blanco);
+}
+
+.btn-cantidad:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.cart-item-quantity {
+    min-width: 24px;
+    text-align: center;
+    font-weight: bold;
+    color: var(--azul-oscuro);
+}
+
+.btn-eliminar-producto {
+    margin-left: auto;
+    border: none;
+    background: none;
+    color: #dc3545;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.btn-eliminar-producto:hover {
+    text-decoration: underline;
+}
+
+/*========================================
+=             SECCIÓN DE RECAUDO         =
+========================================*/
+
+.payment-section {
+    border-top: 1px solid var(--gris-claro);
+    margin-top: 22px;
+    padding-top: 20px;
+}
+
+.payment-heading h4 {
+    color: var(--azul-oscuro);
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 18px;
+}
+
+.payment-field {
+    margin-bottom: 16px;
+}
+
+.payment-field label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.payment-field select,
+.payment-field input {
+    width: 100%;
+    padding: 11px;
+    border: 1px solid var(--gris-claro);
+    border-radius: 8px;
+    background-color: var(--blanco);
+    font-size: 14px;
+}
+
+.payment-field select:focus,
+.payment-field input:focus {
+    outline: none;
+    border-color: var(--azul-claro);
+}
+
+.payment-field input:disabled {
+    background-color: var(--gris-fondo);
+    cursor: not-allowed;
+}
+
+.payment-change {
+    border-top: 1px solid var(--gris-claro);
+    padding-top: 14px;
+    margin-top: 16px;
+}
+
+.payment-error {
+    color: #dc3545;
+    font-size: 13px;
+    font-weight: 600;
+    margin: 10px 0;
+}
+
+/*========================================
 =             DISEÑO RESPONSIVO          =
 ========================================*/
 

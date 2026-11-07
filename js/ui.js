@@ -231,6 +231,7 @@ export function gco_mostrarErrorProductos() {
 
 }
 
+
 // ========================================
 // MOSTRAR CARRITO DE VENTA
 // ========================================
@@ -254,7 +255,7 @@ export function gco_mostrarCarrito(gco_carrito) {
         maximumFractionDigits: 0
     });
 
-    // Limpiar la lista antes de actualizarla
+    // Limpiar lista antes de actualizarla
     gco_listaCarrito.replaceChildren();
 
     // Controlar mensaje de carrito vacío
@@ -266,61 +267,95 @@ export function gco_mostrarCarrito(gco_carrito) {
     // Recorrer productos del carrito
     gco_carrito.forEach((gco_producto) => {
 
-        // Obtener precio y cantidad
         const gco_precioUnitario = Number(gco_producto.precio_unitario);
         const gco_cantidad = Number(gco_producto.cantidad);
 
         // Calcular subtotal del producto
         const gco_subtotalProducto = gco_precioUnitario * gco_cantidad;
 
-        // Acumular subtotal general
         gco_subtotalGeneral += gco_subtotalProducto;
 
         // Crear elemento del producto
         const gco_item = document.createElement("li");
-
         gco_item.className = "cart-item";
 
-        // Crear encabezado del producto
+        // Encabezado del producto
         const gco_encabezado = document.createElement("div");
-
         gco_encabezado.className = "cart-item-header";
 
-        // Nombre del producto
+        // Nombre
         const gco_nombre = document.createElement("strong");
-
         gco_nombre.className = "cart-item-name";
         gco_nombre.textContent = gco_producto.nombre_producto;
 
-        // Subtotal del producto
+        // Subtotal
         const gco_subtotal = document.createElement("strong");
-
         gco_subtotal.className = "cart-item-subtotal";
         gco_subtotal.textContent = gco_formatoMoneda.format(
             gco_subtotalProducto
         );
 
-        // Información complementaria
-        const gco_detalles = document.createElement("p");
+        gco_encabezado.append(gco_nombre, gco_subtotal);
 
+        // Información del producto
+        const gco_detalles = document.createElement("p");
         gco_detalles.className = "cart-item-details";
 
         gco_detalles.textContent =
-            `${gco_formatoMoneda.format(gco_precioUnitario)} × ${gco_cantidad}`;
+            `Precio unitario: ${gco_formatoMoneda.format(gco_precioUnitario)}`;
 
-        // Incorporar elementos al encabezado
-        gco_encabezado.append(
-            gco_nombre,
-            gco_subtotal
+        // Controles de cantidad
+        const gco_controles = document.createElement("div");
+        gco_controles.className = "cart-item-controls";
+
+        // Botón disminuir
+        const gco_botonDisminuir = document.createElement("button");
+        gco_botonDisminuir.type = "button";
+        gco_botonDisminuir.className = "btn-cantidad";
+        gco_botonDisminuir.textContent = "−";
+        gco_botonDisminuir.dataset.accion = "disminuir-cantidad";
+        gco_botonDisminuir.dataset.productoId = gco_producto.producto_id;
+        gco_botonDisminuir.setAttribute("aria-label", "Disminuir cantidad");
+        gco_botonDisminuir.disabled = gco_cantidad <= 1;
+
+        // Mostrar cantidad actual
+        const gco_cantidadTexto = document.createElement("span");
+        gco_cantidadTexto.className = "cart-item-quantity";
+        gco_cantidadTexto.textContent = gco_cantidad;
+
+        // Botón aumentar
+        const gco_botonAumentar = document.createElement("button");
+        gco_botonAumentar.type = "button";
+        gco_botonAumentar.className = "btn-cantidad";
+        gco_botonAumentar.textContent = "+";
+        gco_botonAumentar.dataset.accion = "incrementar-cantidad";
+        gco_botonAumentar.dataset.productoId = gco_producto.producto_id;
+        gco_botonAumentar.setAttribute("aria-label", "Aumentar cantidad");
+
+        // Botón eliminar
+        const gco_botonEliminar = document.createElement("button");
+        gco_botonEliminar.type = "button";
+        gco_botonEliminar.className = "btn-eliminar-producto";
+        gco_botonEliminar.textContent = "Eliminar";
+        gco_botonEliminar.dataset.accion = "eliminar-producto";
+        gco_botonEliminar.dataset.productoId = gco_producto.producto_id;
+
+        // Incorporar controles
+        gco_controles.append(
+            gco_botonDisminuir,
+            gco_cantidadTexto,
+            gco_botonAumentar,
+            gco_botonEliminar
         );
 
         // Incorporar elementos al producto
         gco_item.append(
             gco_encabezado,
-            gco_detalles
+            gco_detalles,
+            gco_controles
         );
 
-        // Incorporar producto a la lista
+        // Incorporar producto al carrito visual
         gco_listaCarrito.appendChild(gco_item);
 
     });
@@ -329,13 +364,13 @@ export function gco_mostrarCarrito(gco_carrito) {
     const gco_descuentoGeneral = 0;
     const gco_impuestosGeneral = 0;
 
-    // Calcular total de la venta
+    // Calcular total
     const gco_totalGeneral =
         gco_subtotalGeneral +
         gco_descuentoGeneral +
         gco_impuestosGeneral;
 
-    // Actualizar resumen de la venta
+    // Actualizar resumen
     gco_elementoSubtotal.textContent =
         gco_formatoMoneda.format(gco_subtotalGeneral);
 
