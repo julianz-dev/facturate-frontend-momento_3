@@ -265,7 +265,7 @@ if (gco_accesoAutorizado) {
     });
 
     // ========================================
-    // REGISTRAR NUEVO CLIENTE
+    // REGISTRAR Y EDITAR CLIENTES
     // ========================================
 
     gco_formularioCliente.addEventListener("submit", async (gco_evento) => {
@@ -273,28 +273,41 @@ if (gco_accesoAutorizado) {
         // Evitar el envío tradicional del formulario
         gco_evento.preventDefault();
 
-        // Evitar registrar un cliente durante una edición
-        if (gco_clienteEnEdicion !== null) {
+        // Identificar si estamos creando o editando
+        const gco_esEdicion = gco_clienteEnEdicion !== null;
+
+        // Proteger el cliente genérico
+        if (gco_esEdicion && gco_clienteGenericoEnEdicion) {
+
+            window.alert("El cliente genérico está protegido.");
+
             return;
+
         }
 
         // Validar campos obligatorios
         if (!gco_formularioCliente.checkValidity()) {
+
             gco_formularioCliente.reportValidity();
+
             return;
+
         }
 
         // Identificar tipo de cliente
         const gco_esGenerico = gco_esGenericoCliente.checked;
 
-        // Normalizar los datos de texto
+        // Normalizar datos de texto
         const gco_nombreValidado =
             gco_nombreRazonSocialCliente.value.trim();
+
+        const gco_tipoDocumentoValidado =
+            gco_tipoDocumentoCliente.value.trim().toUpperCase();
 
         const gco_documentoValidado =
             gco_numeroDocumentoCliente.value.trim();
 
-        // Validar que el nombre no contenga únicamente espacios
+        // Validar nombre
         if (!gco_esGenerico && !gco_nombreValidado) {
 
             window.alert("Ingresa un nombre o razón social válido.");
@@ -305,7 +318,7 @@ if (gco_accesoAutorizado) {
 
         }
 
-        // Validar número de documento
+        // Validar documento
         if (!gco_esGenerico && !gco_documentoValidado) {
 
             window.alert("Ingresa un número de documento válido.");
@@ -316,17 +329,55 @@ if (gco_accesoAutorizado) {
 
         }
 
-        // Verificar si el documento ya está registrado
-        const gco_documentoDuplicado = gco_clientes.some(
-            (gco_cliente) =>
-                gco_cliente.es_generico !== true &&
-                String(gco_cliente.tipo_documento ?? "").trim() ===
-                gco_tipoDocumentoCliente.value &&
-                String(gco_cliente.numero_documento ?? "").trim() ===
-                gco_documentoValidado
-        );
+        // Evitar duplicar el cliente genérico
+        const gco_genericoDuplicado = gco_esGenerico &&
+            gco_clientes.some(
+                (gco_cliente) =>
+                    gco_cliente.es_generico === true &&
+                    String(gco_cliente.cliente_id ?? gco_cliente.id) !==
+                    String(gco_clienteEnEdicion)
+            );
 
-        // Evitar registrar documentos duplicados
+        if (gco_genericoDuplicado) {
+
+            window.alert("Ya existe un cliente genérico registrado.");
+
+            return;
+
+        }
+
+        // ========================================
+        // VALIDAR DOCUMENTOS DUPLICADOS
+        // ========================================
+
+        const gco_documentoDuplicado = !gco_esGenerico &&
+            gco_clientes.some((gco_cliente) => {
+
+                const gco_idRegistrado =
+                    gco_cliente.cliente_id ?? gco_cliente.id;
+
+                const gco_mismoTipoDocumento =
+                    String(gco_cliente.tipo_documento ?? "")
+                        .trim()
+                        .toUpperCase() === gco_tipoDocumentoValidado;
+
+                const gco_mismoNumeroDocumento =
+                    String(gco_cliente.numero_documento ?? "").trim() ===
+                    gco_documentoValidado;
+
+                const gco_esOtroCliente =
+                    String(gco_idRegistrado) !==
+                    String(gco_clienteEnEdicion);
+
+                return (
+                    gco_cliente.es_generico !== true &&
+                    gco_mismoTipoDocumento &&
+                    gco_mismoNumeroDocumento &&
+                    gco_esOtroCliente
+                );
+
+            });
+
         if (gco_documentoDuplicado) {
 
             window.alert(
@@ -339,25 +390,48 @@ if (gco_accesoAutorizado) {
 
         }
 
-        // Evitar duplicar el cliente genérico
-        if (
-            gco_esGenerico &&
-            gco_clientes.some(
-                (gco_cliente) => gco_cliente.es_generico === true
-            )
-        ) {
-            window.alert("Ya existe un cliente genérico registrado.");
-            return;
+        // ========================================
+        // IDENTIFICAR CLIENTE ORIGINAL
+        // ========================================
+
+        let gco_clienteOriginal = null;
+
+        let gco_indiceCliente = -1;
+
+        if (gco_esEdicion) {
+
+            gco_indiceCliente = gco_clientes.findIndex(
+                (gco_cliente) =>
+                    String(gco_cliente.cliente_id ?? gco_cliente.id) ===
+                    String(gco_clienteEnEdicion)
+            );
+
+            if (gco_indiceCliente === -1) {
+
+                window.alert(
+                    "No se encontró el cliente que deseas actualizar."
+                );
+
+                return;
+
+            }
+
+            gco_clienteOriginal = gco_clientes[gco_indiceCliente];
+
         }
 
-        // Construir objeto del nuevo cliente
-        const gco_nuevoCliente = {
+        // ========================================
+        // CONSTRUIR DATOS DEL CLIENTE
+        // ========================================
 
-            negocio_id: 1,
+        const gco_datosCliente = {
+
+            // Conservar el negocio original al editar
+            negocio_id: gco_clienteOriginal?.negocio_id ?? 1,
 
             tipo_documento: gco_esGenerico
                 ? null
-                : gco_tipoDocumentoCliente.value,
+                : gco_tipoDocumentoValidado,
 
             numero_documento: gco_esGenerico
                 ? null
@@ -375,20 +449,61 @@ if (gco_accesoAutorizado) {
 
         };
 
-        // Evitar envíos duplicados
+        // Evitar solicitudes duplicadas
         gco_btnGuardarCliente.disabled = true;
-        gco_btnGuardarCliente.textContent = "Guardando...";
+
+        gco_btnGuardarCliente.textContent = gco_esEdicion
+            ? "Guardando cambios..."
+            : "Guardando...";
 
         try {
 
-            // Registrar cliente en MockAPI
-            const gco_clienteCreado = await gco_crearAPI(
-                gco_apiClientes,
-                gco_nuevoCliente
-            );
+            let gco_clienteGuardado;
 
-            // Incorporar nuevo cliente a la colección
-            gco_clientes.push(gco_clienteCreado);
+            // ========================================
+            // ACTUALIZAR CLIENTE EXISTENTE (PUT)
+            // ========================================
+
+            if (gco_esEdicion) {
+
+                const gco_urlCliente =
+                    `${gco_apiClientes}/${encodeURIComponent(gco_clienteEnEdicion)}`;
+
+                gco_clienteGuardado = await gco_actualizarAPI(
+                    gco_urlCliente,
+                    gco_datosCliente
+                );
+
+                // Actualizar registro en la colección local
+                gco_clientes[gco_indiceCliente] = {
+
+                    ...gco_clienteOriginal,
+
+                    ...gco_datosCliente,
+
+                    ...gco_clienteGuardado,
+
+                };
+
+            } else {
+
+                // ========================================
+                // REGISTRAR NUEVO CLIENTE (POST)
+                // ========================================
+
+                gco_clienteGuardado = await gco_crearAPI(
+                    gco_apiClientes,
+                    gco_datosCliente
+                );
+
+                // Incorporar nuevo cliente a la colección
+                gco_clientes.push(gco_clienteGuardado);
+
+            }
+
+            // ========================================
+            // ACTUALIZAR COLECCIONES E INTERFAZ
+            // ========================================
 
             // Conservar cliente seleccionado en la venta
             const gco_selectorCliente = document.querySelector(
@@ -397,7 +512,7 @@ if (gco_accesoAutorizado) {
 
             const gco_clienteVentaActual = gco_selectorCliente.value;
 
-            // Actualizar colección de clientes activos
+            // Reconstruir colección de clientes activos
             gco_clientesActivos = gco_clientes.filter(
                 (gco_cliente) => gco_cliente.activo === true
             );
@@ -405,7 +520,7 @@ if (gco_accesoAutorizado) {
             // Actualizar selector de ventas
             gco_mostrarClientes(gco_clientesActivos);
 
-            // Restaurar selección anterior
+            // Restaurar selección anterior si sigue disponible
             const gco_seleccionSigueActiva = gco_clientesActivos.some(
                 (gco_cliente) =>
                     String(gco_cliente.cliente_id ?? gco_cliente.id) ===
@@ -413,11 +528,14 @@ if (gco_accesoAutorizado) {
             );
 
             if (gco_seleccionSigueActiva) {
+
                 gco_selectorCliente.value = gco_clienteVentaActual;
+
             }
 
-            // Actualizar tabla e indicadores
+            // Actualizar tabla e indicadores administrativos
             gco_aplicarFiltrosClientes();
+
             gco_actualizarIndicadoresClientes(gco_clientes);
 
             // Actualizar indicador general del dashboard
@@ -426,35 +544,50 @@ if (gco_accesoAutorizado) {
                 document.querySelector("#indicadorProductos").textContent
             );
 
-            // Reiniciar formulario
+            // ========================================
+            // RESTAURAR FORMULARIO
+            // ========================================
+
             gco_formularioCliente.reset();
 
             gco_clienteEnEdicion = null;
+
             gco_clienteGenericoEnEdicion = false;
 
-            // Restaurar formulario para nuevo registro
             gco_tituloModalCliente.textContent = "Nuevo cliente";
-
-            gco_btnGuardarCliente.textContent = "Guardar cliente";
 
             gco_actualizarCamposDocumentoCliente();
 
             // Cerrar modal
             gco_modalCliente.hide();
 
-            console.log("Cliente registrado correctamente:", gco_clienteCreado);
+            // Confirmar operación
+            console.log(
+                gco_esEdicion
+                    ? "Cliente actualizado correctamente:"
+                    : "Cliente registrado correctamente:",
+                gco_clienteGuardado
+            );
 
-            window.alert("Cliente registrado correctamente.");
+            window.alert(
+                gco_esEdicion
+                    ? "Cliente actualizado correctamente."
+                    : "Cliente registrado correctamente."
+            );
 
         } catch (gco_error) {
 
             console.error(
-                "No fue posible registrar el cliente:",
+                gco_esEdicion
+                    ? "No fue posible actualizar el cliente:"
+                    : "No fue posible registrar el cliente:",
                 gco_error.message
             );
 
             window.alert(
-                "No fue posible registrar el cliente. Intenta nuevamente."
+                gco_esEdicion
+                    ? "No fue posible actualizar el cliente. Intenta nuevamente."
+                    : "No fue posible registrar el cliente. Intenta nuevamente."
             );
 
         } finally {
@@ -462,7 +595,10 @@ if (gco_accesoAutorizado) {
             // Restaurar botón de guardado
             gco_btnGuardarCliente.disabled = false;
 
-            gco_btnGuardarCliente.textContent = "Guardar cliente";
+            gco_btnGuardarCliente.textContent =
+                gco_clienteEnEdicion !== null
+                    ? "Guardar cambios"
+                    : "Guardar cliente";
 
         }
 
@@ -538,8 +674,8 @@ if (gco_accesoAutorizado) {
             gco_tituloModalCliente.textContent = "Editar cliente";
             gco_btnGuardarCliente.textContent = "Guardar cambios";
 
-            // Deshabilitar edición hasta implementar su operación PUT
-            gco_btnGuardarCliente.disabled = true;
+            // Deshabilitar únicamente si se trata del cliente genérico
+            gco_btnGuardarCliente.disabled = gco_clienteGenericoEnEdicion;
 
             // Abrir modal
             gco_modalCliente.show();
