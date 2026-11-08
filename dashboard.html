@@ -11,13 +11,11 @@
 
         <link rel="icon" type="image/png" href="Imagenes/favicon.png" />
 
-        <!-- Bootstrap -->
         <link
             href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
             rel="stylesheet"
         />
 
-        <!-- CSS personalizado -->
         <link rel="stylesheet" href="dashboard.css" />
     </head>
 
@@ -49,7 +47,7 @@
                         <span>Nueva venta</span>
                     </a>
 
-                    <a href="#clientes" class="sidebar-link">
+                    <a href="#gestion-clientes" class="sidebar-link">
                         <span>Clientes</span>
                     </a>
 
@@ -164,7 +162,6 @@
                         </article>
                     </section>
 
-                    <!-- Área de ventas -->
                     <section class="workspace-section" id="nueva-venta">
                         <header class="section-heading">
                             <h2>Registrar una venta</h2>
@@ -196,31 +193,54 @@
 
                                 <!-- Selección de productos -->
                                 <article class="dashboard-card" id="productos">
-                                    <header class="card-heading">
+                                    <header class="card-heading product-card-heading">
                                         <h3>Catálogo de productos</h3>
-                                        <span class="step-number">02</span>
+
+                                        <span class="product-heading-actions">
+                                            <button
+                                                type="button"
+                                                class="btn-toggle-catalogo"
+                                                id="btnAlternarCatalogo"
+                                                aria-controls="contenedorCatalogoProductos"
+                                                aria-expanded="false"
+                                            >
+                                                Mostrar productos
+                                            </button>
+
+                                            <span class="step-number">02</span>
+                                        </span>
                                     </header>
 
-                                    <label for="buscarProducto"
-                                        >Buscar producto</label
-                                    >
-
-                                    <input
-                                        type="search"
-                                        id="buscarProducto"
-                                        placeholder="Buscar por nombre o código..."
-                                        autocomplete="off"
-                                    />
-
-                                    <section
-                                        id="listaProductos"
-                                        class="product-list"
+                                    <p
+                                        id="mensajeProductoAgregado"
+                                        class="product-feedback"
+                                        role="status"
                                         aria-live="polite"
-                                    >
-                                        <p class="empty-state">
-                                            Los productos aparecerán aquí cuando
-                                            conectemos el catálogo.
-                                        </p>
+                                        hidden
+                                    ></p>
+
+                                    <section id="contenedorCatalogoProductos" hidden>
+                                        <label for="buscarProducto"
+                                            >Buscar producto</label
+                                        >
+
+                                        <input
+                                            type="search"
+                                            id="buscarProducto"
+                                            placeholder="Buscar por nombre o código..."
+                                            autocomplete="off"
+                                        />
+
+                                        <section
+                                            id="listaProductos"
+                                            class="product-list"
+                                            aria-live="polite"
+                                        >
+                                            <p class="empty-state">
+                                                Los productos aparecerán aquí cuando
+                                                conectemos el catálogo.
+                                            </p>
+                                        </section>
                                     </section>
                                 </article>
                             </section>
@@ -311,7 +331,7 @@
                                             min="0"
                                             step="1"
                                             placeholder="Ingresa el valor recibido"
-                                            inputmode="numeric"
+                                            inputmode="text"
                                             disabled
                                         />
                                     </article>
@@ -348,7 +368,6 @@
                         </section>
                     </section>
 
-                    <!-- Historial de ventas -->
                     <section class="dashboard-card history-card" id="historial">
                         <header class="card-heading">
                             <section>
@@ -380,8 +399,242 @@
                             </table>
                         </section>
                     </section>
+
+                    <section
+                        class="dashboard-card clients-admin-section"
+                        id="gestion-clientes"
+                    >
+                        <header class="clients-admin-heading">
+                            <section>
+                                <h2>Administración de clientes</h2>
+                                <p>
+                                    Consulta y administra los clientes
+                                    registrados en Facturate.
+                                </p>
+                            </section>
+
+                            <button
+                                type="button"
+                                class="btn-dashboard"
+                                id="btnNuevoCliente"
+                                data-bs-toggle="modal"
+                                data-bs-target="#modalCliente"
+                            >
+                                + Nuevo cliente
+                            </button>
+                        </header>
+
+                        <!-- Indicadores de clientes -->
+                        <section class="clients-admin-metrics">
+                            <article class="client-summary-card">
+                                <span>Total de clientes</span>
+                                <strong id="totalClientesAdmin">—</strong>
+                            </article>
+
+                            <article class="client-summary-card">
+                                <span>Clientes activos</span>
+                                <strong id="clientesActivosAdmin">—</strong>
+                            </article>
+
+                            <article class="client-summary-card">
+                                <span>Clientes inactivos</span>
+                                <strong id="clientesInactivosAdmin">—</strong>
+                            </article>
+                        </section>
+
+                        <!-- Búsqueda y filtros -->
+                        <section class="clients-admin-filters">
+                            <article class="client-search">
+                                <label for="buscarCliente"
+                                    >Buscar cliente</label
+                                >
+
+                                <input
+                                    type="search"
+                                    id="buscarCliente"
+                                    placeholder="Buscar por nombre o documento..."
+                                    autocomplete="off"
+                                />
+                            </article>
+
+                            <article class="client-status-filter">
+                                <label for="filtroEstadoCliente"
+                                    >Filtrar por estado</label
+                                >
+
+                                <select id="filtroEstadoCliente">
+                                    <option value="TODOS">
+                                        Todos los clientes
+                                    </option>
+                                    <option value="ACTIVOS">Activos</option>
+                                    <option value="INACTIVOS">Inactivos</option>
+                                </select>
+                            </article>
+                        </section>
+
+                        <!-- Tabla de clientes -->
+                        <section class="table-responsive">
+                            <table class="history-table clients-admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Nombre o razón social</th>
+                                        <th>Documento</th>
+                                        <th>Tipo de cliente</th>
+                                        <th>Estado</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody id="tablaClientes">
+                                    <tr>
+                                        <td colspan="6" class="empty-table">
+                                            Los clientes aparecerán aquí cuando
+                                            conectemos el módulo.
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </section>
+                    </section>
                 </section>
             </main>
+        </section>
+
+
+        <!-- Modal para crear o editar clientes -->
+        <section
+            class="modal fade client-modal"
+            id="modalCliente"
+            tabindex="-1"
+            aria-labelledby="tituloModalCliente"
+            aria-hidden="true"
+        >
+            <section class="modal-dialog modal-dialog-centered modal-lg">
+                <section class="modal-content">
+                    <header class="modal-header client-modal-header">
+                        <section>
+                            <span class="client-modal-eyebrow">GESTIÓN DE CLIENTES</span>
+                            <h2 class="modal-title" id="tituloModalCliente">
+                                Nuevo cliente
+                            </h2>
+                            <p>Completa la información para registrar un cliente en Facturate.</p>
+                        </section>
+
+                        <button
+                            type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Cerrar ventana"
+                        ></button>
+                    </header>
+
+                    <form id="formularioCliente" autocomplete="off" novalidate>
+                        <section class="modal-body client-modal-body">
+                            <section class="client-form-grid">
+                                <article class="client-form-field client-form-field-full">
+                                    <label for="nombreRazonSocialCliente">
+                                        Nombre o razón social <span aria-hidden="true">*</span>
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="nombreRazonSocialCliente"
+                                        name="nombre_razon_social"
+                                        maxlength="150"
+                                        placeholder="Ej. María Gómez o Comercializadora ABC S. A. S."
+                                        required
+                                    />
+                                    <small>Ingresa el nombre completo de la persona o empresa.</small>
+                                </article>
+
+                                <article class="client-form-field">
+                                    <label for="tipoDocumentoCliente">
+                                        Tipo de documento <span aria-hidden="true">*</span>
+                                    </label>
+                                    <select
+                                        id="tipoDocumentoCliente"
+                                        name="tipo_documento"
+                                        required
+                                    >
+                                        <option value="" selected disabled>
+                                            Selecciona un tipo
+                                        </option>
+                                        <option value="CC">Cédula de ciudadanía (CC)</option>
+                                        <option value="NIT">NIT</option>
+                                        <option value="CE">Cédula de extranjería (CE)</option>
+                                    </select>
+                                </article>
+
+                                <article class="client-form-field">
+                                    <label for="numeroDocumentoCliente">
+                                        Número de documento <span aria-hidden="true">*</span>
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="numeroDocumentoCliente"
+                                        name="numero_documento"
+                                        maxlength="25"
+                                        inputmode="text"
+                                        placeholder="Ingresa el número"
+                                        required
+                                    />
+                                    <small>Se almacenará como texto para conservar su formato.</small>
+                                </article>
+                            </section>
+
+                            <section class="client-form-options">
+                                <label class="client-checkbox-option" for="esGenericoCliente">
+                                    <input
+                                        type="checkbox"
+                                        id="esGenericoCliente"
+                                        name="es_generico"
+                                    />
+                                    <span>
+                                        <strong>Cliente genérico</strong>
+                                        <small>Consumidor final sin tipo ni número de documento.</small>
+                                    </span>
+                                </label>
+
+                                <label class="client-checkbox-option" for="activoCliente">
+                                    <input
+                                        type="checkbox"
+                                        id="activoCliente"
+                                        name="activo"
+                                        checked
+                                    />
+                                    <span>
+                                        <strong>Cliente activo</strong>
+                                        <small>Los clientes inactivos no estarán disponibles para nuevas ventas.</small>
+                                    </span>
+                                </label>
+                            </section>
+
+                            <p class="client-modal-note">
+                                El identificador y el negocio se asignarán automáticamente. El guardado se habilitará al integrar el CRUD.
+                            </p>
+                        </section>
+
+                        <footer class="modal-footer client-modal-footer">
+                            <button
+                                type="button"
+                                class="btn-client-cancel"
+                                data-bs-dismiss="modal"
+                            >
+                                Cancelar
+                            </button>
+                            <button
+                                type="button"
+                                class="btn-client-save"
+                                id="btnGuardarCliente"
+                                title="Se habilitará al integrar el CRUD"
+                                disabled
+                            >
+                                Guardar cliente
+                            </button>
+                        </footer>
+                    </form>
+                </section>
+            </section>
         </section>
 
         <!-- JavaScript -->

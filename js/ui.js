@@ -1,6 +1,3 @@
-
-console.log("[GCO-UI ONLINE]");
-
 // ========================================
 // ESTADOS DE CARGA
 // ========================================
@@ -31,7 +28,6 @@ export function gco_mostrarCargaProductos() {
     gco_listaProductos.textContent = "Cargando productos...";
 
 }
-
 
 // ========================================
 // MOSTRAR CLIENTES
@@ -88,6 +84,192 @@ export function gco_mostrarClientes(gco_clientes) {
     });
 
 }
+
+// ========================================
+// MOSTRAR TABLA DE CLIENTES
+// ========================================
+
+export function gco_mostrarTablaClientes(gco_clientes) {
+    const gco_tablaClientes = document.querySelector("#tablaClientes");
+
+    // Limpiar tabla antes de actualizarla
+    gco_tablaClientes.replaceChildren();
+
+    // Verificar disponibilidad de clientes
+    if (!Array.isArray(gco_clientes) || gco_clientes.length === 0) {
+        const gco_filaVacia = document.createElement("tr");
+        const gco_celdaVacia = document.createElement("td");
+
+        gco_celdaVacia.colSpan = 6;
+        gco_celdaVacia.className = "empty-table";
+        gco_celdaVacia.textContent = "No se encontraron clientes.";
+
+        gco_filaVacia.appendChild(gco_celdaVacia);
+        gco_tablaClientes.appendChild(gco_filaVacia);
+
+        return;
+    }
+
+    // Recorrer clientes y construir las filas
+    gco_clientes.forEach((gco_cliente) => {
+        const gco_fila = document.createElement("tr");
+
+        // Identificador del cliente
+        const gco_idCliente =
+            gco_cliente.cliente_id ?? gco_cliente.id ?? "—";
+        const gco_celdaId = document.createElement("td");
+        gco_celdaId.textContent = gco_idCliente;
+
+        // Nombre o razón social
+        const gco_celdaNombre = document.createElement("td");
+        gco_celdaNombre.textContent =
+            gco_cliente.nombre_razon_social ?? "Cliente sin nombre";
+
+        // Documento
+        const gco_celdaDocumento = document.createElement("td");
+        const gco_documento = gco_cliente.es_generico
+            ? "No aplica"
+            : [gco_cliente.tipo_documento, gco_cliente.numero_documento]
+                .filter(Boolean)
+                .join(" ") || "Sin documento";
+        gco_celdaDocumento.textContent = gco_documento;
+
+        // Tipo de cliente
+        const gco_celdaTipo = document.createElement("td");
+        gco_celdaTipo.textContent = gco_cliente.es_generico
+            ? "Genérico"
+            : "Identificado";
+
+        // Estado del cliente
+        const gco_celdaEstado = document.createElement("td");
+        const gco_etiquetaEstado = document.createElement("span");
+
+        if (gco_cliente.activo === true) {
+            gco_etiquetaEstado.className = "badge text-bg-success";
+            gco_etiquetaEstado.textContent = "Activo";
+        } else if (gco_cliente.activo === false) {
+            gco_etiquetaEstado.className = "badge text-bg-secondary";
+            gco_etiquetaEstado.textContent = "Inactivo";
+        } else {
+            gco_etiquetaEstado.className = "badge text-bg-warning";
+            gco_etiquetaEstado.textContent = "Sin estado";
+        }
+
+        gco_celdaEstado.appendChild(gco_etiquetaEstado);
+
+        // Acciones disponibles para el cliente
+        const gco_celdaAcciones = document.createElement("td");
+
+        gco_celdaAcciones.className = "text-nowrap";
+
+        // Botón editar cliente
+        const gco_botonEditar = document.createElement("button");
+
+        gco_botonEditar.type = "button";
+        gco_botonEditar.className = "btn btn-sm btn-outline-primary me-1";
+        gco_botonEditar.textContent = "Editar";
+        gco_botonEditar.dataset.accion = "editar-cliente";
+        gco_botonEditar.dataset.clienteId = gco_idCliente;
+
+        // Botón activar o inactivar cliente
+        const gco_botonEstado = document.createElement("button");
+
+        gco_botonEstado.type = "button";
+
+        gco_botonEstado.className = gco_cliente.activo
+            ? "btn btn-sm btn-outline-danger"
+            : "btn btn-sm btn-outline-success";
+
+        gco_botonEstado.textContent = gco_cliente.activo
+            ? "Inactivar"
+            : "Activar";
+
+        // Proteger el cliente genérico
+        if (gco_cliente.es_generico === true) {
+
+            gco_botonEstado.disabled = true;
+
+            gco_botonEstado.className =
+                "btn btn-sm btn-outline-secondary";
+
+            gco_botonEstado.textContent = "Protegido";
+
+            gco_botonEstado.title =
+                "El cliente genérico no se puede inactivar.";
+
+        }
+
+        gco_botonEstado.dataset.accion = "cambiar-estado-cliente";
+        gco_botonEstado.dataset.clienteId = gco_idCliente;
+
+        // Incorporar botones a la celda
+        gco_celdaAcciones.append(
+            gco_botonEditar,
+            gco_botonEstado
+        );
+
+        // Incorporar celdas a la fila
+        gco_fila.append(
+            gco_celdaId,
+            gco_celdaNombre,
+            gco_celdaDocumento,
+            gco_celdaTipo,
+            gco_celdaEstado,
+            gco_celdaAcciones,
+        );
+
+        // Incorporar fila a la tabla
+        gco_tablaClientes.appendChild(gco_fila);
+    });
+}
+
+
+// ========================================
+// ACTUALIZAR INDICADORES DE CLIENTES
+// ========================================
+
+export function gco_actualizarIndicadoresClientes(gco_clientes) {
+    const gco_totalClientes = document.querySelector("#totalClientesAdmin");
+    const gco_clientesActivos = document.querySelector("#clientesActivosAdmin");
+    const gco_clientesInactivos = document.querySelector("#clientesInactivosAdmin");
+
+    // Calcular cantidades
+    const gco_total = gco_clientes.length;
+    const gco_activos = gco_clientes.filter(
+        (gco_cliente) => gco_cliente.activo === true,
+    ).length;
+    const gco_inactivos = gco_clientes.filter(
+        (gco_cliente) => gco_cliente.activo === false,
+    ).length;
+
+    // Actualizar indicadores
+    gco_totalClientes.textContent = gco_total;
+    gco_clientesActivos.textContent = gco_activos;
+    gco_clientesInactivos.textContent = gco_inactivos;
+}
+
+
+// ========================================
+// MOSTRAR ERROR EN TABLA DE CLIENTES
+// ========================================
+
+export function gco_mostrarErrorTablaClientes() {
+    const gco_tablaClientes = document.querySelector("#tablaClientes");
+
+    gco_tablaClientes.replaceChildren();
+
+    const gco_filaError = document.createElement("tr");
+    const gco_celdaError = document.createElement("td");
+
+    gco_celdaError.colSpan = 6;
+    gco_celdaError.className = "empty-table";
+    gco_celdaError.textContent =
+        "No fue posible cargar los clientes. Intenta nuevamente.";
+
+    gco_filaError.appendChild(gco_celdaError);
+    gco_tablaClientes.appendChild(gco_filaError);
+}
+
 
 // ========================================
 // MOSTRAR PRODUCTOS

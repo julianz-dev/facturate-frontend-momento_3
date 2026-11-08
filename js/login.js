@@ -1,5 +1,3 @@
-console.log("[GCO-SYSTEM v1.0 ONLINE]");
-
 // Credenciales de prueba
 const gco_correoPrueba = "proyecto@facturate.com";
 const gco_contrasenaPrueba = "facturate";
