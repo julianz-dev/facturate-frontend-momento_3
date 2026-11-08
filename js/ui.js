@@ -202,12 +202,21 @@ export function gco_mostrarTablaClientes(gco_clientes) {
         gco_botonEstado.dataset.accion = "cambiar-estado-cliente";
         gco_botonEstado.dataset.clienteId = gco_idCliente;
 
-        // Incorporar botones a la celda
-        gco_celdaAcciones.append(
-            gco_botonEditar,
-            gco_botonEstado
-        );
+        // Incorporar acciones según el tipo de cliente
+        if (gco_cliente.es_generico === true) {
 
+            // El cliente genérico solamente muestra su protección
+            gco_celdaAcciones.append(gco_botonEstado);
+
+        } else {
+
+            // Los demás clientes muestran sus acciones habituales
+            gco_celdaAcciones.append(
+                gco_botonEditar,
+                gco_botonEstado
+            );
+
+        }
         // Incorporar celdas a la fila
         gco_fila.append(
             gco_celdaId,

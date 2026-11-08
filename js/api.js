@@ -52,3 +52,89 @@ export async function gco_consultarAPI(gco_url) {
     }
 
 }
+
+// ========================================
+// FUNCIÓN GENERAL PARA ACTUALIZAR REGISTROS
+// ========================================
+
+export async function gco_actualizarAPI(gco_url, gco_datos) {
+
+    try {
+
+        // Realizar petición HTTP PUT
+        const gco_respuesta = await fetch(gco_url, {
+            method: "PUT",
+
+            headers: {
+                "Content-Type": "application/json",
+            },
+
+            body: JSON.stringify(gco_datos),
+
+        });
+
+        // Comprobar respuesta HTTP
+        if (!gco_respuesta.ok) {
+            throw new Error(`Error HTTP: ${gco_respuesta.status}`);
+        }
+
+        // Convertir respuesta a formato JSON
+        const gco_datosActualizados = await gco_respuesta.json();
+
+        return gco_datosActualizados;
+
+    } catch (gco_error) {
+
+        console.error(
+            "Error al actualizar el registro:",
+            gco_error.message
+        );
+
+        throw gco_error;
+
+    }
+
+}
+
+// ========================================
+// FUNCIÓN GENERAL PARA REGISTRAR REGISTROS
+// ========================================
+
+export async function gco_crearAPI(gco_url, gco_datos) {
+
+    try {
+
+        // Realizar petición HTTP POST
+        const gco_respuesta = await fetch(gco_url, {
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json",
+            },
+
+            body: JSON.stringify(gco_datos),
+
+        });
+
+        // Comprobar respuesta HTTP
+        if (!gco_respuesta.ok) {
+            throw new Error(`Error HTTP: ${gco_respuesta.status}`);
+        }
+
+        // Convertir respuesta a formato JSON
+        const gco_datosCreados = await gco_respuesta.json();
+
+        return gco_datosCreados;
+
+    } catch (gco_error) {
+
+        console.error(
+            "Error al registrar el nuevo registro:",
+            gco_error.message
+        );
+
+        throw gco_error;
+
+    }
+
+}
