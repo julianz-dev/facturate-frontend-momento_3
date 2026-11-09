@@ -1,48 +1,48 @@
-import { gco_verificarSesion } from "./auth.js";
+import { verificarSesion } from "./auth.js";
 
 import {
-    gco_consultarAPI,
-    gco_actualizarAPI,
-    gco_crearAPI,
-    gco_apiProductos,
+    consultarAPI,
+    actualizarAPI,
+    crearAPI,
+    apiProductos,
 } from "./api.js";
 
-// ========================================
-// VARIABLES DEL MÓDULO DE PRODUCTOS
-// ========================================
+//* ========================================
+//* VARIABLES DEL MÓDULO DE PRODUCTOS
+//* ========================================
 
 // Colección completa de productos recibidos desde MockAPI.
-let gco_productos = [];
+let productos = [];
 
 // Identificador del producto que se encuentra en edición.
-let gco_productoEnEdicion = null;
+let productoEnEdicion = null;
 
 // Evita operaciones simultáneas de guardado.
-let gco_guardadoEnCurso = false;
+let guardadoEnCurso = false;
 
 // Evita operaciones simultáneas de cambio de estado.
-let gco_actualizacionEstadoEnCurso = false;
+let actualizacionEstadoEnCurso = false;
 
 // Indica si la primera consulta de productos terminó correctamente.
-let gco_productosCargados = false;
+let productosCargados = false;
 
-// ========================================
-// VERIFICAR AUTORIZACIÓN DE ACCESO
-// ========================================
+//* ========================================
+//* VERIFICAR AUTORIZACIÓN DE ACCESO
+//* ========================================
 
-const gco_accesoAutorizado = gco_verificarSesion();
+const accesoAutorizado = verificarSesion();
 
-if (gco_accesoAutorizado) {
-    gco_inicializarModuloProductos();
+if (accesoAutorizado) {
+    inicializarModuloProductos();
 }
 
-// ========================================
-// INICIALIZAR MÓDULO DE PRODUCTOS
-// ========================================
+//* ========================================
+//* INICIALIZAR MÓDULO DE PRODUCTOS
+//* ========================================
 
-function gco_inicializarModuloProductos() {
+function inicializarModuloProductos() {
     // Seleccionar los elementos de la página.
-    const gco_elementos = {
+    const elementos = {
         btnCerrarSesion: document.querySelector("#btnCerrarSesion"),
         btnNuevoProducto: document.querySelector("#btnNuevoProducto"),
         formulario: document.querySelector("#formularioProducto"),
@@ -72,14 +72,14 @@ function gco_inicializarModuloProductos() {
     };
 
     // Comprobar que el HTML contiene los elementos requeridos.
-    const gco_elementosFaltantes = Object.entries(gco_elementos)
-        .filter(([, gco_elemento]) => !gco_elemento)
-        .map(([gco_nombre]) => gco_nombre);
+    const elementosFaltantes = Object.entries(elementos)
+        .filter(([, elemento]) => !elemento)
+        .map(([nombre]) => nombre);
 
-    if (gco_elementosFaltantes.length > 0) {
+    if (elementosFaltantes.length > 0) {
         console.error(
             "No se pudo inicializar el módulo de productos. Faltan elementos HTML:",
-            gco_elementosFaltantes,
+            elementosFaltantes,
         );
         return;
     }
@@ -92,831 +92,831 @@ function gco_inicializarModuloProductos() {
         return;
     }
 
-    const gco_modalProducto = window.bootstrap.Modal.getOrCreateInstance(
-        gco_elementos.modal,
+    const modalProducto = window.bootstrap.Modal.getOrCreateInstance(
+        elementos.modal,
     );
 
     // No permitir crear productos hasta consultar los registros existentes.
-    gco_elementos.btnNuevoProducto.disabled = true;
-    gco_elementos.btnNuevoProducto.title =
+    elementos.btnNuevoProducto.disabled = true;
+    elementos.btnNuevoProducto.title =
         "Espera a que se cargue el catálogo de productos.";
 
     // Evitar cerrar el modal mientras una solicitud de guardado está pendiente.
-    gco_elementos.modal.addEventListener("hide.bs.modal", (gco_evento) => {
-        if (gco_guardadoEnCurso) {
-            gco_evento.preventDefault();
+    elementos.modal.addEventListener("hide.bs.modal", (evento) => {
+        if (guardadoEnCurso) {
+            evento.preventDefault();
         }
     });
 
-    // ========================================
-    // CERRAR SESIÓN
-    // ========================================
+    //* ========================================
+    //* CERRAR SESIÓN
+    //* ========================================
 
-    if (gco_elementos.btnCerrarSesion) {
-        gco_elementos.btnCerrarSesion.addEventListener("click", () => {
-            sessionStorage.removeItem("gco_sesionActiva");
+    if (elementos.btnCerrarSesion) {
+        elementos.btnCerrarSesion.addEventListener("click", () => {
+            sessionStorage.removeItem("sesionActiva");
             window.location.replace("login.html");
         });
     }
 
-    // ========================================
-    // MENSAJES DEL MÓDULO
-    // ========================================
+    //* ========================================
+    //* MENSAJES DEL MÓDULO
+    //* ========================================
 
-    function gco_mostrarMensajeEstado(gco_texto, gco_tipo = "info") {
-        gco_elementos.mensajeEstado.textContent = gco_texto;
-        gco_elementos.mensajeEstado.className = "products-feedback";
+    function mostrarMensajeEstado(texto, tipo = "info") {
+        elementos.mensajeEstado.textContent = texto;
+        elementos.mensajeEstado.className = "products-feedback";
 
-        if (gco_tipo === "success") {
-            gco_elementos.mensajeEstado.classList.add("is-success");
-        } else if (gco_tipo === "error") {
-            gco_elementos.mensajeEstado.classList.add("is-error");
+        if (tipo === "success") {
+            elementos.mensajeEstado.classList.add("is-success");
+        } else if (tipo === "error") {
+            elementos.mensajeEstado.classList.add("is-error");
         }
 
-        gco_elementos.mensajeEstado.hidden = false;
+        elementos.mensajeEstado.hidden = false;
     }
 
-    function gco_limpiarMensajeEstado() {
-        gco_elementos.mensajeEstado.textContent = "";
-        gco_elementos.mensajeEstado.className = "products-feedback";
-        gco_elementos.mensajeEstado.hidden = true;
+    function limpiarMensajeEstado() {
+        elementos.mensajeEstado.textContent = "";
+        elementos.mensajeEstado.className = "products-feedback";
+        elementos.mensajeEstado.hidden = true;
     }
 
-    function gco_mostrarMensajeFormulario(gco_texto) {
-        gco_elementos.mensajeFormulario.textContent = gco_texto;
-        gco_elementos.mensajeFormulario.hidden = false;
+    function mostrarMensajeFormulario(texto) {
+        elementos.mensajeFormulario.textContent = texto;
+        elementos.mensajeFormulario.hidden = false;
     }
 
-    function gco_limpiarMensajeFormulario() {
-        gco_elementos.mensajeFormulario.textContent = "";
-        gco_elementos.mensajeFormulario.hidden = true;
+    function limpiarMensajeFormulario() {
+        elementos.mensajeFormulario.textContent = "";
+        elementos.mensajeFormulario.hidden = true;
     }
 
-    // ========================================
-    // ESTADOS DE CARGA Y ERROR
-    // ========================================
+    //* ========================================
+    //* ESTADOS DE CARGA Y ERROR
+    //* ========================================
 
-    function gco_mostrarEstadoCarga() {
-        const gco_fila = document.createElement("tr");
-        const gco_celda = document.createElement("td");
+    function mostrarEstadoCarga() {
+        const fila = document.createElement("tr");
+        const celda = document.createElement("td");
 
-        gco_celda.colSpan = 8;
-        gco_celda.className = "empty-table";
-        gco_celda.textContent = "Cargando productos...";
+        celda.colSpan = 8;
+        celda.className = "empty-table";
+        celda.textContent = "Cargando productos...";
 
-        gco_fila.appendChild(gco_celda);
-        gco_elementos.tabla.replaceChildren(gco_fila);
+        fila.appendChild(celda);
+        elementos.tabla.replaceChildren(fila);
 
-        gco_elementos.indicadorTotal.textContent = "—";
-        gco_elementos.indicadorActivos.textContent = "—";
-        gco_elementos.indicadorInactivos.textContent = "—";
+        elementos.indicadorTotal.textContent = "—";
+        elementos.indicadorActivos.textContent = "—";
+        elementos.indicadorInactivos.textContent = "—";
     }
 
-    function gco_mostrarErrorTabla(gco_texto) {
-        const gco_fila = document.createElement("tr");
-        const gco_celda = document.createElement("td");
+    function mostrarErrorTabla(texto) {
+        const fila = document.createElement("tr");
+        const celda = document.createElement("td");
 
-        gco_celda.colSpan = 8;
-        gco_celda.className = "empty-table";
-        gco_celda.textContent = gco_texto;
+        celda.colSpan = 8;
+        celda.className = "empty-table";
+        celda.textContent = texto;
 
-        gco_fila.appendChild(gco_celda);
-        gco_elementos.tabla.replaceChildren(gco_fila);
+        fila.appendChild(celda);
+        elementos.tabla.replaceChildren(fila);
     }
 
-    // ========================================
-    // FORMATEAR Y CREAR ELEMENTOS DE LA TABLA
-    // ========================================
+    //* ========================================
+    //* FORMATEAR Y CREAR ELEMENTOS DE LA TABLA
+    //* ========================================
 
-    const gco_formatoMoneda = new Intl.NumberFormat("es-CO", {
+    const formatoMoneda = new Intl.NumberFormat("es-CO", {
         style: "currency",
         currency: "COP",
         maximumFractionDigits: 0,
     });
 
-    function gco_obtenerIdProducto(gco_producto) {
-        return gco_producto.producto_id ?? gco_producto.id ?? "";
+    function obtenerIdProducto(producto) {
+        return producto.producto_id ?? producto.id ?? "";
     }
 
-    function gco_crearCelda(gco_texto, gco_clase = "") {
-        const gco_celda = document.createElement("td");
-        gco_celda.textContent = gco_texto;
+    function crearCelda(texto, clase = "") {
+        const celda = document.createElement("td");
+        celda.textContent = texto;
 
-        if (gco_clase) {
-            gco_celda.className = gco_clase;
+        if (clase) {
+            celda.className = clase;
         }
 
-        return gco_celda;
+        return celda;
     }
 
-    function gco_crearEtiqueta(gco_texto, gco_clase) {
-        const gco_etiqueta = document.createElement("span");
-        gco_etiqueta.className = gco_clase;
-        gco_etiqueta.textContent = gco_texto;
-        return gco_etiqueta;
+    function crearEtiqueta(texto, clase) {
+        const etiqueta = document.createElement("span");
+        etiqueta.className = clase;
+        etiqueta.textContent = texto;
+        return etiqueta;
     }
 
-    function gco_crearBotonAccion(
-        gco_texto,
-        gco_accion,
-        gco_productoId,
-        gco_clases,
-        gco_etiquetaAccesible,
+    function crearBotonAccion(
+        texto,
+        accion,
+        productoId,
+        clases,
+        etiquetaAccesible,
     ) {
-        const gco_boton = document.createElement("button");
+        const boton = document.createElement("button");
 
-        gco_boton.type = "button";
-        gco_boton.className = gco_clases;
-        gco_boton.textContent = gco_texto;
-        gco_boton.dataset.accion = gco_accion;
-        gco_boton.dataset.productoId = String(gco_productoId);
-        gco_boton.setAttribute("aria-label", gco_etiquetaAccesible);
+        boton.type = "button";
+        boton.className = clases;
+        boton.textContent = texto;
+        boton.dataset.accion = accion;
+        boton.dataset.productoId = String(productoId);
+        boton.setAttribute("aria-label", etiquetaAccesible);
 
-        return gco_boton;
+        return boton;
     }
 
-    // ========================================
-    // MOSTRAR PRODUCTOS EN LA TABLA
-    // ========================================
+    //* ========================================
+    //* MOSTRAR PRODUCTOS EN LA TABLA
+    //* ========================================
 
-    function gco_mostrarTablaProductos(gco_listaProductos) {
-        if (gco_listaProductos.length === 0) {
-            const gco_fila = document.createElement("tr");
-            const gco_celda = document.createElement("td");
+    function mostrarTablaProductos(listaProductos) {
+        if (listaProductos.length === 0) {
+            const fila = document.createElement("tr");
+            const celda = document.createElement("td");
 
-            gco_celda.colSpan = 8;
-            gco_celda.className = "empty-table";
-            gco_celda.textContent = gco_productos.length === 0
+            celda.colSpan = 8;
+            celda.className = "empty-table";
+            celda.textContent = productos.length === 0
                 ? "Todavía no hay productos registrados."
                 : "No se encontraron productos con los criterios seleccionados.";
 
-            gco_fila.appendChild(gco_celda);
-            gco_elementos.tabla.replaceChildren(gco_fila);
+            fila.appendChild(celda);
+            elementos.tabla.replaceChildren(fila);
             return;
         }
 
-        const gco_fragmento = document.createDocumentFragment();
+        const fragmento = document.createDocumentFragment();
 
-        gco_listaProductos.forEach((gco_producto) => {
-            const gco_fila = document.createElement("tr");
-            const gco_productoId = gco_obtenerIdProducto(gco_producto);
-            const gco_productoActivo = gco_producto.activo === true;
-            const gco_manejaInventario = gco_producto.maneja_inventario === true;
-            const gco_precio = Number(gco_producto.precio_venta);
+        listaProductos.forEach((producto) => {
+            const fila = document.createElement("tr");
+            const productoId = obtenerIdProducto(producto);
+            const productoActivo = producto.activo === true;
+            const manejaInventario = producto.maneja_inventario === true;
+            const precio = Number(producto.precio_venta);
 
-            gco_fila.appendChild(
-                gco_crearCelda(String(gco_productoId)),
+            fila.appendChild(
+                crearCelda(String(productoId)),
             );
 
-            gco_fila.appendChild(
-                gco_crearCelda(
-                    String(gco_producto.codigo_producto ?? "—"),
+            fila.appendChild(
+                crearCelda(
+                    String(producto.codigo_producto ?? "—"),
                     "product-code-cell",
                 ),
             );
 
-            gco_fila.appendChild(
-                gco_crearCelda(
-                    String(gco_producto.nombre_producto ?? "—"),
+            fila.appendChild(
+                crearCelda(
+                    String(producto.nombre_producto ?? "—"),
                     "product-name-cell",
                 ),
             );
 
-            gco_fila.appendChild(
-                gco_crearCelda(String(gco_producto.categoria_id ?? "—")),
+            fila.appendChild(
+                crearCelda(String(producto.categoria_id ?? "—")),
             );
 
-            gco_fila.appendChild(
-                gco_crearCelda(
-                    Number.isFinite(gco_precio)
-                        ? gco_formatoMoneda.format(gco_precio)
+            fila.appendChild(
+                crearCelda(
+                    Number.isFinite(precio)
+                        ? formatoMoneda.format(precio)
                         : "—",
                 ),
             );
 
-            const gco_celdaInventario = document.createElement("td");
-            gco_celdaInventario.appendChild(
-                gco_crearEtiqueta(
-                    gco_manejaInventario ? "Sí" : "No",
-                    `product-inventory-badge ${gco_manejaInventario ? "is-enabled" : "is-disabled"}`,
+            const celdaInventario = document.createElement("td");
+            celdaInventario.appendChild(
+                crearEtiqueta(
+                    manejaInventario ? "Sí" : "No",
+                    `product-inventory-badge ${manejaInventario ? "is-enabled" : "is-disabled"}`,
                 ),
             );
-            gco_fila.appendChild(gco_celdaInventario);
+            fila.appendChild(celdaInventario);
 
-            const gco_celdaEstado = document.createElement("td");
-            gco_celdaEstado.appendChild(
-                gco_crearEtiqueta(
-                    gco_productoActivo ? "Activo" : "Inactivo",
-                    gco_productoActivo
+            const celdaEstado = document.createElement("td");
+            celdaEstado.appendChild(
+                crearEtiqueta(
+                    productoActivo ? "Activo" : "Inactivo",
+                    productoActivo
                         ? "badge text-bg-success"
                         : "badge text-bg-secondary",
                 ),
             );
-            gco_fila.appendChild(gco_celdaEstado);
+            fila.appendChild(celdaEstado);
 
             // Mantener las acciones con el mismo diseño de la tabla Clientes.
-            const gco_celdaAcciones = document.createElement("td");
-            gco_celdaAcciones.className = "text-nowrap";
+            const celdaAcciones = document.createElement("td");
+            celdaAcciones.className = "text-nowrap";
 
-            const gco_botonEditar = gco_crearBotonAccion(
+            const botonEditar = crearBotonAccion(
                 "Editar",
                 "editar-producto",
-                gco_productoId,
+                productoId,
                 "btn btn-sm btn-outline-primary me-1",
-                `Editar producto ${String(gco_producto.nombre_producto ?? gco_productoId)}`,
+                `Editar producto ${String(producto.nombre_producto ?? productoId)}`,
             );
 
-            const gco_botonEstado = gco_crearBotonAccion(
-                gco_productoActivo ? "Inactivar" : "Activar",
+            const botonEstado = crearBotonAccion(
+                productoActivo ? "Inactivar" : "Activar",
                 "cambiar-estado-producto",
-                gco_productoId,
-                gco_productoActivo
+                productoId,
+                productoActivo
                     ? "btn btn-sm btn-outline-danger"
                     : "btn btn-sm btn-outline-success",
-                `${gco_productoActivo ? "Inactivar" : "Activar"} producto ${String(gco_producto.nombre_producto ?? gco_productoId)}`,
+                `${productoActivo ? "Inactivar" : "Activar"} producto ${String(producto.nombre_producto ?? productoId)}`,
             );
 
-            gco_celdaAcciones.append(
-                gco_botonEditar,
-                gco_botonEstado,
+            celdaAcciones.append(
+                botonEditar,
+                botonEstado,
             );
-            gco_fila.appendChild(gco_celdaAcciones);
+            fila.appendChild(celdaAcciones);
 
-            gco_fragmento.appendChild(gco_fila);
+            fragmento.appendChild(fila);
         });
 
-        gco_elementos.tabla.replaceChildren(gco_fragmento);
+        elementos.tabla.replaceChildren(fragmento);
     }
 
-    // ========================================
-    // ACTUALIZAR INDICADORES Y TABLA
-    // ========================================
+    //* ========================================
+    //* ACTUALIZAR INDICADORES Y TABLA
+    //* ========================================
 
-    function gco_actualizarIndicadoresProductos() {
-        const gco_totalProductos = gco_productos.length;
-        const gco_totalActivos = gco_productos.filter(
-            (gco_producto) => gco_producto.activo === true,
+    function actualizarIndicadoresProductos() {
+        const totalProductos = productos.length;
+        const totalActivos = productos.filter(
+            (producto) => producto.activo === true,
         ).length;
-        const gco_totalInactivos = gco_productos.filter(
-            (gco_producto) => gco_producto.activo === false,
+        const totalInactivos = productos.filter(
+            (producto) => producto.activo === false,
         ).length;
 
-        gco_elementos.indicadorTotal.textContent = String(gco_totalProductos);
-        gco_elementos.indicadorActivos.textContent = String(gco_totalActivos);
-        gco_elementos.indicadorInactivos.textContent = String(gco_totalInactivos);
+        elementos.indicadorTotal.textContent = String(totalProductos);
+        elementos.indicadorActivos.textContent = String(totalActivos);
+        elementos.indicadorInactivos.textContent = String(totalInactivos);
     }
 
-    // ========================================
-    // BÚSQUEDA Y FILTRO DE PRODUCTOS
-    // ========================================
+    //* ========================================
+    //* BÚSQUEDA Y FILTRO DE PRODUCTOS
+    //* ========================================
 
-    function gco_aplicarFiltrosProductos() {
-        const gco_terminoBusqueda = gco_elementos.buscar.value
+    function aplicarFiltrosProductos() {
+        const terminoBusqueda = elementos.buscar.value
             .trim()
             .toLocaleLowerCase("es-CO");
 
-        const gco_estadoSeleccionado = gco_elementos.filtroEstado.value;
+        const estadoSeleccionado = elementos.filtroEstado.value;
 
         // Aplicar los filtros sobre la colección original sin modificarla.
-        const gco_productosFiltrados = gco_productos.filter((gco_producto) => {
-            const gco_nombre = String(
-                gco_producto.nombre_producto ?? "",
+        const productosFiltrados = productos.filter((producto) => {
+            const nombre = String(
+                producto.nombre_producto ?? "",
             ).toLocaleLowerCase("es-CO");
 
-            const gco_codigo = String(
-                gco_producto.codigo_producto ?? "",
+            const codigo = String(
+                producto.codigo_producto ?? "",
             ).toLocaleLowerCase("es-CO");
 
-            const gco_id = String(
-                gco_obtenerIdProducto(gco_producto),
+            const id = String(
+                obtenerIdProducto(producto),
             ).toLocaleLowerCase("es-CO");
 
-            const gco_coincideBusqueda =
-                gco_nombre.includes(gco_terminoBusqueda) ||
-                gco_codigo.includes(gco_terminoBusqueda) ||
-                gco_id.includes(gco_terminoBusqueda);
+            const coincideBusqueda =
+                nombre.includes(terminoBusqueda) ||
+                codigo.includes(terminoBusqueda) ||
+                id.includes(terminoBusqueda);
 
-            let gco_coincideEstado = true;
+            let coincideEstado = true;
 
-            if (gco_estadoSeleccionado === "ACTIVOS") {
-                gco_coincideEstado = gco_producto.activo === true;
-            } else if (gco_estadoSeleccionado === "INACTIVOS") {
-                gco_coincideEstado = gco_producto.activo === false;
+            if (estadoSeleccionado === "ACTIVOS") {
+                coincideEstado = producto.activo === true;
+            } else if (estadoSeleccionado === "INACTIVOS") {
+                coincideEstado = producto.activo === false;
             }
 
-            return gco_coincideBusqueda && gco_coincideEstado;
+            return coincideBusqueda && coincideEstado;
         });
 
-        gco_mostrarTablaProductos(gco_productosFiltrados);
+        mostrarTablaProductos(productosFiltrados);
     }
 
-    function gco_actualizarInterfazProductos() {
-        gco_aplicarFiltrosProductos();
-        gco_actualizarIndicadoresProductos();
+    function actualizarInterfazProductos() {
+        aplicarFiltrosProductos();
+        actualizarIndicadoresProductos();
     }
 
-    gco_elementos.buscar.addEventListener(
+    elementos.buscar.addEventListener(
         "input",
-        gco_aplicarFiltrosProductos,
+        aplicarFiltrosProductos,
     );
 
-    gco_elementos.filtroEstado.addEventListener(
+    elementos.filtroEstado.addEventListener(
         "change",
-        gco_aplicarFiltrosProductos,
+        aplicarFiltrosProductos,
     );
 
-    // ========================================
-    // MOSTRAR Y OCULTAR LA TABLA
-    // ========================================
+    //* ========================================
+    //* MOSTRAR Y OCULTAR LA TABLA
+    //* ========================================
 
-    gco_elementos.btnAlternarTabla.addEventListener("click", () => {
-        const gco_tablaVisible = !gco_elementos.contenedorTabla.hidden;
+    elementos.btnAlternarTabla.addEventListener("click", () => {
+        const tablaVisible = !elementos.contenedorTabla.hidden;
 
-        gco_elementos.contenedorTabla.hidden = gco_tablaVisible;
-        gco_elementos.btnAlternarTabla.textContent = gco_tablaVisible
+        elementos.contenedorTabla.hidden = tablaVisible;
+        elementos.btnAlternarTabla.textContent = tablaVisible
             ? "Mostrar tabla de productos"
             : "Ocultar tabla de productos";
 
-        gco_elementos.btnAlternarTabla.setAttribute(
+        elementos.btnAlternarTabla.setAttribute(
             "aria-expanded",
-            String(!gco_tablaVisible),
+            String(!tablaVisible),
         );
     });
 
-    // ========================================
-    // VALIDAR CÓDIGO DE PRODUCTO DUPLICADO
-    // ========================================
+    //* ========================================
+    //* VALIDAR CÓDIGO DE PRODUCTO DUPLICADO
+    //* ========================================
 
-    function gco_existeCodigoDuplicado(gco_codigoProducto) {
-        const gco_codigoNormalizado = gco_codigoProducto
+    function existeCodigoDuplicado(codigoProducto) {
+        const codigoNormalizado = codigoProducto
             .trim()
             .toLocaleLowerCase("es-CO");
 
-        return gco_productos.some((gco_producto) => {
-            const gco_idRegistrado = gco_obtenerIdProducto(gco_producto);
-            const gco_codigoRegistrado = String(
-                gco_producto.codigo_producto ?? "",
+        return productos.some((producto) => {
+            const idRegistrado = obtenerIdProducto(producto);
+            const codigoRegistrado = String(
+                producto.codigo_producto ?? "",
             )
                 .trim()
                 .toLocaleLowerCase("es-CO");
 
-            const gco_esOtroProducto =
-                String(gco_idRegistrado) !== String(gco_productoEnEdicion);
+            const esOtroProducto =
+                String(idRegistrado) !== String(productoEnEdicion);
 
             return (
-                gco_esOtroProducto &&
-                gco_codigoRegistrado === gco_codigoNormalizado
+                esOtroProducto &&
+                codigoRegistrado === codigoNormalizado
             );
         });
     }
 
-    // ========================================
-    // RESTABLECER EL FORMULARIO
-    // ========================================
+    //* ========================================
+    //* RESTABLECER EL FORMULARIO
+    //* ========================================
 
-    function gco_restaurarFormularioProducto() {
-        gco_elementos.formulario.reset();
+    function restaurarFormularioProducto() {
+        elementos.formulario.reset();
 
-        gco_productoEnEdicion = null;
-        gco_guardadoEnCurso = false;
+        productoEnEdicion = null;
+        guardadoEnCurso = false;
 
-        gco_elementos.productoId.value = "";
-        gco_elementos.tituloModal.textContent = "Nuevo producto";
-        gco_elementos.btnGuardar.textContent = "Guardar producto";
-        gco_elementos.btnGuardar.disabled = !gco_productosCargados;
+        elementos.productoId.value = "";
+        elementos.tituloModal.textContent = "Nuevo producto";
+        elementos.btnGuardar.textContent = "Guardar producto";
+        elementos.btnGuardar.disabled = !productosCargados;
 
-        gco_limpiarMensajeFormulario();
+        limpiarMensajeFormulario();
     }
 
     // Preparar el modal para crear un producto nuevo.
-    gco_elementos.btnNuevoProducto.addEventListener("click", () => {
-        gco_restaurarFormularioProducto();
+    elementos.btnNuevoProducto.addEventListener("click", () => {
+        restaurarFormularioProducto();
     });
 
     // Limpiar el estado al cerrar el modal mediante Cancelar, X o Escape.
-    gco_elementos.modal.addEventListener(
+    elementos.modal.addEventListener(
         "hidden.bs.modal",
-        gco_restaurarFormularioProducto,
+        restaurarFormularioProducto,
     );
 
-    // ========================================
-    // CREAR O ACTUALIZAR PRODUCTOS
-    // ========================================
+    //* ========================================
+    //* CREAR O ACTUALIZAR PRODUCTOS
+    //* ========================================
 
-    gco_elementos.formulario.addEventListener(
+    elementos.formulario.addEventListener(
         "submit",
-        async (gco_evento) => {
-            gco_evento.preventDefault();
+        async (evento) => {
+            evento.preventDefault();
 
-            if (gco_guardadoEnCurso) {
+            if (guardadoEnCurso) {
                 return;
             }
 
-            if (!gco_productosCargados) {
-                gco_mostrarMensajeFormulario(
+            if (!productosCargados) {
+                mostrarMensajeFormulario(
                     "No es posible guardar productos hasta que se cargue correctamente el catálogo.",
                 );
                 return;
             }
 
-            const gco_esEdicion = gco_productoEnEdicion !== null;
-            const gco_idEnEdicion = gco_productoEnEdicion;
+            const esEdicion = productoEnEdicion !== null;
+            const idEnEdicion = productoEnEdicion;
 
             // Validar los campos obligatorios del formulario.
-            if (!gco_elementos.formulario.checkValidity()) {
-                gco_elementos.formulario.reportValidity();
+            if (!elementos.formulario.checkValidity()) {
+                elementos.formulario.reportValidity();
                 return;
             }
 
-            const gco_codigoValidado = gco_elementos.codigo.value.trim();
-            const gco_nombreValidado = gco_elementos.nombre.value.trim();
-            const gco_descripcionValidada = gco_elementos.descripcion.value.trim();
-            const gco_categoriaValidada = Number(gco_elementos.categoria.value);
-            const gco_precioValidado = Number(gco_elementos.precioVenta.value);
+            const codigoValidado = elementos.codigo.value.trim();
+            const nombreValidado = elementos.nombre.value.trim();
+            const descripcionValidada = elementos.descripcion.value.trim();
+            const categoriaValidada = Number(elementos.categoria.value);
+            const precioValidado = Number(elementos.precioVenta.value);
 
-            if (!gco_codigoValidado) {
-                gco_mostrarMensajeFormulario("Ingresa un código de producto válido.");
-                gco_elementos.codigo.focus();
+            if (!codigoValidado) {
+                mostrarMensajeFormulario("Ingresa un código de producto válido.");
+                elementos.codigo.focus();
                 return;
             }
 
-            if (!gco_nombreValidado) {
-                gco_mostrarMensajeFormulario("Ingresa el nombre del producto.");
-                gco_elementos.nombre.focus();
+            if (!nombreValidado) {
+                mostrarMensajeFormulario("Ingresa el nombre del producto.");
+                elementos.nombre.focus();
                 return;
             }
 
             if (
-                !Number.isSafeInteger(gco_categoriaValidada) ||
-                gco_categoriaValidada < 1
+                !Number.isSafeInteger(categoriaValidada) ||
+                categoriaValidada < 1
             ) {
-                gco_mostrarMensajeFormulario(
+                mostrarMensajeFormulario(
                     "El ID de categoría debe ser un número entero mayor que cero.",
                 );
-                gco_elementos.categoria.focus();
+                elementos.categoria.focus();
                 return;
             }
 
             if (
-                !Number.isSafeInteger(gco_precioValidado) ||
-                gco_precioValidado < 0
+                !Number.isSafeInteger(precioValidado) ||
+                precioValidado < 0
             ) {
-                gco_mostrarMensajeFormulario(
+                mostrarMensajeFormulario(
                     "El precio de venta debe ser un número entero igual o mayor que cero.",
                 );
-                gco_elementos.precioVenta.focus();
+                elementos.precioVenta.focus();
                 return;
             }
 
-            if (!gco_descripcionValidada) {
-                gco_mostrarMensajeFormulario("Ingresa una descripción para el producto.");
-                gco_elementos.descripcion.focus();
+            if (!descripcionValidada) {
+                mostrarMensajeFormulario("Ingresa una descripción para el producto.");
+                elementos.descripcion.focus();
                 return;
             }
 
             // Evitar códigos duplicados, incluidos los productos inactivos.
-            if (gco_existeCodigoDuplicado(gco_codigoValidado)) {
-                gco_mostrarMensajeFormulario(
+            if (existeCodigoDuplicado(codigoValidado)) {
+                mostrarMensajeFormulario(
                     "Ya existe un producto registrado con este código, incluso si está inactivo.",
                 );
-                gco_elementos.codigo.focus();
+                elementos.codigo.focus();
                 return;
             }
 
             // Recuperar el registro original cuando se está editando.
-            let gco_productoOriginal = null;
-            let gco_indiceProducto = -1;
+            let productoOriginal = null;
+            let indiceProducto = -1;
 
-            if (gco_esEdicion) {
-                gco_indiceProducto = gco_productos.findIndex((gco_producto) => {
-                    const gco_idRegistrado = gco_obtenerIdProducto(gco_producto);
-                    return String(gco_idRegistrado) === String(gco_idEnEdicion);
+            if (esEdicion) {
+                indiceProducto = productos.findIndex((producto) => {
+                    const idRegistrado = obtenerIdProducto(producto);
+                    return String(idRegistrado) === String(idEnEdicion);
                 });
 
-                if (gco_indiceProducto === -1) {
-                    gco_mostrarMensajeFormulario(
+                if (indiceProducto === -1) {
+                    mostrarMensajeFormulario(
                         "No se encontró el producto que deseas actualizar. Recarga la página e inténtalo nuevamente.",
                     );
                     return;
                 }
 
-                gco_productoOriginal = gco_productos[gco_indiceProducto];
+                productoOriginal = productos[indiceProducto];
             }
 
             // Conservar los valores de negocio y tipo de ítem existentes al editar.
             // Para registros nuevos se toman los valores configurados en el HTML.
-            const gco_negocioId = gco_productoOriginal?.negocio_id ??
-                Number(gco_elementos.negocio.value || 1);
-            const gco_tipoItemId = gco_productoOriginal?.tipo_item_id ??
-                Number(gco_elementos.tipoItem.value || 1);
+            const negocioId = productoOriginal?.negocio_id ??
+                Number(elementos.negocio.value || 1);
+            const tipoItemId = productoOriginal?.tipo_item_id ??
+                Number(elementos.tipoItem.value || 1);
 
-            const gco_datosProducto = {
-                negocio_id: gco_negocioId,
-                categoria_id: gco_categoriaValidada,
-                codigo_producto: gco_codigoValidado,
-                nombre_producto: gco_nombreValidado,
-                descripcion: gco_descripcionValidada,
-                precio_venta: gco_precioValidado,
-                tipo_item_id: gco_tipoItemId,
-                maneja_inventario: gco_elementos.manejaInventario.checked,
-                activo: gco_elementos.activo.checked,
+            const datosProducto = {
+                negocio_id: negocioId,
+                categoria_id: categoriaValidada,
+                codigo_producto: codigoValidado,
+                nombre_producto: nombreValidado,
+                descripcion: descripcionValidada,
+                precio_venta: precioValidado,
+                tipo_item_id: tipoItemId,
+                maneja_inventario: elementos.manejaInventario.checked,
+                activo: elementos.activo.checked,
             };
 
-            gco_guardadoEnCurso = true;
-            gco_elementos.btnGuardar.disabled = true;
-            gco_elementos.btnGuardar.textContent = gco_esEdicion
+            guardadoEnCurso = true;
+            elementos.btnGuardar.disabled = true;
+            elementos.btnGuardar.textContent = esEdicion
                 ? "Guardando cambios..."
                 : "Guardando...";
-            gco_limpiarMensajeFormulario();
+            limpiarMensajeFormulario();
 
             try {
-                let gco_productoGuardado;
+                let productoGuardado;
 
-                if (gco_esEdicion) {
+                if (esEdicion) {
                     // PUT: actualizar el registro existente.
-                    const gco_urlProducto =
-                        `${gco_apiProductos}/${encodeURIComponent(gco_idEnEdicion)}`;
+                    const urlProducto =
+                        `${apiProductos}/${encodeURIComponent(idEnEdicion)}`;
 
-                    gco_productoGuardado = await gco_actualizarAPI(
-                        gco_urlProducto,
-                        gco_datosProducto,
+                    productoGuardado = await actualizarAPI(
+                        urlProducto,
+                        datosProducto,
                     );
 
                     // Conservar atributos originales y aplicar la respuesta de la API.
-                    gco_productos[gco_indiceProducto] = {
-                        ...gco_productoOriginal,
-                        ...gco_datosProducto,
-                        ...gco_productoGuardado,
+                    productos[indiceProducto] = {
+                        ...productoOriginal,
+                        ...datosProducto,
+                        ...productoGuardado,
                     };
                 } else {
                     // POST: crear un registro nuevo. MockAPI asigna el identificador.
-                    gco_productoGuardado = await gco_crearAPI(
-                        gco_apiProductos,
-                        gco_datosProducto,
+                    productoGuardado = await crearAPI(
+                        apiProductos,
+                        datosProducto,
                     );
 
-                    gco_productos.push({
-                        ...gco_datosProducto,
-                        ...gco_productoGuardado,
+                    productos.push({
+                        ...datosProducto,
+                        ...productoGuardado,
                     });
                 }
 
-                gco_actualizarInterfazProductos();
-                gco_limpiarMensajeEstado();
+                actualizarInterfazProductos();
+                limpiarMensajeEstado();
 
                 console.log(
-                    gco_esEdicion
+                    esEdicion
                         ? "Producto actualizado correctamente:"
                         : "Producto registrado correctamente:",
-                    gco_productoGuardado,
+                    productoGuardado,
                 );
 
                 // Liberar la operación y limpiar el estado antes de cerrar el modal.
-                gco_guardadoEnCurso = false;
-                gco_productoEnEdicion = null;
-                gco_modalProducto.hide();
+                guardadoEnCurso = false;
+                productoEnEdicion = null;
+                modalProducto.hide();
 
-                gco_mostrarMensajeEstado(
-                    gco_esEdicion
+                mostrarMensajeEstado(
+                    esEdicion
                         ? "Producto actualizado correctamente."
                         : "Producto registrado correctamente.",
                     "success",
                 );
-            } catch (gco_error) {
+            } catch (error) {
                 console.error(
-                    gco_esEdicion
+                    esEdicion
                         ? "No fue posible actualizar el producto:"
                         : "No fue posible registrar el producto:",
-                    gco_error,
+                    error,
                 );
 
-                gco_mostrarMensajeFormulario(
-                    gco_esEdicion
+                mostrarMensajeFormulario(
+                    esEdicion
                         ? "No fue posible actualizar el producto. Verifica la conexión e inténtalo nuevamente."
                         : "No fue posible registrar el producto. Verifica la conexión e inténtalo nuevamente.",
                 );
             } finally {
-                gco_guardadoEnCurso = false;
-                gco_elementos.btnGuardar.disabled = false;
-                gco_elementos.btnGuardar.textContent =
-                    gco_productoEnEdicion !== null
+                guardadoEnCurso = false;
+                elementos.btnGuardar.disabled = false;
+                elementos.btnGuardar.textContent =
+                    productoEnEdicion !== null
                         ? "Guardar cambios"
                         : "Guardar producto";
             }
         },
     );
 
-    // ========================================
-    // EDITAR Y CAMBIAR ESTADO DE PRODUCTOS
-    // ========================================
+    //* ========================================
+    //* EDITAR Y CAMBIAR ESTADO DE PRODUCTOS
+    //* ========================================
 
-    gco_elementos.tabla.addEventListener("click", async (gco_evento) => {
-        const gco_objetivo = gco_evento.target;
+    elementos.tabla.addEventListener("click", async (evento) => {
+        const objetivo = evento.target;
 
-        if (!(gco_objetivo instanceof Element)) {
+        if (!(objetivo instanceof Element)) {
             return;
         }
 
-        const gco_botonAccion = gco_objetivo.closest("[data-accion]");
+        const botonAccion = objetivo.closest("[data-accion]");
 
         if (
-            !gco_botonAccion ||
-            !gco_elementos.tabla.contains(gco_botonAccion) ||
-            gco_actualizacionEstadoEnCurso
+            !botonAccion ||
+            !elementos.tabla.contains(botonAccion) ||
+            actualizacionEstadoEnCurso
         ) {
             return;
         }
 
-        const gco_accion = gco_botonAccion.dataset.accion;
-        const gco_productoId = gco_botonAccion.dataset.productoId;
+        const accion = botonAccion.dataset.accion;
+        const productoId = botonAccion.dataset.productoId;
 
-        const gco_productoSeleccionado = gco_productos.find((gco_producto) => {
-            const gco_idRegistrado = gco_obtenerIdProducto(gco_producto);
-            return String(gco_idRegistrado) === String(gco_productoId);
+        const productoSeleccionado = productos.find((producto) => {
+            const idRegistrado = obtenerIdProducto(producto);
+            return String(idRegistrado) === String(productoId);
         });
 
-        if (!gco_productoSeleccionado) {
+        if (!productoSeleccionado) {
             console.error("No se encontró el producto seleccionado.");
             return;
         }
 
-        // ----------------------------------------
-        // EDITAR PRODUCTO
-        // ----------------------------------------
+        //* ========================================
+        //* EDITAR PRODUCTO
+        //* ========================================
 
-        if (gco_accion === "editar-producto") {
-            gco_productoEnEdicion = gco_productoId;
-            gco_elementos.formulario.reset();
-            gco_limpiarMensajeFormulario();
+        if (accion === "editar-producto") {
+            productoEnEdicion = productoId;
+            elementos.formulario.reset();
+            limpiarMensajeFormulario();
 
-            gco_elementos.productoId.value = String(gco_productoId);
-            gco_elementos.codigo.value = gco_productoSeleccionado.codigo_producto ?? "";
-            gco_elementos.nombre.value = gco_productoSeleccionado.nombre_producto ?? "";
-            gco_elementos.categoria.value = gco_productoSeleccionado.categoria_id ?? "";
-            gco_elementos.precioVenta.value = gco_productoSeleccionado.precio_venta ?? "";
-            gco_elementos.descripcion.value = gco_productoSeleccionado.descripcion ?? "";
-            gco_elementos.manejaInventario.checked =
-                gco_productoSeleccionado.maneja_inventario === true;
-            gco_elementos.activo.checked = gco_productoSeleccionado.activo === true;
-            gco_elementos.negocio.value = String(
-                gco_productoSeleccionado.negocio_id ?? 1,
+            elementos.productoId.value = String(productoId);
+            elementos.codigo.value = productoSeleccionado.codigo_producto ?? "";
+            elementos.nombre.value = productoSeleccionado.nombre_producto ?? "";
+            elementos.categoria.value = productoSeleccionado.categoria_id ?? "";
+            elementos.precioVenta.value = productoSeleccionado.precio_venta ?? "";
+            elementos.descripcion.value = productoSeleccionado.descripcion ?? "";
+            elementos.manejaInventario.checked =
+                productoSeleccionado.maneja_inventario === true;
+            elementos.activo.checked = productoSeleccionado.activo === true;
+            elementos.negocio.value = String(
+                productoSeleccionado.negocio_id ?? 1,
             );
-            gco_elementos.tipoItem.value = String(
-                gco_productoSeleccionado.tipo_item_id ?? 1,
+            elementos.tipoItem.value = String(
+                productoSeleccionado.tipo_item_id ?? 1,
             );
 
-            gco_elementos.tituloModal.textContent = "Editar producto";
-            gco_elementos.btnGuardar.textContent = "Guardar cambios";
-            gco_elementos.btnGuardar.disabled = false;
+            elementos.tituloModal.textContent = "Editar producto";
+            elementos.btnGuardar.textContent = "Guardar cambios";
+            elementos.btnGuardar.disabled = false;
 
-            gco_modalProducto.show();
+            modalProducto.show();
             return;
         }
 
-        // ----------------------------------------
-        // ACTIVAR O INACTIVAR PRODUCTO
-        // ----------------------------------------
+        //* ========================================
+        //* ACTIVAR O INACTIVAR PRODUCTO
+        //* ========================================
 
-        if (gco_accion === "cambiar-estado-producto") {
-            const gco_nuevoEstado = gco_productoSeleccionado.activo !== true;
-            const gco_accionEstado = gco_nuevoEstado ? "activar" : "inactivar";
-            const gco_nombreProducto = String(
-                gco_productoSeleccionado.nombre_producto ?? gco_productoId,
+        if (accion === "cambiar-estado-producto") {
+            const nuevoEstado = productoSeleccionado.activo !== true;
+            const accionEstado = nuevoEstado ? "activar" : "inactivar";
+            const nombreProducto = String(
+                productoSeleccionado.nombre_producto ?? productoId,
             );
 
-            const gco_confirmacion = window.confirm(
-                `¿Confirmas que deseas ${gco_accionEstado} el producto "${gco_nombreProducto}"?`,
+            const confirmacion = window.confirm(
+                `¿Confirmas que deseas ${accionEstado} el producto "${nombreProducto}"?`,
             );
 
-            if (!gco_confirmacion) {
+            if (!confirmacion) {
                 return;
             }
 
-            gco_actualizacionEstadoEnCurso = true;
-            gco_botonAccion.disabled = true;
-            gco_botonAccion.textContent = "Actualizando...";
+            actualizacionEstadoEnCurso = true;
+            botonAccion.disabled = true;
+            botonAccion.textContent = "Actualizando...";
 
             try {
-                const gco_urlProducto =
-                    `${gco_apiProductos}/${encodeURIComponent(gco_productoId)}`;
+                const urlProducto =
+                    `${apiProductos}/${encodeURIComponent(productoId)}`;
 
                 // PUT: cambiar únicamente el estado lógico del producto.
-                const gco_productoActualizado = await gco_actualizarAPI(
-                    gco_urlProducto,
-                    { activo: gco_nuevoEstado },
+                const productoActualizado = await actualizarAPI(
+                    urlProducto,
+                    { activo: nuevoEstado },
                 );
 
-                const gco_indiceProducto = gco_productos.findIndex((gco_producto) => {
-                    const gco_idRegistrado = gco_obtenerIdProducto(gco_producto);
-                    return String(gco_idRegistrado) === String(gco_productoId);
+                const indiceProducto = productos.findIndex((producto) => {
+                    const idRegistrado = obtenerIdProducto(producto);
+                    return String(idRegistrado) === String(productoId);
                 });
 
-                if (gco_indiceProducto === -1) {
+                if (indiceProducto === -1) {
                     throw new Error(
                         "El producto actualizado no se encontró en la colección local.",
                     );
                 }
 
-                gco_productos[gco_indiceProducto] = {
-                    ...gco_productos[gco_indiceProducto],
-                    ...gco_productoActualizado,
-                    activo: gco_nuevoEstado,
+                productos[indiceProducto] = {
+                    ...productos[indiceProducto],
+                    ...productoActualizado,
+                    activo: nuevoEstado,
                 };
 
-                gco_actualizarInterfazProductos();
-                gco_limpiarMensajeEstado();
+                actualizarInterfazProductos();
+                limpiarMensajeEstado();
 
                 console.log(
-                    `Producto ${gco_accionEstado} correctamente:`,
-                    gco_productos[gco_indiceProducto],
+                    `Producto ${accionEstado} correctamente:`,
+                    productos[indiceProducto],
                 );
 
-                gco_mostrarMensajeEstado(
-                    `Producto ${gco_accionEstado} correctamente.`,
+                mostrarMensajeEstado(
+                    `Producto ${accionEstado} correctamente.`,
                     "success",
                 );
-            } catch (gco_error) {
+            } catch (error) {
                 console.error(
                     "No fue posible actualizar el estado del producto:",
-                    gco_error,
+                    error,
                 );
 
-                gco_mostrarMensajeEstado(
+                mostrarMensajeEstado(
                     "No fue posible actualizar el producto. Verifica la conexión e inténtalo nuevamente.",
                     "error",
                 );
 
                 // Volver a dibujar la tabla para restaurar el botón y su estado.
-                gco_aplicarFiltrosProductos();
+                aplicarFiltrosProductos();
             } finally {
-                gco_actualizacionEstadoEnCurso = false;
+                actualizacionEstadoEnCurso = false;
             }
         }
     });
 
-    // ========================================
-    // CONSULTAR PRODUCTOS DESDE MOCKAPI
-    // ========================================
+    //* ========================================
+    //* CONSULTAR PRODUCTOS DESDE MOCKAPI
+    //* ========================================
 
-    async function gco_cargarProductos() {
+    async function cargarProductos() {
         try {
-            const gco_respuesta = await gco_consultarAPI(gco_apiProductos);
+            const respuesta = await consultarAPI(apiProductos);
 
             // Validación adicional del contrato de respuesta.
-            if (!Array.isArray(gco_respuesta)) {
+            if (!Array.isArray(respuesta)) {
                 throw new Error("La API no devolvió una lista de productos válida.");
             }
 
-            gco_productos = gco_respuesta;
-            gco_productosCargados = true;
+            productos = respuesta;
+            productosCargados = true;
 
-            gco_elementos.btnNuevoProducto.disabled = false;
-            gco_elementos.btnNuevoProducto.removeAttribute("title");
-            gco_elementos.btnGuardar.disabled = false;
+            elementos.btnNuevoProducto.disabled = false;
+            elementos.btnNuevoProducto.removeAttribute("title");
+            elementos.btnGuardar.disabled = false;
 
-            gco_actualizarInterfazProductos();
-            gco_limpiarMensajeEstado();
+            actualizarInterfazProductos();
+            limpiarMensajeEstado();
 
             console.log(
                 "Productos consultados correctamente:",
-                gco_productos.length,
+                productos.length,
             );
-        } catch (gco_error) {
-            console.error("No se pudieron cargar los productos:", gco_error);
+        } catch (error) {
+            console.error("No se pudieron cargar los productos:", error);
 
-            gco_productosCargados = false;
-            gco_elementos.btnNuevoProducto.disabled = true;
-            gco_elementos.btnNuevoProducto.title =
+            productosCargados = false;
+            elementos.btnNuevoProducto.disabled = true;
+            elementos.btnNuevoProducto.title =
                 "No es posible registrar productos hasta cargar la información existente.";
 
-            gco_elementos.indicadorTotal.textContent = "—";
-            gco_elementos.indicadorActivos.textContent = "—";
-            gco_elementos.indicadorInactivos.textContent = "—";
+            elementos.indicadorTotal.textContent = "—";
+            elementos.indicadorActivos.textContent = "—";
+            elementos.indicadorInactivos.textContent = "—";
 
-            gco_mostrarErrorTabla(
+            mostrarErrorTabla(
                 "No fue posible cargar los productos. Verifica tu conexión e inténtalo nuevamente.",
             );
 
-            gco_mostrarMensajeEstado(
+            mostrarMensajeEstado(
                 "Ocurrió un problema al consultar el catálogo de productos.",
                 "error",
             );
         }
     }
 
-    // ========================================
-    // MOSTRAR ESTADO INICIAL E INICIAR CARGA
-    // ========================================
+    //* ========================================
+    //* MOSTRAR ESTADO INICIAL E INICIAR CARGA
+    //* ========================================
 
-    gco_mostrarEstadoCarga();
-    gco_restaurarFormularioProducto();
-    gco_cargarProductos();
+    mostrarEstadoCarga();
+    restaurarFormularioProducto();
+    cargarProductos();
 
     // Si el navegador restaura esta página desde BFCache, actualizar el catálogo
     // para reflejar los cambios realizados en otras páginas.
-    window.addEventListener("pageshow", (gco_evento) => {
-        if (gco_evento.persisted) {
-            gco_cargarProductos();
+    window.addEventListener("pageshow", (evento) => {
+        if (evento.persisted) {
+            cargarProductos();
         }
     });
 }

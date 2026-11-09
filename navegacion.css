@@ -47,6 +47,9 @@
 }
 
 .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 1020;
     display: flex;
     align-items: center;
     justify-content: space-between;

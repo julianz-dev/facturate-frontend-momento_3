@@ -1,139 +1,146 @@
-// ========================================
-// CONFIGURACIÓN DE LAS API DE FACTURATE
-// ========================================
+//* ========================================
+//* CONFIGURACIÓN DE LAS API DE FACTURATE
+//* ========================================
 
-// Base URL de la API de Julián
-const gco_baseUrlJulian = "https://6adcddc5fa5e73d4ab2dc4c9.mockapi.io/api/v1";
+// URL base para clientes y productos (Julian)
+const baseUrlCatalogos = "https://6adcddc5fa5e73d4ab2dc4c9.mockapi.io/api/v1";
 
-// Base URL de la API de Cristian
-const gco_baseUrlCristian = "https://6adcddc0fa5e73d4ab2dc4b1.mockapi.io/Facturate/api";
+// URL base para ventas y detalles de venta (Cristian)
+const baseUrlVentas = "https://6adcddc0fa5e73d4ab2dc4b1.mockapi.io/Facturate/api";
 
-// Endpoints de clientes y productos
-export const gco_apiClientes = `${gco_baseUrlJulian}/clientes`;
-export const gco_apiProductos = `${gco_baseUrlJulian}/productos`;
+//* ========================================
+//* ENDPOINTS DE CLIENTES Y PRODUCTOS
+//* ========================================
 
-// Endpoints de ventas y detalles de venta
-export const gco_apiVentas = `${gco_baseUrlCristian}/Ventas`;
-export const gco_apiDetallesVenta = `${gco_baseUrlCristian}/Detalles_Venta`;
+export const apiClientes = `${baseUrlCatalogos}/clientes`;
+export const apiProductos = `${baseUrlCatalogos}/productos`;
 
+//* ========================================
+//* ENDPOINTS DE VENTAS Y DETALLES
+//* ========================================
 
-// ========================================
-// FUNCIÓN GENERAL PARA CONSULTAR LAS API
-// ========================================
+export const apiVentas = `${baseUrlVentas}/Ventas`;
+export const apiDetallesVenta = `${baseUrlVentas}/Detalles_Venta`;
 
-export async function gco_consultarAPI(gco_url) {
+//* ========================================
+//* FUNCIÓN GENERAL PARA CONSULTAR LA API
+//* ========================================
+
+export async function consultarAPI(url) {
 
     try {
 
-        // Realizar petición HTTP
-        const gco_respuesta = await fetch(gco_url);
+        // Realizar petición HTTP GET
+        const respuesta = await fetch(url);
 
         // Comprobar respuesta HTTP
-        if (!gco_respuesta.ok) {
-            throw new Error(`Error HTTP: ${gco_respuesta.status}`);
+        if (!respuesta.ok) {
+            throw new Error(`Error HTTP: ${respuesta.status}`);
         }
 
         // Convertir respuesta a formato JSON
-        const gco_datos = await gco_respuesta.json();
+        const datos = await respuesta.json();
 
         // Verificar que la respuesta sea un arreglo
-        if (!Array.isArray(gco_datos)) {
+        if (!Array.isArray(datos)) {
             throw new Error("La respuesta de la API no contiene un arreglo.");
         }
 
-        return gco_datos;
+        return datos;
 
-    } catch (gco_error) {
+    } catch (error) {
 
-        console.error("Error al consultar la API:", gco_error.message);
+        console.error("Error al consultar la API:", error.message);
 
-        throw gco_error;
+        throw error;
 
     }
 
 }
 
-// ========================================
-// FUNCIÓN GENERAL PARA ACTUALIZAR REGISTROS
-// ========================================
+//* ========================================
+//* FUNCIÓN GENERAL PARA ACTUALIZAR REGISTROS
+//* ========================================
 
-export async function gco_actualizarAPI(gco_url, gco_datos) {
+export async function actualizarAPI(url, datos) {
 
     try {
 
         // Realizar petición HTTP PUT
-        const gco_respuesta = await fetch(gco_url, {
+        const respuesta = await fetch(url, {
+
             method: "PUT",
 
             headers: {
                 "Content-Type": "application/json",
             },
 
-            body: JSON.stringify(gco_datos),
+            body: JSON.stringify(datos),
 
         });
 
         // Comprobar respuesta HTTP
-        if (!gco_respuesta.ok) {
-            throw new Error(`Error HTTP: ${gco_respuesta.status}`);
+        if (!respuesta.ok) {
+            throw new Error(`Error HTTP: ${respuesta.status}`);
         }
 
         // Convertir respuesta a formato JSON
-        const gco_datosActualizados = await gco_respuesta.json();
+        const datosActualizados = await respuesta.json();
 
-        return gco_datosActualizados;
+        return datosActualizados;
 
-    } catch (gco_error) {
+    } catch (error) {
 
         console.error(
             "Error al actualizar el registro:",
-            gco_error.message
+            error.message
         );
 
-        throw gco_error;
+        throw error;
 
     }
 
 }
 
-// ========================================
-// FUNCIÓN GENERAL PARA REGISTRAR REGISTROS
-// ========================================
+//* ========================================
+//* FUNCIÓN GENERAL PARA REGISTRAR REGISTROS
+//* ========================================
 
-export async function gco_crearAPI(gco_url, gco_datos) {
+export async function crearAPI(url, datos) {
 
     try {
 
         // Realizar petición HTTP POST
-        const gco_respuesta = await fetch(gco_url, {
+        const respuesta = await fetch(url, {
+
             method: "POST",
 
             headers: {
                 "Content-Type": "application/json",
             },
 
-            body: JSON.stringify(gco_datos),
+            body: JSON.stringify(datos),
 
         });
 
         // Comprobar respuesta HTTP
-        if (!gco_respuesta.ok) {
-            throw new Error(`Error HTTP: ${gco_respuesta.status}`);
+        if (!respuesta.ok) {
+            throw new Error(`Error HTTP: ${respuesta.status}`);
         }
 
         // Convertir respuesta a formato JSON
-        const gco_datosCreados = await gco_respuesta.json();
+        const datosCreados = await respuesta.json();
 
-        return gco_datosCreados;
+        return datosCreados;
 
-    } catch (gco_error) {
+    } catch (error) {
 
         console.error(
             "Error al registrar el nuevo registro:",
-            gco_error.message
+            error.message
         );
 
-        throw gco_error;
+        throw error;
 
     }
 

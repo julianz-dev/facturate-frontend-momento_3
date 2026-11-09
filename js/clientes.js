@@ -1,51 +1,52 @@
-import { gco_verificarSesion } from "./auth.js";
+import { verificarSesion } from "./auth.js";
 
 import {
-    gco_consultarAPI,
-    gco_actualizarAPI,
-    gco_crearAPI,
-    gco_apiClientes,
+    consultarAPI,
+    actualizarAPI,
+    crearAPI,
+    apiClientes,
 } from "./api.js";
 
 import {
-    gco_mostrarTablaClientes,
-    gco_actualizarIndicadoresClientes,
-    gco_mostrarErrorTablaClientes,
+    mostrarTablaClientes,
+    actualizarIndicadoresClientes,
+    mostrarErrorTablaClientes,
 } from "./ui.js";
 
-// ========================================
-// VARIABLES DEL MÓDULO DE CLIENTES
-// ========================================
+//* ========================================
+//* VARIABLES DEL MÓDULO DE CLIENTES
+//* ========================================
 
 // Colección completa de clientes recibidos desde MockAPI.
-let gco_clientes = [];
+let clientes = [];
 
 // Identificador del cliente que se encuentra en edición.
-let gco_clienteEnEdicion = null;
+let clienteEnEdicion = null;
 
 // Indica si el registro que se intenta editar es el cliente genérico.
-let gco_clienteGenericoEnEdicion = false;
+let clienteGenericoEnEdicion = false;
 
 // Evita que se envíen dos operaciones de guardado simultáneamente.
-let gco_guardadoEnCurso = false;
+let guardadoEnCurso = false;
 
-// ========================================
-// VERIFICAR AUTORIZACIÓN DE ACCESO
-// ========================================
+//* ========================================
+//* VERIFICAR AUTORIZACIÓN DE ACCESO
+//* ========================================
 
-const gco_accesoAutorizado = gco_verificarSesion();
+const accesoAutorizado = verificarSesion();
 
-if (gco_accesoAutorizado) {
-    gco_inicializarModuloClientes();
+if (accesoAutorizado) {
+    inicializarModuloClientes();
 }
 
-// ========================================
-// INICIALIZAR MÓDULO DE CLIENTES
-// ========================================
+//* ========================================
+//* INICIALIZAR MÓDULO DE CLIENTES
+//* ========================================
 
-function gco_inicializarModuloClientes() {
+function inicializarModuloClientes() {
+
     // Seleccionar los elementos de la página.
-    const gco_elementos = {
+    const elementos = {
         btnCerrarSesion: document.querySelector("#btnCerrarSesion"),
         btnNuevoCliente: document.querySelector("#btnNuevoCliente"),
         formulario: document.querySelector("#formularioCliente"),
@@ -67,631 +68,822 @@ function gco_inicializarModuloClientes() {
         indicadorInactivos: document.querySelector("#clientesInactivosAdmin"),
     };
 
-    // Comprobar que el HTML contiene los elementos requeridos.
-    const gco_elementosFaltantes = Object.entries(gco_elementos)
-        .filter(([, gco_elemento]) => !gco_elemento)
-        .map(([gco_nombre]) => gco_nombre);
+    //* ========================================
+    //* VALIDAR ELEMENTOS DEL HTML
+    //* ========================================
 
-    if (gco_elementosFaltantes.length > 0) {
+    // Comprobar que el HTML contiene los elementos requeridos.
+    const elementosFaltantes = Object.entries(elementos)
+        .filter(([, elemento]) => !elemento)
+        .map(([nombre]) => nombre);
+
+    if (elementosFaltantes.length > 0) {
+
         console.error(
             "No se pudo inicializar el módulo de clientes. Faltan elementos HTML:",
-            gco_elementosFaltantes,
+            elementosFaltantes,
         );
+
         return;
     }
+
+    //* ========================================
+    //* VALIDAR DISPONIBILIDAD DE BOOTSTRAP
+    //* ========================================
 
     // Comprobar que Bootstrap esté disponible para controlar el modal.
     if (!window.bootstrap?.Modal) {
+
         console.error(
             "Bootstrap Modal no está disponible. Verifica la carga de bootstrap.bundle.min.js.",
         );
+
         return;
     }
 
-    const gco_modalCliente = window.bootstrap.Modal.getOrCreateInstance(
-        gco_elementos.modal,
+    const modalCliente = window.bootstrap.Modal.getOrCreateInstance(
+        elementos.modal,
     );
+
+    //* ========================================
+    //* CONFIGURACIÓN INICIAL DEL FORMULARIO
+    //* ========================================
 
     // No permitir abrir el formulario hasta haber consultado los registros
     // existentes. Así las validaciones de duplicados trabajan con datos cargados.
-    gco_elementos.btnNuevoCliente.disabled = true;
+    elementos.btnNuevoCliente.disabled = true;
 
     // Evitar cerrar el modal mientras una solicitud de guardado está pendiente.
-    gco_elementos.modal.addEventListener("hide.bs.modal", (gco_evento) => {
-        if (gco_guardadoEnCurso) {
-            gco_evento.preventDefault();
+    elementos.modal.addEventListener("hide.bs.modal", (evento) => {
+
+        if (guardadoEnCurso) {
+            evento.preventDefault();
         }
+
     });
 
-    // ========================================
-    // CERRAR SESIÓN
-    // ========================================
+    //* ========================================
+    //* CERRAR SESIÓN
+    //* ========================================
 
-    gco_elementos.btnCerrarSesion.addEventListener("click", () => {
-        sessionStorage.removeItem("gco_sesionActiva");
+    elementos.btnCerrarSesion.addEventListener("click", () => {
+
+        sessionStorage.removeItem("sesionActiva");
+
         window.location.replace("login.html");
+
     });
 
-    // ========================================
-    // ESTADOS DE LA TABLA E INDICADORES
-    // ========================================
+    //* ========================================
+    //* ESTADOS DE LA TABLA E INDICADORES
+    //* ========================================
 
     // Mostrar un mensaje mientras se consulta la API.
-    function gco_mostrarEstadoCarga() {
-        const gco_fila = document.createElement("tr");
-        const gco_celda = document.createElement("td");
+    function mostrarEstadoCarga() {
 
-        gco_celda.colSpan = 6;
-        gco_celda.className = "empty-table";
-        gco_celda.textContent = "Cargando clientes...";
+        const fila = document.createElement("tr");
+        const celda = document.createElement("td");
 
-        gco_fila.appendChild(gco_celda);
-        gco_elementos.tabla.replaceChildren(gco_fila);
+        celda.colSpan = 6;
+        celda.className = "empty-table";
+        celda.textContent = "Cargando clientes...";
 
-        gco_elementos.indicadorTotal.textContent = "—";
-        gco_elementos.indicadorActivos.textContent = "—";
-        gco_elementos.indicadorInactivos.textContent = "—";
+        fila.appendChild(celda);
+        elementos.tabla.replaceChildren(fila);
+
+        elementos.indicadorTotal.textContent = "—";
+        elementos.indicadorActivos.textContent = "—";
+        elementos.indicadorInactivos.textContent = "—";
+
     }
 
     // Actualizar la tabla y los tres indicadores de administración.
-    function gco_actualizarInterfazClientes() {
-        gco_aplicarFiltrosClientes();
-        gco_actualizarIndicadoresClientes(gco_clientes);
+    function actualizarInterfazClientes() {
+
+        aplicarFiltrosClientes();
+
+        actualizarIndicadoresClientes(clientes);
+
     }
 
-    // ========================================
-    // BÚSQUEDA Y FILTRO DE CLIENTES
-    // ========================================
+    //* ========================================
+    //* BÚSQUEDA Y FILTRO DE CLIENTES
+    //* ========================================
 
-    function gco_aplicarFiltrosClientes() {
-        const gco_terminoBusqueda = gco_elementos.buscar.value
+    function aplicarFiltrosClientes() {
+
+        const terminoBusqueda = elementos.buscar.value
             .trim()
             .toLocaleLowerCase("es-CO");
 
-        const gco_estadoSeleccionado = gco_elementos.filtroEstado.value;
+        const estadoSeleccionado = elementos.filtroEstado.value;
 
         // Aplicar los filtros sobre la colección original sin modificarla.
-        const gco_clientesFiltrados = gco_clientes.filter((gco_cliente) => {
-            const gco_nombre = String(
-                gco_cliente.nombre_razon_social ?? "",
+        const clientesFiltrados = clientes.filter((cliente) => {
+
+            const nombre = String(
+                cliente.nombre_razon_social ?? "",
             ).toLocaleLowerCase("es-CO");
 
-            const gco_tipoDocumento = String(
-                gco_cliente.tipo_documento ?? "",
+            const tipoDocumento = String(
+                cliente.tipo_documento ?? "",
             ).toLocaleLowerCase("es-CO");
 
-            const gco_numeroDocumento = String(
-                gco_cliente.numero_documento ?? "",
+            const numeroDocumento = String(
+                cliente.numero_documento ?? "",
             ).toLocaleLowerCase("es-CO");
 
-            const gco_idCliente = String(
-                gco_cliente.cliente_id ?? gco_cliente.id ?? "",
+            const idCliente = String(
+                cliente.cliente_id ?? cliente.id ?? "",
             ).toLocaleLowerCase("es-CO");
 
-            const gco_coincideBusqueda =
-                gco_nombre.includes(gco_terminoBusqueda) ||
-                gco_tipoDocumento.includes(gco_terminoBusqueda) ||
-                gco_numeroDocumento.includes(gco_terminoBusqueda) ||
-                gco_idCliente.includes(gco_terminoBusqueda);
+            const coincideBusqueda =
+                nombre.includes(terminoBusqueda) ||
+                tipoDocumento.includes(terminoBusqueda) ||
+                numeroDocumento.includes(terminoBusqueda) ||
+                idCliente.includes(terminoBusqueda);
 
-            let gco_coincideEstado = true;
+            let coincideEstado = true;
 
-            if (gco_estadoSeleccionado === "ACTIVOS") {
-                gco_coincideEstado = gco_cliente.activo === true;
-            } else if (gco_estadoSeleccionado === "INACTIVOS") {
-                gco_coincideEstado = gco_cliente.activo === false;
+            if (estadoSeleccionado === "ACTIVOS") {
+
+                coincideEstado = cliente.activo === true;
+
+            } else if (estadoSeleccionado === "INACTIVOS") {
+
+                coincideEstado = cliente.activo === false;
+
             }
 
-            return gco_coincideBusqueda && gco_coincideEstado;
+            return coincideBusqueda && coincideEstado;
+
         });
 
-        gco_mostrarTablaClientes(gco_clientesFiltrados);
+        mostrarTablaClientes(clientesFiltrados);
+
     }
 
-    gco_elementos.buscar.addEventListener(
+
+    elementos.buscar.addEventListener(
         "input",
-        gco_aplicarFiltrosClientes,
+        aplicarFiltrosClientes,
     );
 
-    gco_elementos.filtroEstado.addEventListener(
+    elementos.filtroEstado.addEventListener(
         "change",
-        gco_aplicarFiltrosClientes,
+        aplicarFiltrosClientes,
     );
 
-    // ========================================
-    // MOSTRAR Y OCULTAR TABLA DE CLIENTES
-    // ========================================
+    //* ========================================
+    //* MOSTRAR Y OCULTAR TABLA DE CLIENTES
+    //* ========================================
 
-    gco_elementos.btnAlternarTabla.addEventListener("click", () => {
-        const gco_tablaVisible = !gco_elementos.contenedorTabla.hidden;
+    elementos.btnAlternarTabla.addEventListener("click", () => {
+
+        const tablaVisible = !elementos.contenedorTabla.hidden;
 
         // Cambiar la visibilidad del contenedor sin detener los filtros.
-        gco_elementos.contenedorTabla.hidden = gco_tablaVisible;
+        elementos.contenedorTabla.hidden = tablaVisible;
 
         // Actualizar el texto del botón.
-        gco_elementos.btnAlternarTabla.textContent = gco_tablaVisible
+        elementos.btnAlternarTabla.textContent = tablaVisible
             ? "Mostrar tabla de clientes"
             : "Ocultar tabla de clientes";
 
         // Mantener sincronizado el estado de accesibilidad.
-        gco_elementos.btnAlternarTabla.setAttribute(
+        elementos.btnAlternarTabla.setAttribute(
             "aria-expanded",
-            String(!gco_tablaVisible),
+            String(!tablaVisible),
         );
+
     });
 
-    // ========================================
-    // CONTROLAR LOS CAMPOS DEL CLIENTE GENÉRICO
-    // ========================================
+    //* ========================================
+    //* CONTROLAR LOS CAMPOS DEL CLIENTE GENÉRICO
+    //* ========================================
 
-    function gco_actualizarCamposDocumentoCliente() {
-        const gco_esGenerico = gco_elementos.esGenerico.checked;
+    function actualizarCamposDocumentoCliente() {
+
+        const esGenerico = elementos.esGenerico.checked;
 
         // No permitir un segundo cliente genérico.
-        const gco_existeOtroGenerico = gco_clientes.some((gco_cliente) => {
-            const gco_idRegistrado =
-                gco_cliente.cliente_id ?? gco_cliente.id;
+        const existeOtroGenerico = clientes.some((cliente) => {
+
+            const idRegistrado =
+                cliente.cliente_id ?? cliente.id;
 
             return (
-                gco_cliente.es_generico === true &&
-                String(gco_idRegistrado) !== String(gco_clienteEnEdicion)
+                cliente.es_generico === true &&
+                String(idRegistrado) !== String(clienteEnEdicion)
             );
+
         });
 
-        gco_elementos.esGenerico.disabled =
-            gco_clienteGenericoEnEdicion || gco_existeOtroGenerico;
+        elementos.esGenerico.disabled =
+            clienteGenericoEnEdicion || existeOtroGenerico;
 
         // El cliente genérico tiene nombre fijo y no utiliza documento.
-        gco_elementos.nombre.readOnly = gco_esGenerico;
-        gco_elementos.tipoDocumento.disabled = gco_esGenerico;
-        gco_elementos.numeroDocumento.disabled = gco_esGenerico;
+        elementos.nombre.readOnly = esGenerico;
 
-        gco_elementos.tipoDocumento.required = !gco_esGenerico;
-        gco_elementos.numeroDocumento.required = !gco_esGenerico;
+        elementos.tipoDocumento.disabled = esGenerico;
 
-        if (gco_esGenerico) {
-            gco_elementos.nombre.value = "Consumidor final";
-            gco_elementos.tipoDocumento.value = "";
-            gco_elementos.numeroDocumento.value = "";
-            gco_elementos.activo.checked = true;
-            gco_elementos.activo.disabled = true;
+        elementos.numeroDocumento.disabled = esGenerico;
+
+        elementos.tipoDocumento.required = !esGenerico;
+
+        elementos.numeroDocumento.required = !esGenerico;
+
+        if (esGenerico) {
+
+            elementos.nombre.value = "Consumidor final";
+
+            elementos.tipoDocumento.value = "";
+
+            elementos.numeroDocumento.value = "";
+
+            elementos.activo.checked = true;
+
+            elementos.activo.disabled = true;
+
         } else {
-            gco_elementos.activo.disabled = false;
+
+            elementos.activo.disabled = false;
+
         }
+
     }
 
-    gco_elementos.esGenerico.addEventListener("change", () => {
+    elementos.esGenerico.addEventListener("change", () => {
+
         // Si se desmarca la opción genérica durante un registro nuevo,
         // dejar los campos listos para ingresar los datos de identificación.
         if (
-            !gco_elementos.esGenerico.checked &&
-            gco_clienteEnEdicion === null &&
-            gco_elementos.nombre.value === "Consumidor final"
+            !elementos.esGenerico.checked &&
+            clienteEnEdicion === null &&
+            elementos.nombre.value === "Consumidor final"
         ) {
-            gco_elementos.nombre.value = "";
+
+            elementos.nombre.value = "";
+
         }
 
-        gco_actualizarCamposDocumentoCliente();
+        actualizarCamposDocumentoCliente();
+
     });
 
-    // ========================================
-    // RESTABLECER EL FORMULARIO
-    // ========================================
+    //* ========================================
+    //* RESTABLECER EL FORMULARIO
+    //* ========================================
 
-    function gco_restaurarFormularioCliente() {
-        gco_elementos.formulario.reset();
+    function restaurarFormularioCliente() {
 
-        gco_clienteEnEdicion = null;
-        gco_clienteGenericoEnEdicion = false;
-        gco_guardadoEnCurso = false;
+        elementos.formulario.reset();
 
-        gco_elementos.tituloModal.textContent = "Nuevo cliente";
-        gco_elementos.btnGuardar.textContent = "Guardar cliente";
-        gco_elementos.btnGuardar.disabled = false;
+        clienteEnEdicion = null;
 
-        gco_actualizarCamposDocumentoCliente();
+        clienteGenericoEnEdicion = false;
+
+        guardadoEnCurso = false;
+
+        elementos.tituloModal.textContent = "Nuevo cliente";
+
+        elementos.btnGuardar.textContent = "Guardar cliente";
+
+        elementos.btnGuardar.disabled = false;
+
+        actualizarCamposDocumentoCliente();
+
     }
 
     // Preparar el modal para crear un cliente nuevo.
-    gco_elementos.btnNuevoCliente.addEventListener("click", () => {
-        gco_restaurarFormularioCliente();
+    elementos.btnNuevoCliente.addEventListener("click", () => {
+
+        restaurarFormularioCliente();
+
     });
 
+
     // Limpiar el estado al cerrar el modal mediante Cancelar, X o Escape.
-    gco_elementos.modal.addEventListener(
+    elementos.modal.addEventListener(
         "hidden.bs.modal",
-        gco_restaurarFormularioCliente,
+        restaurarFormularioCliente,
     );
 
-    // ========================================
-    // VALIDAR DOCUMENTO DUPLICADO
-    // ========================================
+    //* ========================================
+    //* VALIDAR DOCUMENTO DUPLICADO
+    //* ========================================
 
-    function gco_existeDocumentoDuplicado(
-        gco_tipoDocumento,
-        gco_numeroDocumento,
+    function existeDocumentoDuplicado(
+        tipoDocumento,
+        numeroDocumento,
     ) {
-        return gco_clientes.some((gco_cliente) => {
-            const gco_idRegistrado =
-                gco_cliente.cliente_id ?? gco_cliente.id;
 
-            const gco_mismoTipo =
-                String(gco_cliente.tipo_documento ?? "")
+        return clientes.some((cliente) => {
+
+            const idRegistrado =
+                cliente.cliente_id ?? cliente.id;
+
+            const mismoTipo =
+                String(cliente.tipo_documento ?? "")
                     .trim()
-                    .toUpperCase() === gco_tipoDocumento;
+                    .toUpperCase() === tipoDocumento;
 
-            const gco_mismoNumero =
-                String(gco_cliente.numero_documento ?? "").trim() ===
-                gco_numeroDocumento;
+            const mismoNumero =
+                String(cliente.numero_documento ?? "").trim() ===
+                numeroDocumento;
 
-            const gco_esOtroCliente =
-                String(gco_idRegistrado) !== String(gco_clienteEnEdicion);
+            const esOtroCliente =
+                String(idRegistrado) !== String(clienteEnEdicion);
 
             return (
-                gco_cliente.es_generico !== true &&
-                gco_mismoTipo &&
-                gco_mismoNumero &&
-                gco_esOtroCliente
+                cliente.es_generico !== true &&
+                mismoTipo &&
+                mismoNumero &&
+                esOtroCliente
             );
+
         });
+
     }
 
-    // ========================================
-    // REGISTRAR O ACTUALIZAR CLIENTES
-    // ========================================
+    //* ========================================
+    //* REGISTRAR O ACTUALIZAR CLIENTES
+    //* ========================================
 
-    gco_elementos.formulario.addEventListener(
+    elementos.formulario.addEventListener(
         "submit",
-        async (gco_evento) => {
-            gco_evento.preventDefault();
+        async (evento) => {
 
-            if (gco_guardadoEnCurso) {
+            evento.preventDefault();
+
+            if (guardadoEnCurso) {
                 return;
             }
 
-            const gco_esEdicion = gco_clienteEnEdicion !== null;
-            const gco_idEnEdicion = gco_clienteEnEdicion;
+            const esEdicion = clienteEnEdicion !== null;
+
+            const idEnEdicion = clienteEnEdicion;
+
 
             // Protección adicional del cliente genérico.
-            if (gco_esEdicion && gco_clienteGenericoEnEdicion) {
+            if (esEdicion && clienteGenericoEnEdicion) {
+
                 window.alert("El cliente genérico está protegido.");
+
                 return;
+
             }
 
             // Validar los campos habilitados del formulario.
-            if (!gco_elementos.formulario.checkValidity()) {
-                gco_elementos.formulario.reportValidity();
+            if (!elementos.formulario.checkValidity()) {
+
+                elementos.formulario.reportValidity();
+
                 return;
+
             }
 
-            const gco_esGenerico = gco_elementos.esGenerico.checked;
 
-            const gco_nombreValidado = gco_elementos.nombre.value.trim();
-            const gco_tipoDocumentoValidado = gco_elementos.tipoDocumento.value
+            const esGenerico = elementos.esGenerico.checked;
+
+            const nombreValidado = elementos.nombre.value.trim();
+
+            const tipoDocumentoValidado = elementos.tipoDocumento.value
                 .trim()
                 .toUpperCase();
-            const gco_documentoValidado =
-                gco_elementos.numeroDocumento.value.trim();
+
+            const documentoValidado =
+                elementos.numeroDocumento.value.trim();
+
 
             // Validar nombre y documento de clientes identificados.
-            if (!gco_esGenerico && !gco_nombreValidado) {
+            if (!esGenerico && !nombreValidado) {
+
                 window.alert("Ingresa un nombre o razón social válido.");
-                gco_elementos.nombre.focus();
+
+                elementos.nombre.focus();
+
                 return;
+
             }
 
-            if (!gco_esGenerico && !gco_documentoValidado) {
+            if (!esGenerico && !documentoValidado) {
+
                 window.alert("Ingresa un número de documento válido.");
-                gco_elementos.numeroDocumento.focus();
+
+                elementos.numeroDocumento.focus();
+
                 return;
+
             }
+
 
             // Impedir la creación de más de un cliente genérico.
-            const gco_genericoDuplicado =
-                gco_esGenerico &&
-                gco_clientes.some((gco_cliente) => {
-                    const gco_idRegistrado =
-                        gco_cliente.cliente_id ?? gco_cliente.id;
+            const genericoDuplicado =
+                esGenerico &&
+                clientes.some((cliente) => {
+
+                    const idRegistrado =
+                        cliente.cliente_id ?? cliente.id;
 
                     return (
-                        gco_cliente.es_generico === true &&
-                        String(gco_idRegistrado) !== String(gco_idEnEdicion)
+                        cliente.es_generico === true &&
+                        String(idRegistrado) !== String(idEnEdicion)
                     );
+
                 });
 
-            if (gco_genericoDuplicado) {
+            if (genericoDuplicado) {
+
                 window.alert("Ya existe un cliente genérico registrado.");
+
                 return;
+
             }
 
             // Evitar documentos duplicados, incluidos los de clientes inactivos.
             if (
-                !gco_esGenerico &&
-                gco_existeDocumentoDuplicado(
-                    gco_tipoDocumentoValidado,
-                    gco_documentoValidado,
+                !esGenerico &&
+                existeDocumentoDuplicado(
+                    tipoDocumentoValidado,
+                    documentoValidado,
                 )
             ) {
+
                 window.alert(
                     "Ya existe un cliente registrado con este tipo y número de documento.",
                 );
-                gco_elementos.numeroDocumento.focus();
+
+                elementos.numeroDocumento.focus();
+
                 return;
+
             }
 
             // Recuperar el registro original cuando se está editando.
-            let gco_clienteOriginal = null;
-            let gco_indiceCliente = -1;
+            let clienteOriginal = null;
 
-            if (gco_esEdicion) {
-                gco_indiceCliente = gco_clientes.findIndex((gco_cliente) => {
-                    const gco_idRegistrado =
-                        gco_cliente.cliente_id ?? gco_cliente.id;
+            let indiceCliente = -1;
 
-                    return String(gco_idRegistrado) === String(gco_idEnEdicion);
+
+            if (esEdicion) {
+
+                indiceCliente = clientes.findIndex((cliente) => {
+
+                    const idRegistrado =
+                        cliente.cliente_id ?? cliente.id;
+
+                    return String(idRegistrado) === String(idEnEdicion);
+
                 });
 
-                if (gco_indiceCliente === -1) {
+                if (indiceCliente === -1) {
+
                     window.alert(
                         "No se encontró el cliente que deseas actualizar. Recarga la página e inténtalo nuevamente.",
                     );
+
                     return;
+
                 }
 
-                gco_clienteOriginal = gco_clientes[gco_indiceCliente];
+
+                clienteOriginal = clientes[indiceCliente];
+
 
                 // Verificar nuevamente que el registro original no sea genérico.
-                if (gco_clienteOriginal.es_generico === true) {
+                if (clienteOriginal.es_generico === true) {
+
                     window.alert("El cliente genérico está protegido.");
+
                     return;
+
                 }
+
             }
 
             // Construir el objeto con los campos del modelo de clientes.
-            const gco_datosCliente = {
-                negocio_id: gco_clienteOriginal?.negocio_id ?? 1,
-                tipo_documento: gco_esGenerico
+            const datosCliente = {
+
+                negocio_id: clienteOriginal?.negocio_id ?? 1,
+
+                tipo_documento: esGenerico
                     ? null
-                    : gco_tipoDocumentoValidado,
-                numero_documento: gco_esGenerico
+                    : tipoDocumentoValidado,
+
+                numero_documento: esGenerico
                     ? null
-                    : gco_documentoValidado,
-                nombre_razon_social: gco_esGenerico
+                    : documentoValidado,
+
+                nombre_razon_social: esGenerico
                     ? "Consumidor final"
-                    : gco_nombreValidado,
-                activo: gco_esGenerico ? true : gco_elementos.activo.checked,
-                es_generico: gco_esGenerico,
+                    : nombreValidado,
+
+                activo: esGenerico
+                    ? true
+                    : elementos.activo.checked,
+
+                es_generico: esGenerico,
+
             };
 
-            gco_guardadoEnCurso = true;
-            gco_elementos.btnGuardar.disabled = true;
-            gco_elementos.btnGuardar.textContent = gco_esEdicion
+            guardadoEnCurso = true;
+
+            elementos.btnGuardar.disabled = true;
+
+            elementos.btnGuardar.textContent = esEdicion
                 ? "Guardando cambios..."
                 : "Guardando...";
 
             try {
-                let gco_clienteGuardado;
 
-                if (gco_esEdicion) {
+                let clienteGuardado;
+
+
+                if (esEdicion) {
+
                     // PUT: actualizar el registro existente.
-                    const gco_urlCliente =
-                        `${gco_apiClientes}/${encodeURIComponent(gco_idEnEdicion)}`;
+                    const urlCliente =
+                        `${apiClientes}/${encodeURIComponent(idEnEdicion)}`;
 
-                    gco_clienteGuardado = await gco_actualizarAPI(
-                        gco_urlCliente,
-                        gco_datosCliente,
+                    clienteGuardado = await actualizarAPI(
+                        urlCliente,
+                        datosCliente,
                     );
 
                     // Conservar atributos originales y aplicar los datos devueltos.
-                    gco_clientes[gco_indiceCliente] = {
-                        ...gco_clienteOriginal,
-                        ...gco_datosCliente,
-                        ...gco_clienteGuardado,
+                    clientes[indiceCliente] = {
+
+                        ...clienteOriginal,
+
+                        ...datosCliente,
+
+                        ...clienteGuardado,
+
                     };
+
+
                 } else {
+
                     // POST: crear un registro nuevo.
-                    gco_clienteGuardado = await gco_crearAPI(
-                        gco_apiClientes,
-                        gco_datosCliente,
+                    clienteGuardado = await crearAPI(
+                        apiClientes,
+                        datosCliente,
                     );
 
-                    gco_clientes.push({
-                        ...gco_datosCliente,
-                        ...gco_clienteGuardado,
+                    clientes.push({
+
+                        ...datosCliente,
+
+                        ...clienteGuardado,
+
                     });
+
                 }
 
                 // Actualizar únicamente la tabla y los indicadores de Clientes.
-                gco_actualizarInterfazClientes();
+                actualizarInterfazClientes();
+
 
                 console.log(
-                    gco_esEdicion
+                    esEdicion
                         ? "Cliente actualizado correctamente:"
                         : "Cliente registrado correctamente:",
-                    gco_clienteGuardado,
+                    clienteGuardado,
                 );
 
                 // Liberar la operación y limpiar el estado antes de cerrar el modal.
-                gco_guardadoEnCurso = false;
-                gco_clienteEnEdicion = null;
-                gco_clienteGenericoEnEdicion = false;
+                guardadoEnCurso = false;
 
-                gco_modalCliente.hide();
+                clienteEnEdicion = null;
+
+                clienteGenericoEnEdicion = false;
+
+                modalCliente.hide();
+
 
                 window.alert(
-                    gco_esEdicion
+                    esEdicion
                         ? "Cliente actualizado correctamente."
                         : "Cliente registrado correctamente.",
                 );
-            } catch (gco_error) {
+
+            } catch (error) {
+
                 console.error(
-                    gco_esEdicion
+                    esEdicion
                         ? "No fue posible actualizar el cliente:"
                         : "No fue posible registrar el cliente:",
-                    gco_error,
+                    error,
                 );
 
                 window.alert(
-                    gco_esEdicion
+                    esEdicion
                         ? "No fue posible actualizar el cliente. Verifica la conexión e inténtalo nuevamente."
                         : "No fue posible registrar el cliente. Verifica la conexión e inténtalo nuevamente.",
                 );
+
             } finally {
-                gco_guardadoEnCurso = false;
-                gco_elementos.btnGuardar.disabled = false;
-                gco_elementos.btnGuardar.textContent =
-                    gco_clienteEnEdicion !== null
+
+                guardadoEnCurso = false;
+
+                elementos.btnGuardar.disabled = false;
+
+                elementos.btnGuardar.textContent =
+                    clienteEnEdicion !== null
                         ? "Guardar cambios"
                         : "Guardar cliente";
+
             }
+
         },
     );
 
-    // ========================================
-    // EDITAR Y CAMBIAR ESTADO DE CLIENTES
-    // ========================================
+    //* ========================================
+    //* EDITAR Y CAMBIAR ESTADO DE CLIENTES
+    //* ========================================
 
-    gco_elementos.tabla.addEventListener("click", async (gco_evento) => {
-        const gco_objetivo = gco_evento.target;
+    elementos.tabla.addEventListener("click", async (evento) => {
 
-        if (!(gco_objetivo instanceof Element)) {
+        const objetivo = evento.target;
+
+        if (!(objetivo instanceof Element)) {
             return;
         }
 
-        const gco_botonAccion = gco_objetivo.closest("[data-accion]");
+        const botonAccion = objetivo.closest("[data-accion]");
 
         if (
-            !gco_botonAccion ||
-            !gco_elementos.tabla.contains(gco_botonAccion)
+            !botonAccion ||
+            !elementos.tabla.contains(botonAccion)
         ) {
             return;
         }
 
-        const gco_accion = gco_botonAccion.dataset.accion;
-        const gco_clienteId = gco_botonAccion.dataset.clienteId;
+        const accion = botonAccion.dataset.accion;
 
-        const gco_clienteSeleccionado = gco_clientes.find((gco_cliente) => {
-            const gco_idRegistrado =
-                gco_cliente.cliente_id ?? gco_cliente.id;
+        const clienteId = botonAccion.dataset.clienteId;
 
-            return String(gco_idRegistrado) === String(gco_clienteId);
+
+        const clienteSeleccionado = clientes.find((cliente) => {
+
+            const idRegistrado =
+                cliente.cliente_id ?? cliente.id;
+
+            return String(idRegistrado) === String(clienteId);
+
         });
 
-        if (!gco_clienteSeleccionado) {
+        if (!clienteSeleccionado) {
+
             console.error("No se encontró el cliente seleccionado.");
+
             return;
+
         }
 
-        // ----------------------------------------
-        // EDITAR CLIENTE
-        // ----------------------------------------
+        //* ----------------------------------------
+        //* EDITAR CLIENTE
+        //* ----------------------------------------
 
-        if (gco_accion === "editar-cliente") {
+        if (accion === "editar-cliente") {
+
             // Protección del registro genérico.
-            if (gco_clienteSeleccionado.es_generico === true) {
+            if (clienteSeleccionado.es_generico === true) {
+
                 window.alert("El cliente genérico está protegido.");
+
                 return;
+
             }
 
-            gco_clienteEnEdicion =
-                gco_clienteSeleccionado.cliente_id ??
-                gco_clienteSeleccionado.id;
+            clienteEnEdicion =
+                clienteSeleccionado.cliente_id ??
+                clienteSeleccionado.id;
 
-            gco_clienteGenericoEnEdicion = false;
+            clienteGenericoEnEdicion = false;
 
-            gco_elementos.formulario.reset();
+            elementos.formulario.reset();
 
-            gco_elementos.nombre.value =
-                gco_clienteSeleccionado.nombre_razon_social ?? "";
-            gco_elementos.tipoDocumento.value =
-                gco_clienteSeleccionado.tipo_documento ?? "";
-            gco_elementos.numeroDocumento.value =
-                gco_clienteSeleccionado.numero_documento ?? "";
-            gco_elementos.esGenerico.checked = false;
-            gco_elementos.activo.checked =
-                gco_clienteSeleccionado.activo === true;
+            elementos.nombre.value =
+                clienteSeleccionado.nombre_razon_social ?? "";
 
-            gco_elementos.tituloModal.textContent = "Editar cliente";
-            gco_elementos.btnGuardar.textContent = "Guardar cambios";
-            gco_elementos.btnGuardar.disabled = false;
+            elementos.tipoDocumento.value =
+                clienteSeleccionado.tipo_documento ?? "";
 
-            gco_actualizarCamposDocumentoCliente();
-            gco_modalCliente.show();
+            elementos.numeroDocumento.value =
+                clienteSeleccionado.numero_documento ?? "";
+
+            elementos.esGenerico.checked = false;
+
+            elementos.activo.checked =
+                clienteSeleccionado.activo === true;
+
+
+            elementos.tituloModal.textContent = "Editar cliente";
+
+            elementos.btnGuardar.textContent = "Guardar cambios";
+
+            elementos.btnGuardar.disabled = false;
+
+
+            actualizarCamposDocumentoCliente();
+
+            modalCliente.show();
 
             return;
+
         }
 
-        // ----------------------------------------
-        // ACTIVAR O INACTIVAR CLIENTE
-        // ----------------------------------------
+        //* ----------------------------------------
+        //* ACTIVAR O INACTIVAR CLIENTE
+        //* ----------------------------------------
 
-        if (gco_accion === "cambiar-estado-cliente") {
+        if (accion === "cambiar-estado-cliente") {
+
             // El cliente genérico nunca puede cambiar de estado.
-            if (gco_clienteSeleccionado.es_generico === true) {
+            if (clienteSeleccionado.es_generico === true) {
+
                 console.warn("El cliente genérico está protegido.");
+
                 return;
+
             }
 
-            const gco_nuevoEstado =
-                gco_clienteSeleccionado.activo !== true;
+            const nuevoEstado =
+                clienteSeleccionado.activo !== true;
 
-            const gco_accionEstado = gco_nuevoEstado
+            const accionEstado = nuevoEstado
                 ? "activar"
                 : "inactivar";
 
-            const gco_confirmacion = window.confirm(
-                `¿Confirmas que deseas ${gco_accionEstado} al cliente "${gco_clienteSeleccionado.nombre_razon_social}"?`,
+
+            const confirmacion = window.confirm(
+                `¿Confirmas que deseas ${accionEstado} al cliente "${clienteSeleccionado.nombre_razon_social}"?`,
             );
 
-            if (!gco_confirmacion) {
+            if (!confirmacion) {
                 return;
             }
 
             // Evitar solicitudes simultáneas sobre el mismo botón.
-            gco_botonAccion.disabled = true;
-            gco_botonAccion.textContent = "Actualizando...";
+            botonAccion.disabled = true;
+
+            botonAccion.textContent = "Actualizando...";
 
             try {
-                const gco_urlCliente =
-                    `${gco_apiClientes}/${encodeURIComponent(gco_clienteId)}`;
+
+                const urlCliente =
+                    `${apiClientes}/${encodeURIComponent(clienteId)}`;
+
 
                 // PUT: actualizar solamente el estado lógico del cliente.
-                const gco_clienteActualizado = await gco_actualizarAPI(
-                    gco_urlCliente,
-                    { activo: gco_nuevoEstado },
+                const clienteActualizado = await actualizarAPI(
+                    urlCliente,
+                    { activo: nuevoEstado },
                 );
 
-                const gco_indiceCliente = gco_clientes.findIndex(
-                    (gco_cliente) => {
-                        const gco_idRegistrado =
-                            gco_cliente.cliente_id ?? gco_cliente.id;
+                const indiceCliente = clientes.findIndex(
+                    (cliente) => {
 
-                        return String(gco_idRegistrado) === String(gco_clienteId);
+                        const idRegistrado =
+                            cliente.cliente_id ?? cliente.id;
+
+                        return String(idRegistrado) === String(clienteId);
+
                     },
                 );
 
-                if (gco_indiceCliente === -1) {
+                if (indiceCliente === -1) {
+
                     throw new Error(
                         "El cliente actualizado no se encontró en la colección local.",
                     );
+
                 }
 
-                gco_clientes[gco_indiceCliente] = {
-                    ...gco_clientes[gco_indiceCliente],
-                    ...gco_clienteActualizado,
-                    activo: gco_nuevoEstado,
+                clientes[indiceCliente] = {
+
+                    ...clientes[indiceCliente],
+
+                    ...clienteActualizado,
+
+                    activo: nuevoEstado,
+
                 };
 
-                gco_actualizarInterfazClientes();
+                actualizarInterfazClientes();
 
                 console.log(
-                    `Cliente ${gco_accionEstado} correctamente:`,
-                    gco_clientes[gco_indiceCliente],
+                    `Cliente ${accionEstado} correctamente:`,
+                    clientes[indiceCliente],
                 );
-            } catch (gco_error) {
+
+            } catch (error) {
+
                 console.error(
                     "No fue posible actualizar el estado del cliente:",
-                    gco_error,
+                    error,
                 );
 
                 window.alert(
@@ -699,53 +891,79 @@ function gco_inicializarModuloClientes() {
                 );
 
                 // Volver a dibujar la tabla para restaurar el botón y su estado.
-                gco_aplicarFiltrosClientes();
+                aplicarFiltrosClientes();
+
             }
+
         }
+
     });
 
-    // ========================================
-    // CONSULTAR CLIENTES DESDE MOCKAPI
-    // ========================================
+    //* ========================================
+    //* CONSULTAR CLIENTES DESDE MOCKAPI
+    //* ========================================
 
-    async function gco_cargarClientes() {
+    async function cargarClientes() {
+
         try {
-            const gco_respuesta = await gco_consultarAPI(gco_apiClientes);
+
+            const respuesta = await consultarAPI(apiClientes);
 
             // Validación adicional del contrato de respuesta.
-            if (!Array.isArray(gco_respuesta)) {
-                throw new Error("La API no devolvió una lista de clientes válida.");
+            if (!Array.isArray(respuesta)) {
+
+                throw new Error(
+                    "La API no devolvió una lista de clientes válida.",
+                );
+
             }
 
-            gco_clientes = gco_respuesta;
-            gco_elementos.btnNuevoCliente.disabled = false;
-            gco_elementos.btnNuevoCliente.removeAttribute("title");
+            clientes = respuesta;
 
-            gco_actualizarInterfazClientes();
+            elementos.btnNuevoCliente.disabled = false;
+
+            elementos.btnNuevoCliente.removeAttribute("title");
+
+            actualizarInterfazClientes();
 
             console.log(
                 "Clientes consultados correctamente:",
-                gco_clientes.length,
+                clientes.length,
             );
-        } catch (gco_error) {
+
+        } catch (error) {
+
             console.error(
                 "No se pudieron cargar los clientes:",
-                gco_error,
+                error,
             );
 
-            gco_mostrarErrorTablaClientes();
-            gco_elementos.btnNuevoCliente.disabled = true;
-            gco_elementos.btnNuevoCliente.title =
+            mostrarErrorTablaClientes();
+
+            elementos.btnNuevoCliente.disabled = true;
+
+            elementos.btnNuevoCliente.title =
                 "No es posible registrar clientes hasta cargar la información existente.";
 
-            gco_elementos.indicadorTotal.textContent = "—";
-            gco_elementos.indicadorActivos.textContent = "—";
-            gco_elementos.indicadorInactivos.textContent = "—";
+            elementos.indicadorTotal.textContent = "—";
+
+            elementos.indicadorActivos.textContent = "—";
+
+            elementos.indicadorInactivos.textContent = "—";
+
         }
+
     }
 
+    //* ========================================
+    //* INICIAR EL MÓDULO DE CLIENTES
+    //* ========================================
+
     // Mostrar el estado inicial e iniciar la consulta.
-    gco_mostrarEstadoCarga();
-    gco_restaurarFormularioCliente();
-    gco_cargarClientes();
+    mostrarEstadoCarga();
+
+    restaurarFormularioCliente();
+
+    cargarClientes();
+
 }

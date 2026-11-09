@@ -1,365 +1,362 @@
-// ========================================
-// ESTADOS DE CARGA
-// ========================================
+//* ========================================
+//* ESTADOS DE CARGA
+//* ========================================
 
 // Mostrar carga de clientes
-export function gco_mostrarCargaClientes() {
+export function mostrarCargaClientes() {
 
-    const gco_selectorCliente = document.querySelector("#selectorCliente");
+    const selectorCliente = document.querySelector("#selectorCliente");
 
-    gco_selectorCliente.replaceChildren();
+    selectorCliente.replaceChildren();
 
-    const gco_opcion = document.createElement("option");
+    const opcion = document.createElement("option");
 
-    gco_opcion.value = "";
-    gco_opcion.textContent = "Cargando clientes...";
-    gco_opcion.disabled = true;
-    gco_opcion.selected = true;
+    opcion.value = "";
+    opcion.textContent = "Cargando clientes...";
+    opcion.disabled = true;
+    opcion.selected = true;
 
-    gco_selectorCliente.appendChild(gco_opcion);
+    selectorCliente.appendChild(opcion);
 
 }
 
 // Mostrar carga de productos
-export function gco_mostrarCargaProductos() {
+export function mostrarCargaProductos() {
 
-    const gco_listaProductos = document.querySelector("#listaProductos");
+    const listaProductos = document.querySelector("#listaProductos");
 
-    gco_listaProductos.textContent = "Cargando productos...";
+    listaProductos.textContent = "Cargando productos...";
 
 }
 
-// ========================================
-// MOSTRAR CLIENTES
-// ========================================
+//* ========================================
+//* MOSTRAR CLIENTES
+//* ========================================
 
-export function gco_mostrarClientes(gco_clientes) {
+export function mostrarClientes(clientes) {
 
-    const gco_selectorCliente = document.querySelector("#selectorCliente");
+    const selectorCliente = document.querySelector("#selectorCliente");
 
-    gco_selectorCliente.replaceChildren();
+    selectorCliente.replaceChildren();
 
     // Opción inicial
-    const gco_opcionInicial = document.createElement("option");
+    const opcionInicial = document.createElement("option");
 
-    gco_opcionInicial.value = "";
-    gco_opcionInicial.textContent = "Selecciona un cliente";
-    gco_opcionInicial.disabled = true;
-    gco_opcionInicial.selected = true;
+    opcionInicial.value = "";
+    opcionInicial.textContent = "Selecciona un cliente";
+    opcionInicial.disabled = true;
+    opcionInicial.selected = true;
 
-    gco_selectorCliente.appendChild(gco_opcionInicial);
+    selectorCliente.appendChild(opcionInicial);
 
     // Verificar disponibilidad de clientes
-    if (gco_clientes.length === 0) {
+    if (clientes.length === 0) {
 
-        const gco_opcionVacia = document.createElement("option");
+        const opcionVacia = document.createElement("option");
 
-        gco_opcionVacia.textContent = "No hay clientes activos disponibles";
-        gco_opcionVacia.disabled = true;
+        opcionVacia.textContent = "No hay clientes activos disponibles";
+        opcionVacia.disabled = true;
 
-        gco_selectorCliente.appendChild(gco_opcionVacia);
+        selectorCliente.appendChild(opcionVacia);
 
         return;
 
     }
 
     // Recorrer clientes y crear opciones
-    gco_clientes.forEach((gco_cliente) => {
+    clientes.forEach((cliente) => {
 
-        const gco_opcion = document.createElement("option");
+        const opcion = document.createElement("option");
 
-        gco_opcion.value = gco_cliente.cliente_id;
+        opcion.value = cliente.cliente_id;
 
-        const gco_nombreCliente =
-            gco_cliente.nombre_razon_social ?? "Cliente sin nombre";
+        const nombreCliente =
+            cliente.nombre_razon_social ?? "Cliente sin nombre";
 
-        const gco_numeroDocumento =
-            gco_cliente.numero_documento ?? "(Cliente genérico)";
+        const numeroDocumento =
+            cliente.numero_documento ?? "(Cliente genérico)";
 
-        gco_opcion.textContent =
-            `${gco_nombreCliente} - ${gco_numeroDocumento}`;
+        opcion.textContent =
+            `${nombreCliente} - ${numeroDocumento}`;
 
-        gco_selectorCliente.appendChild(gco_opcion);
+        selectorCliente.appendChild(opcion);
 
     });
 
 }
 
-// ========================================
-// MOSTRAR TABLA DE CLIENTES
-// ========================================
+//* ========================================
+//* MOSTRAR TABLA DE CLIENTES
+//* ========================================
 
-export function gco_mostrarTablaClientes(gco_clientes) {
-    const gco_tablaClientes = document.querySelector("#tablaClientes");
+export function mostrarTablaClientes(clientes) {
+    const tablaClientes = document.querySelector("#tablaClientes");
 
     // Limpiar tabla antes de actualizarla
-    gco_tablaClientes.replaceChildren();
+    tablaClientes.replaceChildren();
 
     // Verificar disponibilidad de clientes
-    if (!Array.isArray(gco_clientes) || gco_clientes.length === 0) {
-        const gco_filaVacia = document.createElement("tr");
-        const gco_celdaVacia = document.createElement("td");
+    if (!Array.isArray(clientes) || clientes.length === 0) {
+        const filaVacia = document.createElement("tr");
+        const celdaVacia = document.createElement("td");
 
-        gco_celdaVacia.colSpan = 6;
-        gco_celdaVacia.className = "empty-table";
-        gco_celdaVacia.textContent = "No se encontraron clientes.";
+        celdaVacia.colSpan = 6;
+        celdaVacia.className = "empty-table";
+        celdaVacia.textContent = "No se encontraron clientes.";
 
-        gco_filaVacia.appendChild(gco_celdaVacia);
-        gco_tablaClientes.appendChild(gco_filaVacia);
+        filaVacia.appendChild(celdaVacia);
+        tablaClientes.appendChild(filaVacia);
 
         return;
     }
 
     // Recorrer clientes y construir las filas
-    gco_clientes.forEach((gco_cliente) => {
-        const gco_fila = document.createElement("tr");
+    clientes.forEach((cliente) => {
+        const fila = document.createElement("tr");
 
         // Identificador del cliente
-        const gco_idCliente =
-            gco_cliente.cliente_id ?? gco_cliente.id ?? "—";
-        const gco_celdaId = document.createElement("td");
-        gco_celdaId.textContent = gco_idCliente;
+        const idCliente =
+            cliente.cliente_id ?? cliente.id ?? "—";
+        const celdaId = document.createElement("td");
+        celdaId.textContent = idCliente;
 
         // Nombre o razón social
-        const gco_celdaNombre = document.createElement("td");
-        gco_celdaNombre.textContent =
-            gco_cliente.nombre_razon_social ?? "Cliente sin nombre";
+        const celdaNombre = document.createElement("td");
+        celdaNombre.textContent =
+            cliente.nombre_razon_social ?? "Cliente sin nombre";
 
         // Documento
-        const gco_celdaDocumento = document.createElement("td");
-        const gco_documento = gco_cliente.es_generico
+        const celdaDocumento = document.createElement("td");
+        const documento = cliente.es_generico
             ? "No aplica"
-            : [gco_cliente.tipo_documento, gco_cliente.numero_documento]
+            : [cliente.tipo_documento, cliente.numero_documento]
                 .filter(Boolean)
                 .join(" ") || "Sin documento";
-        gco_celdaDocumento.textContent = gco_documento;
+        celdaDocumento.textContent = documento;
 
         // Tipo de cliente
-        const gco_celdaTipo = document.createElement("td");
-        gco_celdaTipo.textContent = gco_cliente.es_generico
+        const celdaTipo = document.createElement("td");
+        celdaTipo.textContent = cliente.es_generico
             ? "Genérico"
             : "Identificado";
 
         // Estado del cliente
-        const gco_celdaEstado = document.createElement("td");
-        const gco_etiquetaEstado = document.createElement("span");
+        const celdaEstado = document.createElement("td");
+        const etiquetaEstado = document.createElement("span");
 
-        if (gco_cliente.activo === true) {
-            gco_etiquetaEstado.className = "badge text-bg-success";
-            gco_etiquetaEstado.textContent = "Activo";
-        } else if (gco_cliente.activo === false) {
-            gco_etiquetaEstado.className = "badge text-bg-secondary";
-            gco_etiquetaEstado.textContent = "Inactivo";
+        if (cliente.activo === true) {
+            etiquetaEstado.className = "badge text-bg-success";
+            etiquetaEstado.textContent = "Activo";
+        } else if (cliente.activo === false) {
+            etiquetaEstado.className = "badge text-bg-secondary";
+            etiquetaEstado.textContent = "Inactivo";
         } else {
-            gco_etiquetaEstado.className = "badge text-bg-warning";
-            gco_etiquetaEstado.textContent = "Sin estado";
+            etiquetaEstado.className = "badge text-bg-warning";
+            etiquetaEstado.textContent = "Sin estado";
         }
 
-        gco_celdaEstado.appendChild(gco_etiquetaEstado);
+        celdaEstado.appendChild(etiquetaEstado);
 
         // Acciones disponibles para el cliente
-        const gco_celdaAcciones = document.createElement("td");
+        const celdaAcciones = document.createElement("td");
 
-        gco_celdaAcciones.className = "text-nowrap";
+        celdaAcciones.className = "text-nowrap";
 
         // Botón editar cliente
-        const gco_botonEditar = document.createElement("button");
+        const botonEditar = document.createElement("button");
 
-        gco_botonEditar.type = "button";
-        gco_botonEditar.className = "btn btn-sm btn-outline-primary me-1";
-        gco_botonEditar.textContent = "Editar";
-        gco_botonEditar.dataset.accion = "editar-cliente";
-        gco_botonEditar.dataset.clienteId = gco_idCliente;
+        botonEditar.type = "button";
+        botonEditar.className = "btn btn-sm btn-outline-primary me-1";
+        botonEditar.textContent = "Editar";
+        botonEditar.dataset.accion = "editar-cliente";
+        botonEditar.dataset.clienteId = idCliente;
 
         // Botón activar o inactivar cliente
-        const gco_botonEstado = document.createElement("button");
+        const botonEstado = document.createElement("button");
 
-        gco_botonEstado.type = "button";
+        botonEstado.type = "button";
 
-        gco_botonEstado.className = gco_cliente.activo
+        botonEstado.className = cliente.activo
             ? "btn btn-sm btn-outline-danger"
             : "btn btn-sm btn-outline-success";
 
-        gco_botonEstado.textContent = gco_cliente.activo
+        botonEstado.textContent = cliente.activo
             ? "Inactivar"
             : "Activar";
 
         // Proteger el cliente genérico
-        if (gco_cliente.es_generico === true) {
+        if (cliente.es_generico === true) {
 
-            gco_botonEstado.disabled = true;
+            botonEstado.disabled = true;
 
-            gco_botonEstado.className =
+            botonEstado.className =
                 "btn btn-sm btn-outline-secondary";
 
-            gco_botonEstado.textContent = "Protegido";
+            botonEstado.textContent = "Protegido";
 
-            gco_botonEstado.title =
+            botonEstado.title =
                 "El cliente genérico no se puede inactivar.";
 
         }
 
-        gco_botonEstado.dataset.accion = "cambiar-estado-cliente";
-        gco_botonEstado.dataset.clienteId = gco_idCliente;
+        botonEstado.dataset.accion = "cambiar-estado-cliente";
+        botonEstado.dataset.clienteId = idCliente;
 
         // Incorporar acciones según el tipo de cliente
-        if (gco_cliente.es_generico === true) {
+        if (cliente.es_generico === true) {
 
             // El cliente genérico solamente muestra su protección
-            gco_celdaAcciones.append(gco_botonEstado);
+            celdaAcciones.append(botonEstado);
 
         } else {
 
             // Los demás clientes muestran sus acciones habituales
-            gco_celdaAcciones.append(
-                gco_botonEditar,
-                gco_botonEstado
+            celdaAcciones.append(
+                botonEditar,
+                botonEstado
             );
 
         }
         // Incorporar celdas a la fila
-        gco_fila.append(
-            gco_celdaId,
-            gco_celdaNombre,
-            gco_celdaDocumento,
-            gco_celdaTipo,
-            gco_celdaEstado,
-            gco_celdaAcciones,
+        fila.append(
+            celdaId,
+            celdaNombre,
+            celdaDocumento,
+            celdaTipo,
+            celdaEstado,
+            celdaAcciones,
         );
 
         // Incorporar fila a la tabla
-        gco_tablaClientes.appendChild(gco_fila);
+        tablaClientes.appendChild(fila);
     });
 }
 
+//* ========================================
+//* ACTUALIZAR INDICADORES DE CLIENTES
+//* ========================================
 
-// ========================================
-// ACTUALIZAR INDICADORES DE CLIENTES
-// ========================================
-
-export function gco_actualizarIndicadoresClientes(gco_clientes) {
-    const gco_totalClientes = document.querySelector("#totalClientesAdmin");
-    const gco_clientesActivos = document.querySelector("#clientesActivosAdmin");
-    const gco_clientesInactivos = document.querySelector("#clientesInactivosAdmin");
+export function actualizarIndicadoresClientes(clientes) {
+    const totalClientes = document.querySelector("#totalClientesAdmin");
+    const clientesActivos = document.querySelector("#clientesActivosAdmin");
+    const clientesInactivos = document.querySelector("#clientesInactivosAdmin");
 
     // Calcular cantidades
-    const gco_total = gco_clientes.length;
-    const gco_activos = gco_clientes.filter(
-        (gco_cliente) => gco_cliente.activo === true,
+    const total = clientes.length;
+    const activos = clientes.filter(
+        (cliente) => cliente.activo === true,
     ).length;
-    const gco_inactivos = gco_clientes.filter(
-        (gco_cliente) => gco_cliente.activo === false,
+    const inactivos = clientes.filter(
+        (cliente) => cliente.activo === false,
     ).length;
 
     // Actualizar indicadores
-    gco_totalClientes.textContent = gco_total;
-    gco_clientesActivos.textContent = gco_activos;
-    gco_clientesInactivos.textContent = gco_inactivos;
+    totalClientes.textContent = total;
+    clientesActivos.textContent = activos;
+    clientesInactivos.textContent = inactivos;
 }
 
+//* ========================================
+//* MOSTRAR ERROR EN TABLA DE CLIENTES
+//* ========================================
 
-// ========================================
-// MOSTRAR ERROR EN TABLA DE CLIENTES
-// ========================================
+export function mostrarErrorTablaClientes() {
+    const tablaClientes = document.querySelector("#tablaClientes");
 
-export function gco_mostrarErrorTablaClientes() {
-    const gco_tablaClientes = document.querySelector("#tablaClientes");
+    tablaClientes.replaceChildren();
 
-    gco_tablaClientes.replaceChildren();
+    const filaError = document.createElement("tr");
+    const celdaError = document.createElement("td");
 
-    const gco_filaError = document.createElement("tr");
-    const gco_celdaError = document.createElement("td");
-
-    gco_celdaError.colSpan = 6;
-    gco_celdaError.className = "empty-table";
-    gco_celdaError.textContent =
+    celdaError.colSpan = 6;
+    celdaError.className = "empty-table";
+    celdaError.textContent =
         "No fue posible cargar los clientes. Intenta nuevamente.";
 
-    gco_filaError.appendChild(gco_celdaError);
-    gco_tablaClientes.appendChild(gco_filaError);
+    filaError.appendChild(celdaError);
+    tablaClientes.appendChild(filaError);
 }
 
+//* ========================================
+//* MOSTRAR PRODUCTOS
+//* ========================================
 
-// ========================================
-// MOSTRAR PRODUCTOS
-// ========================================
+export function mostrarProductos(productos) {
 
-export function gco_mostrarProductos(gco_productos) {
+    const listaProductos = document.querySelector("#listaProductos");
 
-    const gco_listaProductos = document.querySelector("#listaProductos");
-
-    gco_listaProductos.replaceChildren();
+    listaProductos.replaceChildren();
 
     // Verificar disponibilidad de productos
-    if (gco_productos.length === 0) {
+    if (productos.length === 0) {
 
-        const gco_mensaje = document.createElement("p");
+        const mensaje = document.createElement("p");
 
-        gco_mensaje.className = "empty-state";
-        gco_mensaje.textContent = "No se encontraron productos.";
+        mensaje.className = "empty-state";
+        mensaje.textContent = "No se encontraron productos.";
 
-        gco_listaProductos.appendChild(gco_mensaje);
+        listaProductos.appendChild(mensaje);
 
         return;
 
     }
 
     // Formatear valores monetarios
-    const gco_formatoMoneda = new Intl.NumberFormat("es-CO", {
+    const formatoMoneda = new Intl.NumberFormat("es-CO", {
         style: "currency",
         currency: "COP",
         maximumFractionDigits: 0
     });
 
     // Recorrer productos y crear tarjetas
-    gco_productos.forEach((gco_producto) => {
+    productos.forEach((producto) => {
 
-        const gco_tarjeta = document.createElement("article");
+        const tarjeta = document.createElement("article");
 
-        gco_tarjeta.className = "product-item";
-        gco_tarjeta.dataset.productoId = gco_producto.producto_id;
+        tarjeta.className = "product-item";
+        tarjeta.dataset.productoId = producto.producto_id;
 
         // Nombre del producto
-        const gco_nombre = document.createElement("h4");
+        const nombre = document.createElement("h4");
 
-        gco_nombre.className = "product-name";
-        gco_nombre.textContent = gco_producto.nombre_producto;
+        nombre.className = "product-name";
+        nombre.textContent = producto.nombre_producto;
 
         // Código del producto
-        const gco_codigo = document.createElement("p");
+        const codigo = document.createElement("p");
 
-        gco_codigo.className = "product-code";
-        gco_codigo.textContent = `Código: ${gco_producto.codigo_producto}`;
+        codigo.className = "product-code";
+        codigo.textContent = `Código: ${producto.codigo_producto}`;
 
         // Precio del producto
-        const gco_precio = document.createElement("strong");
+        const precio = document.createElement("strong");
 
-        gco_precio.className = "product-price";
-        gco_precio.textContent = gco_formatoMoneda.format(
-            Number(gco_producto.precio_venta)
+        precio.className = "product-price";
+        precio.textContent = formatoMoneda.format(
+            Number(producto.precio_venta)
         );
 
         // Botón para agregar al carrito
-        const gco_botonAgregar = document.createElement("button");
+        const botonAgregar = document.createElement("button");
 
-        gco_botonAgregar.type = "button";
-        gco_botonAgregar.className = "btn-agregar-producto";
-        gco_botonAgregar.textContent = "Agregar al carrito";
+        botonAgregar.type = "button";
+        botonAgregar.className = "btn-agregar-producto";
+        botonAgregar.textContent = "Agregar al carrito";
 
         // Identificar la acción y el producto seleccionado
-        gco_botonAgregar.dataset.accion = "agregar-carrito";
-        gco_botonAgregar.dataset.productoId = gco_producto.producto_id;
+        botonAgregar.dataset.accion = "agregar-carrito";
+        botonAgregar.dataset.productoId = producto.producto_id;
 
         // Incorporar elementos a la tarjeta
-        gco_tarjeta.append(
-            gco_nombre,
-            gco_codigo,
-            gco_precio,
-            gco_botonAgregar
+        tarjeta.append(
+            nombre,
+            codigo,
+            precio,
+            botonAgregar
         );
 
         // Incorporar tarjeta al catálogo
-        gco_listaProductos.appendChild(gco_tarjeta);
+        listaProductos.appendChild(tarjeta);
 
     });
 
@@ -369,209 +366,206 @@ export function gco_mostrarProductos(gco_productos) {
 // ACTUALIZAR INDICADORES
 // ========================================
 
-export function gco_actualizarIndicadores(
-    gco_cantidadClientes,
-    gco_cantidadProductos
+export function actualizarIndicadores(
+    cantidadClientes,
+    cantidadProductos
 ) {
 
-    const gco_indicadorClientes =
+    const indicadorClientes =
         document.querySelector("#indicadorClientes");
 
-    const gco_indicadorProductos =
+    const indicadorProductos =
         document.querySelector("#indicadorProductos");
 
-    gco_indicadorClientes.textContent = gco_cantidadClientes;
+    indicadorClientes.textContent = cantidadClientes;
 
-    gco_indicadorProductos.textContent = gco_cantidadProductos;
-
-}
-
-
-// ========================================
-// MOSTRAR ERRORES
-// ========================================
-
-export function gco_mostrarErrorClientes() {
-
-    const gco_selectorCliente = document.querySelector("#selectorCliente");
-
-    gco_selectorCliente.replaceChildren();
-
-    const gco_opcionError = document.createElement("option");
-
-    gco_opcionError.textContent = "Error al cargar los clientes";
-    gco_opcionError.disabled = true;
-
-    gco_selectorCliente.appendChild(gco_opcionError);
+    indicadorProductos.textContent = cantidadProductos;
 
 }
 
+//* ========================================
+//* MOSTRAR ERRORES
+//* ========================================
 
-export function gco_mostrarErrorProductos() {
+export function mostrarErrorClientes() {
 
-    const gco_listaProductos = document.querySelector("#listaProductos");
+    const selectorCliente = document.querySelector("#selectorCliente");
 
-    gco_listaProductos.replaceChildren();
+    selectorCliente.replaceChildren();
 
-    const gco_mensaje = document.createElement("p");
+    const opcionError = document.createElement("option");
 
-    gco_mensaje.className = "empty-state";
-    gco_mensaje.textContent = "No fue posible cargar los productos. Intenta nuevamente.";
+    opcionError.textContent = "Error al cargar los clientes";
+    opcionError.disabled = true;
 
-    gco_listaProductos.appendChild(gco_mensaje);
+    selectorCliente.appendChild(opcionError);
 
 }
 
+export function mostrarErrorProductos() {
 
-// ========================================
-// MOSTRAR CARRITO DE VENTA
-// ========================================
+    const listaProductos = document.querySelector("#listaProductos");
 
-export function gco_mostrarCarrito(gco_carrito) {
+    listaProductos.replaceChildren();
+
+    const mensaje = document.createElement("p");
+
+    mensaje.className = "empty-state";
+    mensaje.textContent = "No fue posible cargar los productos. Intenta nuevamente.";
+
+    listaProductos.appendChild(mensaje);
+
+}
+
+//* ========================================
+//* MOSTRAR CARRITO DE VENTA
+//* ========================================
+
+export function mostrarCarrito(carrito) {
 
     // Seleccionar elementos del carrito
-    const gco_listaCarrito = document.querySelector("#listaCarrito");
-    const gco_carritoVacio = document.querySelector("#carritoVacio");
+    const listaCarrito = document.querySelector("#listaCarrito");
+    const carritoVacio = document.querySelector("#carritoVacio");
 
     // Seleccionar elementos del resumen
-    const gco_elementoSubtotal = document.querySelector("#subtotalVenta");
-    const gco_elementoDescuento = document.querySelector("#descuentoVenta");
-    const gco_elementoImpuestos = document.querySelector("#impuestosVenta");
-    const gco_elementoTotal = document.querySelector("#totalVenta");
+    const elementoSubtotal = document.querySelector("#subtotalVenta");
+    const elementoDescuento = document.querySelector("#descuentoVenta");
+    const elementoImpuestos = document.querySelector("#impuestosVenta");
+    const elementoTotal = document.querySelector("#totalVenta");
 
     // Formatear valores monetarios
-    const gco_formatoMoneda = new Intl.NumberFormat("es-CO", {
+    const formatoMoneda = new Intl.NumberFormat("es-CO", {
         style: "currency",
         currency: "COP",
         maximumFractionDigits: 0
     });
 
     // Limpiar lista antes de actualizarla
-    gco_listaCarrito.replaceChildren();
+    listaCarrito.replaceChildren();
 
     // Controlar mensaje de carrito vacío
-    gco_carritoVacio.hidden = gco_carrito.length > 0;
+    carritoVacio.hidden = carrito.length > 0;
 
     // Inicializar subtotal general
-    let gco_subtotalGeneral = 0;
+    let subtotalGeneral = 0;
 
     // Recorrer productos del carrito
-    gco_carrito.forEach((gco_producto) => {
+    carrito.forEach((producto) => {
 
-        const gco_precioUnitario = Number(gco_producto.precio_unitario);
-        const gco_cantidad = Number(gco_producto.cantidad);
+        const precioUnitario = Number(producto.precio_unitario);
+        const cantidad = Number(producto.cantidad);
 
         // Calcular subtotal del producto
-        const gco_subtotalProducto = gco_precioUnitario * gco_cantidad;
+        const subtotalProducto = precioUnitario * cantidad;
 
-        gco_subtotalGeneral += gco_subtotalProducto;
+        subtotalGeneral += subtotalProducto;
 
         // Crear elemento del producto
-        const gco_item = document.createElement("li");
-        gco_item.className = "cart-item";
+        const item = document.createElement("li");
+        item.className = "cart-item";
 
         // Encabezado del producto
-        const gco_encabezado = document.createElement("div");
-        gco_encabezado.className = "cart-item-header";
+        const encabezado = document.createElement("div");
+        encabezado.className = "cart-item-header";
 
         // Nombre
-        const gco_nombre = document.createElement("strong");
-        gco_nombre.className = "cart-item-name";
-        gco_nombre.textContent = gco_producto.nombre_producto;
+        const nombre = document.createElement("strong");
+        nombre.className = "cart-item-name";
+        nombre.textContent = producto.nombre_producto;
 
         // Subtotal
-        const gco_subtotal = document.createElement("strong");
-        gco_subtotal.className = "cart-item-subtotal";
-        gco_subtotal.textContent = gco_formatoMoneda.format(
-            gco_subtotalProducto
+        const subtotal = document.createElement("strong");
+        subtotal.className = "cart-item-subtotal";
+        subtotal.textContent = formatoMoneda.format(
+            subtotalProducto
         );
 
-        gco_encabezado.append(gco_nombre, gco_subtotal);
+        encabezado.append(nombre, subtotal);
 
         // Información del producto
-        const gco_detalles = document.createElement("p");
-        gco_detalles.className = "cart-item-details";
+        const detalles = document.createElement("p");
+        detalles.className = "cart-item-details";
 
-        gco_detalles.textContent =
-            `Precio unitario: ${gco_formatoMoneda.format(gco_precioUnitario)}`;
+        detalles.textContent =
+            `Precio unitario: ${formatoMoneda.format(precioUnitario)}`;
 
         // Controles de cantidad
-        const gco_controles = document.createElement("div");
-        gco_controles.className = "cart-item-controls";
+        const controles = document.createElement("div");
+        controles.className = "cart-item-controls";
 
         // Botón disminuir
-        const gco_botonDisminuir = document.createElement("button");
-        gco_botonDisminuir.type = "button";
-        gco_botonDisminuir.className = "btn-cantidad";
-        gco_botonDisminuir.textContent = "−";
-        gco_botonDisminuir.dataset.accion = "disminuir-cantidad";
-        gco_botonDisminuir.dataset.productoId = gco_producto.producto_id;
-        gco_botonDisminuir.setAttribute("aria-label", "Disminuir cantidad");
-        gco_botonDisminuir.disabled = gco_cantidad <= 1;
+        const botonDisminuir = document.createElement("button");
+        botonDisminuir.type = "button";
+        botonDisminuir.className = "btn-cantidad";
+        botonDisminuir.textContent = "−";
+        botonDisminuir.dataset.accion = "disminuir-cantidad";
+        botonDisminuir.dataset.productoId = producto.producto_id;
+        botonDisminuir.setAttribute("aria-label", "Disminuir cantidad");
+        botonDisminuir.disabled = cantidad <= 1;
 
         // Mostrar cantidad actual
-        const gco_cantidadTexto = document.createElement("span");
-        gco_cantidadTexto.className = "cart-item-quantity";
-        gco_cantidadTexto.textContent = gco_cantidad;
+        const cantidadTexto = document.createElement("span");
+        cantidadTexto.className = "cart-item-quantity";
+        cantidadTexto.textContent = cantidad;
 
         // Botón aumentar
-        const gco_botonAumentar = document.createElement("button");
-        gco_botonAumentar.type = "button";
-        gco_botonAumentar.className = "btn-cantidad";
-        gco_botonAumentar.textContent = "+";
-        gco_botonAumentar.dataset.accion = "incrementar-cantidad";
-        gco_botonAumentar.dataset.productoId = gco_producto.producto_id;
-        gco_botonAumentar.setAttribute("aria-label", "Aumentar cantidad");
+        const botonAumentar = document.createElement("button");
+        botonAumentar.type = "button";
+        botonAumentar.className = "btn-cantidad";
+        botonAumentar.textContent = "+";
+        botonAumentar.dataset.accion = "incrementar-cantidad";
+        botonAumentar.dataset.productoId = producto.producto_id;
+        botonAumentar.setAttribute("aria-label", "Aumentar cantidad");
 
         // Botón eliminar
-        const gco_botonEliminar = document.createElement("button");
-        gco_botonEliminar.type = "button";
-        gco_botonEliminar.className = "btn-eliminar-producto";
-        gco_botonEliminar.textContent = "Eliminar";
-        gco_botonEliminar.dataset.accion = "eliminar-producto";
-        gco_botonEliminar.dataset.productoId = gco_producto.producto_id;
+        const botonEliminar = document.createElement("button");
+        botonEliminar.type = "button";
+        botonEliminar.className = "btn-eliminar-producto";
+        botonEliminar.textContent = "Eliminar";
+        botonEliminar.dataset.accion = "eliminar-producto";
+        botonEliminar.dataset.productoId = producto.producto_id;
 
         // Incorporar controles
-        gco_controles.append(
-            gco_botonDisminuir,
-            gco_cantidadTexto,
-            gco_botonAumentar,
-            gco_botonEliminar
+        controles.append(
+            botonDisminuir,
+            cantidadTexto,
+            botonAumentar,
+            botonEliminar
         );
 
         // Incorporar elementos al producto
-        gco_item.append(
-            gco_encabezado,
-            gco_detalles,
-            gco_controles
+        item.append(
+            encabezado,
+            detalles,
+            controles
         );
 
         // Incorporar producto al carrito visual
-        gco_listaCarrito.appendChild(gco_item);
+        listaCarrito.appendChild(item);
 
     });
 
     // Mantener descuentos e impuestos en cero
-    const gco_descuentoGeneral = 0;
-    const gco_impuestosGeneral = 0;
+    const descuentoGeneral = 0;
+    const impuestosGeneral = 0;
 
     // Calcular total
-    const gco_totalGeneral =
-        gco_subtotalGeneral +
-        gco_descuentoGeneral +
-        gco_impuestosGeneral;
+    const totalGeneral =
+        subtotalGeneral +
+        descuentoGeneral +
+        impuestosGeneral;
 
     // Actualizar resumen
-    gco_elementoSubtotal.textContent =
-        gco_formatoMoneda.format(gco_subtotalGeneral);
+    elementoSubtotal.textContent =
+        formatoMoneda.format(subtotalGeneral);
 
-    gco_elementoDescuento.textContent =
-        gco_formatoMoneda.format(gco_descuentoGeneral);
+    elementoDescuento.textContent =
+        formatoMoneda.format(descuentoGeneral);
 
-    gco_elementoImpuestos.textContent =
-        gco_formatoMoneda.format(gco_impuestosGeneral);
+    elementoImpuestos.textContent =
+        formatoMoneda.format(impuestosGeneral);
 
-    gco_elementoTotal.textContent =
-        gco_formatoMoneda.format(gco_totalGeneral);
+    elementoTotal.textContent =
+        formatoMoneda.format(totalGeneral);
 
 }

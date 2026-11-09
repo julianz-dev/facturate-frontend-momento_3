@@ -1,398 +1,514 @@
-import { gco_verificarSesion } from "./auth.js";
+import { verificarSesion } from "./auth.js";
 
 import {
-    gco_consultarAPI,
-    gco_apiClientes,
-    gco_apiProductos,
+    consultarAPI,
+    apiClientes,
+    apiProductos,
 } from "./api.js";
 
 import {
-    gco_mostrarCargaClientes,
-    gco_mostrarCargaProductos,
-    gco_mostrarClientes,
-    gco_mostrarProductos,
-    gco_actualizarIndicadores,
-    gco_mostrarErrorClientes,
-    gco_mostrarErrorProductos,
-    gco_mostrarCarrito,
+    mostrarCargaClientes,
+    mostrarCargaProductos,
+    mostrarClientes,
+    mostrarProductos,
+    actualizarIndicadores,
+    mostrarErrorClientes,
+    mostrarErrorProductos,
+    mostrarCarrito,
 } from "./ui.js";
 
-// ========================================
-// VARIABLES DEL DASHBOARD Y DE LA VENTA
-// ========================================
+//* ========================================
+//* VARIABLES DEL DASHBOARD Y DE LA VENTA
+//* ========================================
 
 // Clientes activos disponibles para nuevas ventas.
-let gco_clientesActivos = [];
+let clientesActivos = [];
 
 // Productos activos disponibles en el catálogo de ventas.
-let gco_productosActivos = [];
+let productosActivos = [];
 
 // Productos incorporados al carrito de la venta actual.
-let gco_carrito = [];
+let carrito = [];
 
 // Los indicadores permanecen pendientes hasta que cada API responda.
-let gco_totalClientesRegistrados = null;
-let gco_totalProductosActivos = null;
+let totalClientesRegistrados = null;
+let totalProductosActivos = null;
 
 // Temporizador para ocultar el mensaje de producto agregado.
-let gco_temporizadorMensajeProducto = null;
+let temporizadorMensajeProducto = null;
 
-// ========================================
-// VERIFICAR AUTORIZACIÓN DE ACCESO
-// ========================================
 
-const gco_accesoAutorizado = gco_verificarSesion();
+//* ========================================
+//* VERIFICAR AUTORIZACIÓN DE ACCESO
+//* ========================================
 
-if (gco_accesoAutorizado) {
+const accesoAutorizado = verificarSesion();
+
+if (accesoAutorizado) {
+
     console.log("Sesión validada. Acceso autorizado al dashboard.");
 
-    // ========================================
-    // CERRAR SESIÓN
-    // ========================================
+    //* ========================================
+    //* CERRAR SESIÓN
+    //* ========================================
 
-    const gco_btnCerrarSesion = document.querySelector("#btnCerrarSesion");
+    const btnCerrarSesion = document.querySelector("#btnCerrarSesion");
 
-    if (gco_btnCerrarSesion) {
-        gco_btnCerrarSesion.addEventListener("click", () => {
-            sessionStorage.removeItem("gco_sesionActiva");
+    if (btnCerrarSesion) {
+
+        btnCerrarSesion.addEventListener("click", () => {
+
+            sessionStorage.removeItem("sesionActiva");
+
             window.location.replace("login.html");
+
         });
+
     }
 
-    // ========================================
-    // ACTUALIZAR INDICADORES DEL DASHBOARD
-    // ========================================
+    //* ========================================
+    //* ACTUALIZAR INDICADORES DEL DASHBOARD
+    //* ========================================
 
-    function gco_refrescarIndicadoresDashboard() {
-        const gco_clientesTexto = gco_totalClientesRegistrados === null
+    function refrescarIndicadoresDashboard() {
+
+        const clientesTexto = totalClientesRegistrados === null
             ? "—"
-            : gco_totalClientesRegistrados;
+            : totalClientesRegistrados;
 
-        const gco_productosTexto = gco_totalProductosActivos === null
+        const productosTexto = totalProductosActivos === null
             ? "—"
-            : gco_totalProductosActivos;
+            : totalProductosActivos;
 
-        gco_actualizarIndicadores(
-            gco_clientesTexto,
-            gco_productosTexto,
+        actualizarIndicadores(
+            clientesTexto,
+            productosTexto,
         );
+
     }
 
-    // ========================================
-    // MOSTRAR Y OCULTAR CATÁLOGO DE PRODUCTOS
-    // ========================================
+    //* ========================================
+    //* MOSTRAR Y OCULTAR CATÁLOGO DE PRODUCTOS
+    //* ========================================
 
-    const gco_btnAlternarCatalogo = document.querySelector(
+    const btnAlternarCatalogo = document.querySelector(
         "#btnAlternarCatalogo",
     );
 
-    const gco_contenedorCatalogo = document.querySelector(
+    const contenedorCatalogo = document.querySelector(
         "#contenedorCatalogoProductos",
     );
 
-    if (gco_btnAlternarCatalogo && gco_contenedorCatalogo) {
-        gco_btnAlternarCatalogo.addEventListener("click", () => {
-            const gco_catalogoVisible = !gco_contenedorCatalogo.hidden;
+    if (btnAlternarCatalogo && contenedorCatalogo) {
 
-            gco_contenedorCatalogo.hidden = gco_catalogoVisible;
-            gco_btnAlternarCatalogo.textContent = gco_catalogoVisible
+        btnAlternarCatalogo.addEventListener("click", () => {
+
+            const catalogoVisible = !contenedorCatalogo.hidden;
+
+            contenedorCatalogo.hidden = catalogoVisible;
+
+            btnAlternarCatalogo.textContent = catalogoVisible
                 ? "Mostrar productos"
                 : "Ocultar productos";
 
-            gco_btnAlternarCatalogo.setAttribute(
+            btnAlternarCatalogo.setAttribute(
                 "aria-expanded",
-                String(!gco_catalogoVisible),
-            );
-        });
-    }
-
-    // ========================================
-    // BUSCADOR DEL CATÁLOGO DE PRODUCTOS
-    // ========================================
-
-    const gco_buscarProducto = document.querySelector("#buscarProducto");
-
-    if (gco_buscarProducto) {
-        gco_buscarProducto.addEventListener("input", () => {
-            const gco_terminoBusqueda = gco_buscarProducto.value
-                .trim()
-                .toLowerCase();
-
-            const gco_productosFiltrados = gco_productosActivos.filter(
-                (gco_producto) => {
-                    const gco_nombreProducto = String(
-                        gco_producto.nombre_producto ?? "",
-                    ).toLowerCase();
-
-                    const gco_codigoProducto = String(
-                        gco_producto.codigo_producto ?? "",
-                    ).toLowerCase();
-
-                    return (
-                        gco_nombreProducto.includes(gco_terminoBusqueda) ||
-                        gco_codigoProducto.includes(gco_terminoBusqueda)
-                    );
-                },
+                String(!catalogoVisible),
             );
 
-            gco_mostrarProductos(gco_productosFiltrados);
         });
+
     }
 
-    // ========================================
-    // AGREGAR PRODUCTOS AL CARRITO
-    // ========================================
+    //* ========================================
+    //* BUSCADOR DEL CATÁLOGO DE PRODUCTOS
+    //* ========================================
 
-    const gco_listaProductos = document.querySelector("#listaProductos");
-    const gco_mensajeProductoAgregado = document.querySelector(
+    const buscarProducto = document.querySelector("#buscarProducto");
+
+    // Aplicar el filtro actual sobre la colección de productos activos.
+    // Esta función también se utiliza cuando se actualiza el catálogo desde la API.
+    function aplicarFiltroProductos() {
+
+        const terminoBusqueda = buscarProducto?.value
+            .trim()
+            .toLowerCase() ?? "";
+
+        const productosFiltrados = productosActivos.filter(
+            (producto) => {
+
+                const nombreProducto = String(
+                    producto.nombre_producto ?? "",
+                ).toLowerCase();
+
+                const codigoProducto = String(
+                    producto.codigo_producto ?? "",
+                ).toLowerCase();
+
+                return (
+                    nombreProducto.includes(terminoBusqueda) ||
+                    codigoProducto.includes(terminoBusqueda)
+                );
+
+            },
+        );
+
+        mostrarProductos(productosFiltrados);
+
+    }
+
+    if (buscarProducto) {
+
+        buscarProducto.addEventListener("input", aplicarFiltroProductos);
+
+    }
+
+    //* ========================================
+    //* AGREGAR PRODUCTOS AL CARRITO
+    //* ========================================
+
+    const listaProductos = document.querySelector("#listaProductos");
+
+    const mensajeProductoAgregado = document.querySelector(
         "#mensajeProductoAgregado",
     );
 
-    function gco_mostrarMensajeProductoAgregado() {
-        if (!gco_mensajeProductoAgregado) {
+
+    // Mostrar mensaje de confirmación al agregar un producto.
+    function mostrarMensajeProductoAgregado() {
+
+        if (!mensajeProductoAgregado) {
             return;
         }
 
-        gco_mensajeProductoAgregado.textContent = "Producto agregado.";
-        gco_mensajeProductoAgregado.hidden = false;
+        mensajeProductoAgregado.textContent = "Producto agregado.";
+        mensajeProductoAgregado.hidden = false;
 
-        if (gco_temporizadorMensajeProducto !== null) {
-            clearTimeout(gco_temporizadorMensajeProducto);
+        if (temporizadorMensajeProducto !== null) {
+            clearTimeout(temporizadorMensajeProducto);
         }
 
-        gco_temporizadorMensajeProducto = setTimeout(() => {
-            gco_mensajeProductoAgregado.hidden = true;
-            gco_mensajeProductoAgregado.textContent = "";
-            gco_temporizadorMensajeProducto = null;
+        temporizadorMensajeProducto = setTimeout(() => {
+
+            mensajeProductoAgregado.hidden = true;
+            mensajeProductoAgregado.textContent = "";
+
+            temporizadorMensajeProducto = null;
+
         }, 2500);
+
     }
 
-    if (gco_listaProductos) {
-        gco_listaProductos.addEventListener("click", (gco_evento) => {
-            const gco_botonAgregar = gco_evento.target.closest(
+    // Escuchar los eventos de los botones del catálogo.
+    if (listaProductos) {
+
+        listaProductos.addEventListener("click", (evento) => {
+
+            const botonAgregar = evento.target.closest(
                 '[data-accion="agregar-carrito"]',
             );
 
             if (
-                !gco_botonAgregar ||
-                !gco_listaProductos.contains(gco_botonAgregar)
+                !botonAgregar ||
+                !listaProductos.contains(botonAgregar)
             ) {
                 return;
             }
 
-            const gco_productoId = gco_botonAgregar.dataset.productoId;
+            const productoId = botonAgregar.dataset.productoId;
 
-            const gco_productoSeleccionado = gco_productosActivos.find(
-                (gco_producto) =>
-                    String(gco_producto.producto_id) === String(gco_productoId),
+            // Buscar el producto seleccionado en los productos activos.
+            const productoSeleccionado = productosActivos.find(
+                (producto) =>
+                    String(producto.producto_id) === String(productoId),
             );
 
-            if (!gco_productoSeleccionado) {
+            if (!productoSeleccionado) {
+
                 console.error("No se encontró el producto seleccionado.");
+
                 return;
+
             }
 
-            const gco_productoExistente = gco_carrito.find(
-                (gco_producto) =>
-                    String(gco_producto.producto_id) === String(gco_productoId),
+            // Verificar si el producto ya existe en el carrito.
+            const productoExistente = carrito.find(
+                (producto) =>
+                    String(producto.producto_id) === String(productoId),
             );
 
-            if (gco_productoExistente) {
-                gco_productoExistente.cantidad++;
+            if (productoExistente) {
+
+                // Si existe, aumentar su cantidad.
+                productoExistente.cantidad++;
+
             } else {
-                gco_carrito.push({
-                    producto_id: gco_productoSeleccionado.producto_id,
-                    nombre_producto: gco_productoSeleccionado.nombre_producto,
-                    codigo_producto: gco_productoSeleccionado.codigo_producto,
-                    precio_unitario: Number(gco_productoSeleccionado.precio_venta),
+
+                // Si no existe, agregarlo al carrito.
+                carrito.push({
+
+                    producto_id: productoSeleccionado.producto_id,
+                    nombre_producto: productoSeleccionado.nombre_producto,
+                    codigo_producto: productoSeleccionado.codigo_producto,
+                    precio_unitario: Number(productoSeleccionado.precio_venta),
                     cantidad: 1,
+
                 });
+
             }
 
             console.log("Carrito actualizado:");
-            console.table(gco_carrito);
+            console.table(carrito);
 
-            gco_mostrarCarrito(gco_carrito);
-            gco_mostrarMensajeProductoAgregado();
+            mostrarCarrito(carrito);
+
+            mostrarMensajeProductoAgregado();
+
         });
+
     }
 
-    // ========================================
-    // ADMINISTRAR PRODUCTOS DEL CARRITO
-    // ========================================
+    //* ========================================
+    //* ADMINISTRAR PRODUCTOS DEL CARRITO
+    //* ========================================
 
-    const gco_listaCarrito = document.querySelector("#listaCarrito");
+    const listaCarrito = document.querySelector("#listaCarrito");
 
-    if (gco_listaCarrito) {
-        gco_listaCarrito.addEventListener("click", (gco_evento) => {
-            const gco_botonControl = gco_evento.target.closest("[data-accion]");
+    if (listaCarrito) {
+
+        listaCarrito.addEventListener("click", (evento) => {
+
+            const botonControl = evento.target.closest("[data-accion]");
 
             if (
-                !gco_botonControl ||
-                !gco_listaCarrito.contains(gco_botonControl)
+                !botonControl ||
+                !listaCarrito.contains(botonControl)
             ) {
                 return;
             }
 
-            const gco_productoId = gco_botonControl.dataset.productoId;
-            const gco_accion = gco_botonControl.dataset.accion;
+            const productoId = botonControl.dataset.productoId;
+            const accion = botonControl.dataset.accion;
 
-            const gco_productoExistente = gco_carrito.find(
-                (gco_producto) =>
-                    String(gco_producto.producto_id) === String(gco_productoId),
+            // Buscar el producto dentro del carrito.
+            const productoExistente = carrito.find(
+                (producto) =>
+                    String(producto.producto_id) === String(productoId),
             );
 
-            if (!gco_productoExistente) {
+            if (!productoExistente) {
                 return;
             }
 
-            if (gco_accion === "incrementar-cantidad") {
-                gco_productoExistente.cantidad++;
-            } else if (gco_accion === "disminuir-cantidad") {
-                if (gco_productoExistente.cantidad > 1) {
-                    gco_productoExistente.cantidad--;
+
+            // AUMENTAR CANTIDAD
+            if (accion === "incrementar-cantidad") {
+
+                productoExistente.cantidad++;
+
+
+            // DISMINUIR CANTIDAD
+            } else if (accion === "disminuir-cantidad") {
+
+                if (productoExistente.cantidad > 1) {
+
+                    productoExistente.cantidad--;
+
                 }
-            } else if (gco_accion === "eliminar-producto") {
-                const gco_indiceProducto = gco_carrito.findIndex(
-                    (gco_producto) =>
-                        String(gco_producto.producto_id) === String(gco_productoId),
+
+            // ELIMINAR PRODUCTO
+            } else if (accion === "eliminar-producto") {
+
+                const indiceProducto = carrito.findIndex(
+                    (producto) =>
+                        String(producto.producto_id) === String(productoId),
                 );
 
-                if (gco_indiceProducto !== -1) {
-                    gco_carrito.splice(gco_indiceProducto, 1);
+                if (indiceProducto !== -1) {
+
+                    carrito.splice(indiceProducto, 1);
+
                 }
+
             } else {
+
                 return;
+
             }
 
-            gco_mostrarCarrito(gco_carrito);
+            // Actualizar la representación del carrito.
+            mostrarCarrito(carrito);
 
             console.log("Carrito actualizado:");
-            console.table(gco_carrito);
+            console.table(carrito);
+
         });
+
     }
 
-    // ========================================
-    // INICIALIZAR REPRESENTACIÓN DEL CARRITO
-    // ========================================
 
-    gco_mostrarCarrito(gco_carrito);
+    //* ========================================
+    //* INICIALIZAR REPRESENTACIÓN DEL CARRITO
+    //* ========================================
 
-    // ========================================
-    // INICIALIZAR DASHBOARD
-    // ========================================
+    mostrarCarrito(carrito);
 
-    async function gco_inicializarDashboard() {
+    //* ========================================
+    //* INICIALIZAR DASHBOARD
+    //* ========================================
+
+    async function inicializarDashboard() {
+
         // Mostrar estados de carga en el selector y el catálogo.
-        gco_mostrarCargaClientes();
-        gco_mostrarCargaProductos();
+        mostrarCargaClientes();
+        mostrarCargaProductos();
 
         // Consultar clientes y productos de manera simultánea.
         await Promise.all([
-            gco_cargarClientesDashboard(),
-            gco_cargarProductosActivos(),
+
+            cargarClientesDashboard(),
+
+            cargarProductosActivos(),
+
         ]);
+
     }
 
-    // ========================================
-    // CONSULTAR CLIENTES ACTIVOS PARA VENTAS
-    // ========================================
+    //* ========================================
+    //* CONSULTAR CLIENTES ACTIVOS PARA VENTAS
+    //* ========================================
 
-    async function gco_cargarClientesDashboard() {
+    async function cargarClientesDashboard() {
+
         try {
+
             // Consultar todos los clientes registrados en MockAPI.
-            const gco_clientesRegistrados = await gco_consultarAPI(gco_apiClientes);
+            const clientesRegistrados = await consultarAPI(apiClientes);
 
             // Conservar únicamente los clientes activos para nuevas ventas.
-            gco_clientesActivos = gco_clientesRegistrados.filter(
-                (gco_cliente) => gco_cliente.activo === true,
+            clientesActivos = clientesRegistrados.filter(
+                (cliente) => cliente.activo === true,
             );
 
             // Recordar la selección actual, si el cliente sigue activo.
-            const gco_selectorCliente = document.querySelector("#selectorCliente");
-            const gco_clienteSeleccionado = gco_selectorCliente?.value ?? "";
+            const selectorCliente = document.querySelector("#selectorCliente");
+
+            const clienteSeleccionado = selectorCliente?.value ?? "";
 
             // Mostrar únicamente clientes activos en el selector de venta.
-            gco_mostrarClientes(gco_clientesActivos);
+            mostrarClientes(clientesActivos);
 
             // Restaurar la selección solo si el cliente continúa activo.
-            const gco_seleccionSigueActiva = gco_clientesActivos.some(
-                (gco_cliente) =>
-                    String(gco_cliente.cliente_id ?? gco_cliente.id) ===
-                    String(gco_clienteSeleccionado),
+            const seleccionSigueActiva = clientesActivos.some(
+                (cliente) =>
+                    String(cliente.cliente_id ?? cliente.id) ===
+                    String(clienteSeleccionado),
             );
 
-            if (gco_seleccionSigueActiva && gco_selectorCliente) {
-                gco_selectorCliente.value = gco_clienteSeleccionado;
+            if (seleccionSigueActiva && selectorCliente) {
+
+                selectorCliente.value = clienteSeleccionado;
+
             }
 
             // El indicador "Clientes registrados" cuenta activos e inactivos.
-            gco_totalClientesRegistrados = gco_clientesRegistrados.length;
-            gco_refrescarIndicadoresDashboard();
+            totalClientesRegistrados = clientesRegistrados.length;
+
+            refrescarIndicadoresDashboard();
 
             console.log(
                 "Total de clientes registrados:",
-                gco_totalClientesRegistrados,
+                totalClientesRegistrados,
             );
+
             console.log(
                 "Clientes activos disponibles para ventas:",
-                gco_clientesActivos.length,
+                clientesActivos.length,
             );
-        } catch (gco_error) {
+
+        } catch (error) {
+
             console.error(
                 "No se pudieron cargar los clientes para el Dashboard:",
-                gco_error.message,
+                error.message,
             );
 
-            gco_totalClientesRegistrados = null;
-            gco_refrescarIndicadoresDashboard();
-            gco_mostrarErrorClientes();
+            totalClientesRegistrados = null;
+
+            refrescarIndicadoresDashboard();
+
+            mostrarErrorClientes();
+
         }
+
     }
 
-    // ========================================
-    // CONSULTAR PRODUCTOS ACTIVOS PARA VENTAS
-    // ========================================
+    //* ========================================
+    //* CONSULTAR PRODUCTOS ACTIVOS PARA VENTAS
+    //* ========================================
 
-    async function gco_cargarProductosActivos() {
+    async function cargarProductosActivos() {
+
         try {
+
             // Consultar el catálogo de productos.
-            const gco_productos = await gco_consultarAPI(gco_apiProductos);
+            const productos = await consultarAPI(apiProductos);
 
             // Conservar únicamente los productos activos.
-            gco_productosActivos = gco_productos.filter(
-                (gco_producto) => gco_producto.activo === true,
+            productosActivos = productos.filter(
+                (producto) => producto.activo === true,
             );
 
-            // Mostrar productos activos en el catálogo de ventas.
-            gco_mostrarProductos(gco_productosActivos);
+            // Mostrar los productos activos conservando el filtro de búsqueda actual.
+            aplicarFiltroProductos();
 
             // Actualizar el indicador general de productos.
-            gco_totalProductosActivos = gco_productosActivos.length;
-            gco_refrescarIndicadoresDashboard();
+            totalProductosActivos = productosActivos.length;
+
+            refrescarIndicadoresDashboard();
 
             console.log(
                 "Productos activos disponibles para ventas:",
-                gco_productosActivos.length,
+                productosActivos.length,
             );
-        } catch (gco_error) {
+
+        } catch (error) {
+
             console.error(
                 "No se pudieron cargar los productos para ventas:",
-                gco_error.message,
+                error.message,
             );
 
-            gco_mostrarErrorProductos();
+            mostrarErrorProductos();
+
         }
+
     }
 
-    // Ejecutar la carga inicial del Dashboard.
-    gco_inicializarDashboard();
+    //* ========================================
+    //* EJECUTAR LA CARGA INICIAL DEL DASHBOARD
+    //* ========================================
 
-    // Si el navegador restaura esta página desde BFCache (por ejemplo,
-    // al volver desde Clientes), consultar nuevamente los clientes.
-    window.addEventListener("pageshow", (gco_evento) => {
-        if (gco_evento.persisted) {
-            gco_cargarClientesDashboard();
+    inicializarDashboard();
+
+    //* ========================================
+    //* ACTUALIZAR INFORMACIÓN AL REGRESAR AL DASHBOARD
+    //* ========================================
+
+    window.addEventListener("pageshow", async (evento) => {
+
+        if (evento.persisted) {
+
+            await Promise.all([
+
+                cargarClientesDashboard(),
+
+                cargarProductosActivos(),
+
+            ]);
+
         }
+
     });
+
 }

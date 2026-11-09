@@ -1,32 +1,34 @@
+//* proyecto@facturate.com
+//* facturate
 // Credenciales de prueba
-const gco_correoPrueba = "proyecto@facturate.com";
-const gco_contrasenaPrueba = "facturate";
+const correoPrueba = "proyecto@facturate.com";
+const contrasenaPrueba = "facturate";
 
 // Seleccionar elementos del formulario
-const gco_formularioLogin = document.querySelector("#formularioLogin");
-const gco_email = document.querySelector("#email");
-const gco_password = document.querySelector("#password");
-const gco_mensajeError = document.querySelector("#mensajeErrorLogin");
-const gco_contenedorError = document.querySelector("#contenedorErrorLogin");
+const formularioLogin = document.querySelector("#formularioLogin");
+const campoCorreo = document.querySelector("#email");
+const campoContrasena = document.querySelector("#password");
+const mensajeError = document.querySelector("#mensajeErrorLogin");
+const contenedorError = document.querySelector("#contenedorErrorLogin");
 
 // Escuchar el evento submit
-gco_formularioLogin.addEventListener("submit", (gco_evento) => {
+formularioLogin.addEventListener("submit", (evento) => {
 
     // Evitar el comportamiento predeterminado del formulario
-    gco_evento.preventDefault();
+    evento.preventDefault();
 
     // Capturar los valores ingresados
-    const gco_correoIngresado = gco_email.value.trim().toLowerCase();
-    const gco_contrasenaIngresada = gco_password.value;
+    const correoIngresado = campoCorreo.value.trim().toLowerCase();
+    const contrasenaIngresada = campoContrasena.value;
 
     // Validar las credenciales
     if (
-        gco_correoIngresado === gco_correoPrueba &&
-        gco_contrasenaIngresada === gco_contrasenaPrueba
+        correoIngresado === correoPrueba &&
+        contrasenaIngresada === contrasenaPrueba
     ) {
 
         // Crear una sesión temporal
-        sessionStorage.setItem("gco_sesionActiva", "true");
+        sessionStorage.setItem("sesionActiva", "true");
 
         // Redireccionar al dashboard
         window.location.href = "dashboard.html";
@@ -34,17 +36,17 @@ gco_formularioLogin.addEventListener("submit", (gco_evento) => {
     } else {
 
         // Mostrar mensaje de error
-        gco_mensajeError.textContent = "Correo electrónico o contraseña incorrectos.";
-        gco_contenedorError.hidden = false;
+        mensajeError.textContent = "Correo electrónico o contraseña incorrectos.";
+        contenedorError.hidden = false;
 
     }
 
 });
 
 // Ocultar el mensaje cuando el usuario modifica los campos
-gco_formularioLogin.addEventListener("input", () => {
+formularioLogin.addEventListener("input", () => {
 
-    gco_mensajeError.textContent = "";
-    gco_contenedorError.hidden = true;
+    mensajeError.textContent = "";
+    contenedorError.hidden = true;
 
 });

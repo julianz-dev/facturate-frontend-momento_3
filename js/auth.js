@@ -1,15 +1,20 @@
-// Verificar si existe una sesión activa
-export function gco_verificarSesion() {
+//* ========================================
+//* VERIFICAR SI EXISTE UNA SESIÓN ACTIVA
+//* ========================================
 
-    const gco_sesionActiva = sessionStorage.getItem("gco_sesionActiva");
+export function verificarSesion() {
 
-    // Redireccionar si no existe una sesión
-    if (gco_sesionActiva !== "true") {
+    const sesionActiva = sessionStorage.getItem("sesionActiva");
+
+    // Redireccionar al inicio de sesión si no existe una sesión
+    if (sesionActiva !== "true") {
 
         window.location.replace("login.html");
+
         return false;
 
     }
 
     return true;
+
 }

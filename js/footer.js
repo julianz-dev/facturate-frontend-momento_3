@@ -1,48 +1,91 @@
-/*========================================
-=       CARGADOR DEL FOOTER FACTURATE    =
-========================================*/
+//* ========================================
+//* CARGADOR DEL FOOTER DE FACTURATE
+//* ========================================
 
 class FacturateFooter extends HTMLElement {
+
     constructor() {
+
         super();
-        this.footerCargado = false;
+
+        this.footerYaCargado = false;
+
     }
 
+    //* ========================================
+    //* CARGAR COMPONENTE FOOTER
+    //* ========================================
+
     async connectedCallback() {
-        // Evita realizar la misma petición más de una vez sobre la misma instancia.
-        if (this.footerCargado) {
+
+        // Evitar realizar la misma petición más de una vez.
+        if (this.footerYaCargado) {
             return;
         }
 
-        this.footerCargado = true;
+        this.footerYaCargado = true;
 
         try {
-            // footer.js está dentro de /js; el fragmento se encuentra en /componentes.
-            const rutaFooter = new URL("../componentes/footer.html", import.meta.url);
-            const respuesta = await fetch(rutaFooter);
 
-            if (!respuesta.ok) {
-                throw new Error(`No se pudo cargar el footer. HTTP ${respuesta.status}.`);
+            // footer.js está dentro de /js.
+            // El fragmento HTML se encuentra dentro de /componentes.
+            const urlFooter = new URL(
+                "../componentes/footer.html",
+                import.meta.url
+            );
+
+            // Realizar petición para obtener el contenido del footer.
+            const respuestaFooter = await fetch(urlFooter);
+
+            // Comprobar respuesta HTTP.
+            if (!respuestaFooter.ok) {
+
+                throw new Error(
+                    `No se pudo cargar el footer. HTTP ${respuestaFooter.status}.`
+                );
+
             }
 
-            const contenidoFooter = await respuesta.text();
-            this.innerHTML = contenidoFooter;
-        } catch (error) {
-            console.error("Error al cargar el footer de Facturate:", error);
+            // Convertir respuesta a texto HTML.
+            const contenidoFooter = await respuestaFooter.text();
 
-            // Se muestra un aviso visible sin impedir que el resto de la página funcione.
+            // Insertar contenido dentro del componente.
+            this.innerHTML = contenidoFooter;
+
+        } catch (error) {
+
+            console.error(
+                "Error al cargar el footer de Facturate:",
+                error
+            );
+
+            // Mostrar un aviso sin impedir que el resto de la página funcione.
             this.innerHTML = `
                 <footer class="footer">
                     <div class="footer-copy">
-                        <p role="alert">No fue posible cargar la información del pie de página.</p>
+                        <p role="alert">
+                            No fue posible cargar la información del pie de página.
+                        </p>
                     </div>
                 </footer>
             `;
+
         }
+
     }
+
 }
 
-// Evita registrar el mismo componente más de una vez.
+//* ========================================
+//* REGISTRAR COMPONENTE FOOTER
+//* ========================================
+
+// Evitar registrar el mismo componente más de una vez.
 if (!customElements.get("facturate-footer")) {
-    customElements.define("facturate-footer", FacturateFooter);
+
+    customElements.define(
+        "facturate-footer",
+        FacturateFooter
+    );
+
 }
