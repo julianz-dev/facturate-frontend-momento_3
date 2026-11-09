@@ -1,0 +1,264 @@
+/*========================================
+=      ESTILOS DE NAVEGACION FACTURATE   =
+========================================*/
+
+.dashboard-brand {
+    display: block;
+    background-color: var(--blanco);
+    padding: 10px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.dashboard-brand img {
+    width: 100%;
+    max-width: 180px;
+    height: auto;
+}
+
+.sidebar-navigation {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.sidebar-label {
+    color: #a9b8c9;
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    margin: 0 10px 12px;
+}
+
+.sidebar-link {
+    display: block;
+    color: #dce6f0;
+    text-decoration: none;
+    padding: 13px 15px;
+    border-radius: 8px;
+    font-size: 15px;
+    transition: background-color 0.2s ease;
+}
+
+.sidebar-link:hover,
+.sidebar-link.active {
+    background-color: rgba(91, 192, 235, 0.2);
+    color: var(--blanco);
+}
+
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--blanco);
+    padding: 20px 35px;
+    border-bottom: 1px solid var(--gris-claro);
+}
+
+/*========================================
+=        NAVEGACIÓN DEL ENCABEZADO       =
+========================================*/
+
+.topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    min-width: 0;
+}
+
+.btn-menu-hamburguesa {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--gris-claro);
+    border-radius: 9px;
+    background-color: var(--gris-fondo);
+    color: var(--azul-oscuro);
+    font-size: 25px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.btn-menu-hamburguesa:hover {
+    background-color: #e8f6fc;
+    border-color: var(--azul-claro);
+}
+
+.btn-menu-hamburguesa:focus-visible {
+    outline: 3px solid rgba(91, 192, 235, 0.3);
+    outline-offset: 2px;
+}
+
+.topbar-subtitle {
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    color: var(--gris-medio);
+    margin-bottom: 5px;
+}
+
+.topbar-heading h1 {
+    font-size: 24px;
+    color: var(--azul-oscuro);
+    margin: 0;
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.user-avatar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background-color: var(--azul-claro);
+    color: var(--blanco);
+    font-weight: bold;
+}
+
+.user-details {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.user-details strong {
+    font-size: 14px;
+}
+
+.user-details span {
+    color: var(--gris-medio);
+    font-size: 12px;
+}
+
+.btn-cerrar-sesion {
+    align-self: flex-start;
+    width: fit-content;
+    margin-top: 5px;
+    padding: 5px 9px;
+    border: 1px solid #f1c5c8;
+    border-radius: 6px;
+    background-color: var(--blanco);
+    color: #b42332;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.btn-cerrar-sesion:hover {
+    background-color: #fcebec;
+    border-color: #dc3545;
+}
+
+/*========================================
+=         MENÚ HAMBURGUESA OFFCANVAS     =
+========================================*/
+
+.dashboard-offcanvas {
+    --bs-offcanvas-width: 290px;
+
+    background-color: var(--azul-oscuro);
+    color: var(--blanco);
+}
+
+.dashboard-offcanvas .offcanvas-header {
+    padding: 24px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.dashboard-offcanvas .dashboard-brand {
+    width: 100%;
+    max-width: 190px;
+}
+
+.dashboard-offcanvas .offcanvas-header .btn-close {
+    filter: invert(1);
+    opacity: 0.8;
+}
+
+.dashboard-offcanvas .offcanvas-header .btn-close:hover {
+    opacity: 1;
+}
+
+.dashboard-offcanvas .offcanvas-body {
+    padding: 25px 18px;
+}
+
+.offcanvas-footer {
+    padding: 17px 18px;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.offcanvas-footer p {
+    margin: 0;
+    color: #a9b8c9;
+    font-size: 12px;
+    text-align: center;
+}
+
+/*========================================
+=       RESPONSIVE DE NAVEGACIÓN         =
+========================================*/
+
+@media (max-width: 760px) {
+
+    .topbar {
+        padding: 18px;
+    }
+
+}
+
+@media (max-width: 480px) {
+    /* Aquí van los estilos trasladados */
+
+    .topbar-heading h1 {
+        font-size: 20px;
+    }
+
+    .topbar {
+        flex-wrap: wrap;
+        gap: 14px;
+        padding: 15px;
+    }
+
+    .topbar-left {
+        gap: 10px;
+    }
+
+    .user-profile {
+        gap: 9px;
+        margin-left: auto;
+    }
+
+    .user-avatar {
+        width: 36px;
+        height: 36px;
+        font-size: 13px;
+    }
+
+    .user-details {
+        display: flex;
+        gap: 2px;
+    }
+
+    .user-details strong {
+        font-size: 12px;
+    }
+
+    .user-details span {
+        font-size: 11px;
+    }
+
+    .btn-cerrar-sesion {
+        font-size: 11px;
+    }
+}

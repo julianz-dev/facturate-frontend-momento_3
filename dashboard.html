@@ -1,3 +1,6 @@
+<!--===============================================================================-->
+<!--===================================DASHBOARD===================================-->
+<!--===============================================================================-->
 <!doctype html>
 <html lang="es">
 
@@ -11,73 +14,61 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" />
 
+    <link rel="stylesheet" href="base.css" />
+    <link rel="stylesheet" href="navegacion.css" />
     <link rel="stylesheet" href="dashboard.css" />
+    <link rel="stylesheet" href="footer.css" />
 </head>
 
 <body>
     <!-- Estructura principal -->
     <section class="dashboard-layout">
-        <!-- Menú lateral -->
-        <aside class="sidebar">
-            <header class="sidebar-header">
-                <a href="dashboard.html" class="dashboard-brand">
-                    <img src="Imagenes/logo-facturate.png" alt="Facturate" />
-                </a>
-            </header>
+        <!-- Encabezado superior -->
+        <header class="topbar">
 
-            <nav class="sidebar-navigation" aria-label="Navegación principal">
-                <p class="sidebar-label">MENÚ PRINCIPAL</p>
+            <section class="topbar-left">
 
-                <a href="#resumen" class="sidebar-link active">
-                    <span>Resumen general</span>
-                </a>
-
-                <a href="#nueva-venta" class="sidebar-link">
-                    <span>Nueva venta</span>
-                </a>
-
-                <a href="#gestion-clientes" class="sidebar-link">
-                    <span>Clientes</span>
-                </a>
-
-                <a href="#productos" class="sidebar-link">
-                    <span>Productos</span>
-                </a>
-
-                <a href="#historial" class="sidebar-link">
-                    <span>Historial de ventas</span>
-                </a>
-            </nav>
-
-            <footer class="sidebar-footer">
-                <p>Facturate · CESDE 2026</p>
-
-                <button id="btnCerrarSesion" class="btn-cerrar-sesion" type="button">
-                    Cerrar sesión
+                <!-- Botón del menú hamburguesa -->
+                <button type="button" class="btn-menu-hamburguesa" data-bs-toggle="offcanvas"
+                    data-bs-target="#menuPrincipal" aria-controls="menuPrincipal" aria-label="Abrir menú de navegación">
+                    <span aria-hidden="true">&#9776;</span>
                 </button>
-            </footer>
-        </aside>
 
-        <!-- Contenido principal -->
-        <main class="dashboard-main">
-            <!-- Encabezado superior -->
-            <header class="topbar">
+                <!-- Título de la página -->
                 <section class="topbar-heading">
                     <p class="topbar-subtitle">
                         FACTURATE / PANEL PRINCIPAL
                     </p>
+
                     <h1>Dashboard</h1>
                 </section>
 
-                <section class="user-profile">
-                    <span class="user-avatar" aria-hidden="true">JD</span>
+            </section>
 
-                    <section class="user-details">
-                        <strong>Administrador</strong>
-                        <span>Sesión de prueba</span>
-                    </section>
+            <!-- Perfil del usuario -->
+            <section class="user-profile">
+
+                <span class="user-avatar" aria-hidden="true">JD</span>
+
+                <section class="user-details">
+
+                    <strong>Administrador</strong>
+
+                    <span>Sesión de prueba</span>
+
+                    <!-- Cerrar sesión -->
+                    <button id="btnCerrarSesion" class="btn-cerrar-sesion" type="button">
+                        Cerrar sesión
+                    </button>
+
                 </section>
-            </header>
+
+            </section>
+
+        </header>
+
+        <!-- Contenido principal -->
+        <main class="dashboard-main">
 
             <!-- Contenido del dashboard -->
             <section class="dashboard-content" id="resumen">
@@ -313,187 +304,75 @@
                     </section>
                 </section>
 
-                <section class="dashboard-card clients-admin-section" id="gestion-clientes">
-                    <header class="clients-admin-heading">
-                        <section>
-                            <h2>Administración de clientes</h2>
-                            <p>
-                                Consulta y administra los clientes
-                                registrados en Facturate.
-                            </p>
-                        </section>
 
-                        <button type="button" class="btn-dashboard" id="btnNuevoCliente" data-bs-toggle="modal"
-                            data-bs-target="#modalCliente">
-                            + Nuevo cliente
-                        </button>
-                    </header>
-
-                    <!-- Indicadores de clientes -->
-                    <section class="clients-admin-metrics">
-                        <article class="client-summary-card">
-                            <span>Total de clientes</span>
-                            <strong id="totalClientesAdmin">—</strong>
-                        </article>
-
-                        <article class="client-summary-card">
-                            <span>Clientes activos</span>
-                            <strong id="clientesActivosAdmin">—</strong>
-                        </article>
-
-                        <article class="client-summary-card">
-                            <span>Clientes inactivos</span>
-                            <strong id="clientesInactivosAdmin">—</strong>
-                        </article>
-                    </section>
-
-                    <!-- Búsqueda y filtros -->
-                    <section class="clients-admin-filters">
-                        <article class="client-search">
-                            <label for="buscarCliente">Buscar cliente</label>
-
-                            <input type="search" id="buscarCliente" placeholder="Buscar por nombre o documento..."
-                                autocomplete="off" />
-                        </article>
-
-                        <article class="client-status-filter">
-                            <label for="filtroEstadoCliente">Filtrar por estado</label>
-
-                            <select id="filtroEstadoCliente">
-                                <option value="TODOS">
-                                    Todos los clientes
-                                </option>
-                                <option value="ACTIVOS">Activos</option>
-                                <option value="INACTIVOS">Inactivos</option>
-                            </select>
-                        </article>
-                    </section>
-
-                    <!-- Tabla de clientes -->
-                    <section class="table-responsive">
-                        <table class="history-table clients-admin-table">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Nombre o razón social</th>
-                                    <th>Documento</th>
-                                    <th>Tipo de cliente</th>
-                                    <th>Estado</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-
-                            <tbody id="tablaClientes">
-                                <tr>
-                                    <td colspan="6" class="empty-table">
-                                        Los clientes aparecerán aquí cuando
-                                        conectemos el módulo.
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </section>
-                </section>
             </section>
         </main>
-    </section>
+        <!-- Menú de navegación hamburguesa -->
+        <aside class="offcanvas offcanvas-start dashboard-offcanvas" tabindex="-1" id="menuPrincipal"
+            aria-labelledby="tituloMenuPrincipal">
 
+            <!-- Encabezado del menú -->
+            <header class="offcanvas-header">
 
-    <!-- Modal para crear o editar clientes -->
-    <section class="modal fade client-modal" id="modalCliente" tabindex="-1" aria-labelledby="tituloModalCliente"
-        aria-hidden="true">
-        <section class="modal-dialog modal-dialog-centered modal-lg">
-            <section class="modal-content">
-                <header class="modal-header client-modal-header">
-                    <section>
-                        <span class="client-modal-eyebrow">GESTIÓN DE CLIENTES</span>
-                        <h2 class="modal-title" id="tituloModalCliente">
-                            Nuevo cliente
-                        </h2>
-                        <p>Completa la información para registrar un cliente en Facturate.</p>
-                    </section>
+                <a href="dashboard.html" class="dashboard-brand">
+                    <img src="Imagenes/logo-facturate.png" alt="Facturate" />
+                </a>
 
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                        aria-label="Cerrar ventana"></button>
-                </header>
+                <h2 class="visually-hidden" id="tituloMenuPrincipal">
+                    Menú principal
+                </h2>
 
-                <form id="formularioCliente" autocomplete="off" novalidate>
-                    <section class="modal-body client-modal-body">
-                        <section class="client-form-grid">
-                            <article class="client-form-field client-form-field-full">
-                                <label for="nombreRazonSocialCliente">
-                                    Nombre o razón social <span aria-hidden="true">*</span>
-                                </label>
-                                <input type="text" id="nombreRazonSocialCliente" name="nombre_razon_social"
-                                    maxlength="150" placeholder="Ej. María Gómez o Comercializadora ABC S. A. S."
-                                    required />
-                                <small>Ingresa el nombre completo de la persona o empresa.</small>
-                            </article>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar menú"></button>
 
-                            <article class="client-form-field">
-                                <label for="tipoDocumentoCliente">
-                                    Tipo de documento <span aria-hidden="true">*</span>
-                                </label>
-                                <select id="tipoDocumentoCliente" name="tipo_documento" required>
-                                    <option value="" selected disabled>
-                                        Selecciona un tipo
-                                    </option>
-                                    <option value="CC">Cédula de ciudadanía (CC)</option>
-                                    <option value="NIT">NIT</option>
-                                    <option value="CE">Cédula de extranjería (CE)</option>
-                                </select>
-                            </article>
+            </header>
 
-                            <article class="client-form-field">
-                                <label for="numeroDocumentoCliente">
-                                    Número de documento <span aria-hidden="true">*</span>
-                                </label>
-                                <input type="text" id="numeroDocumentoCliente" name="numero_documento" maxlength="25"
-                                    inputmode="text" placeholder="Ingresa el número" required />
-                                <small>Se almacenará como texto para conservar su formato.</small>
-                            </article>
-                        </section>
+            <!-- Opciones de navegación -->
+            <section class="offcanvas-body">
 
-                        <section class="client-form-options">
-                            <label class="client-checkbox-option" for="esGenericoCliente">
-                                <input type="checkbox" id="esGenericoCliente" name="es_generico" />
-                                <span>
-                                    <strong>Cliente genérico</strong>
-                                    <small>Consumidor final sin tipo ni número de documento.</small>
-                                </span>
-                            </label>
+                <nav class="sidebar-navigation" aria-label="Navegación principal">
 
-                            <label class="client-checkbox-option" for="activoCliente">
-                                <input type="checkbox" id="activoCliente" name="activo" checked />
-                                <span>
-                                    <strong>Cliente activo</strong>
-                                    <small>Los clientes inactivos no estarán disponibles para nuevas ventas.</small>
-                                </span>
-                            </label>
-                        </section>
+                    <p class="sidebar-label">MENÚ PRINCIPAL</p>
 
-                        <p class="client-modal-note">
-                            El identificador y el negocio se asignarán automáticamente. El guardado se habilitará al
-                            integrar el CRUD.
-                        </p>
-                    </section>
+                    <a href="dashboard.html#resumen" class="sidebar-link active" aria-current="page"
+                        data-bs-dismiss="offcanvas">
+                        Resumen general
+                    </a>
 
-                    <footer class="modal-footer client-modal-footer">
-                        <button type="button" class="btn-client-cancel" data-bs-dismiss="modal">
-                            Cancelar
-                        </button>
-                        <button type="submit" class="btn-client-save" id="btnGuardarCliente">
-                            Guardar cliente
-                        </button>
-                    </footer>
-                </form>
+                    <a href="dashboard.html#nueva-venta" class="sidebar-link" data-bs-dismiss="offcanvas">
+                        Nueva venta
+                    </a>
+
+                    <a href="clientes.html" class="sidebar-link" data-bs-dismiss="offcanvas">
+                        Clientes
+                    </a>
+
+                    <a href="productos.html" class="sidebar-link" data-bs-dismiss="offcanvas">
+                        Productos
+                    </a>
+
+                    <a href="historial.html" class="sidebar-link" data-bs-dismiss="offcanvas">
+                        Historial de ventas
+                    </a>
+
+                </nav>
+
             </section>
-        </section>
+
+            <!-- Pie del menú -->
+            <footer class="offcanvas-footer">
+                <p>Facturate · CESDE 2026</p>
+            </footer>
+
+        </aside>
     </section>
+
+    <!-- Footer compartido de Facturate -->
+    <facturate-footer></facturate-footer>
 
     <!-- JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
     <script type="module" src="js/app.js"></script>
+    <script type="module" src="js/footer.js"></script>
 </body>
 
 </html>

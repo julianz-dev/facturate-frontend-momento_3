@@ -1,0 +1,152 @@
+/*========================================
+=          FOOTER COMPARTIDO FACTURATE   =
+========================================*/
+
+.footer {
+    width: 100%;
+    background-color: var(--azul-oscuro);
+    padding: 40px 0 20px;
+}
+
+/* Distribución de marca, contacto y ubicación. */
+.footer-contenido {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 60px;
+}
+
+.footer-contenido article {
+    flex: 1;
+    min-width: 0;
+}
+
+/* Marca y descripción. */
+.footer-marca img {
+    display: block;
+    width: 180px;
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 25px;
+}
+
+/* Textos generales del footer. */
+.footer p {
+    color: var(--gris-claro);
+    line-height: 1.7;
+}
+
+.footer h3 {
+    color: var(--blanco);
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+/* Información de contacto. */
+.footer ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer li {
+    color: var(--gris-claro);
+    line-height: 1.6;
+    margin-bottom: 15px;
+    overflow-wrap: anywhere;
+}
+
+.footer a {
+    color: var(--azul-claro);
+    text-decoration: none;
+}
+
+.footer a:hover {
+    color: var(--blanco);
+    text-decoration: underline;
+}
+
+.footer a:focus-visible {
+    outline: 2px solid var(--azul-claro);
+    outline-offset: 4px;
+    border-radius: 2px;
+}
+
+/* Franja inferior con copyright y datos académicos. */
+.footer-copy {
+    width: 90%;
+    max-width: 1200px;
+    margin: 50px auto 0;
+    padding-top: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    border-top: 1px solid var(--azul-claro);
+    font-size: 14px;
+}
+
+.footer-copy p {
+    margin: 0;
+}
+
+/*========================================
+=         RESPONSIVE: MÓVILES             =
+========================================*/
+
+@media (max-width: 480px) {
+    .footer-contenido {
+        flex-direction: column;
+        gap: 30px;
+    }
+
+    .footer-marca img {
+        width: 150px;
+    }
+
+    .footer h3 {
+        font-size: 20px;
+    }
+
+    .footer-copy {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 10px;
+    }
+
+    .footer-copy p {
+        font-size: 13px;
+    }
+}
+
+/*========================================
+=      RESPONSIVE: CELULARES GRANDES     =
+========================================*/
+
+@media (min-width: 481px) and (max-width: 767px) {
+    .footer-contenido {
+        flex-direction: column;
+        gap: 35px;
+    }
+
+    .footer-copy {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 10px;
+    }
+}
+
+/*========================================
+=          RESPONSIVE: TABLETS           =
+========================================*/
+
+@media (min-width: 768px) and (max-width: 1024px) {
+    .footer-contenido {
+        gap: 40px;
+    }
+}

@@ -1,34 +1,8 @@
 /*========================================
-=             PALETA DE COLORES          =
-========================================*/
-:root {
-    --azul-oscuro: #0b1f3a;
-    --azul-claro: #5bc0eb;
-    --verde: #37a169;
-    --gris-oscuro: #1f2937;
-    --gris-medio: #5b6472;
-    --gris-claro: #dfe5ec;
-    --gris-fondo: #f4f8fb;
-    --blanco: #ffffff;
-}
-
-/*========================================
-=             ESTILOS GENERALES          =
+=       ESTILOS PÁGINA PRINCIPAL INDEX   =
 ========================================*/
 
-/* Reset general para evitar estilos por defecto del navegador */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-/* Estilos generales del sitio */
-body {
-    background-color: var(--gris-fondo);
-    font-family: Arial, Helvetica, sans-serif;
-    color: var(--gris-oscuro);
-}
+/* Los estilos globales están centralizados en base.css. */
 
 /*========================================
 =          PÁGINA PRINCIPAL: INDEX       =
@@ -150,7 +124,6 @@ header {
     margin-bottom: 50px;
 }
 
-
 .boton-primario {
     background-color: var(--azul-claro);
     color: var(--blanco);
@@ -163,7 +136,6 @@ header {
 .boton-primario:hover {
     opacity: 0.8;
 }
-
 
 .boton-secundario {
     background-color: var(--blanco);
@@ -409,80 +381,6 @@ header {
 }
 
 /*========================================
-=                FOOTER                  =
-========================================*/
-
-/* Pie de página */
-.footer {
-    background-color: var(--azul-oscuro);
-    padding: 40px 0 20px;
-}
-
-/* Contenido principal del footer */
-.footer-contenido {
-    width: 90%;
-    max-width: 1200px;
-    margin: auto;
-
-    display: flex;
-    justify-content: space-between;
-    gap: 60px;
-}
-
-.footer-contenido article {
-    flex: 1;
-}
-
-/* Marca */
-.footer-marca img {
-    width: 180px;
-    margin-bottom: 25px;
-}
-
-/* Textos generales */
-.footer p {
-    color: var(--gris-claro);
-    line-height: 1.7;
-}
-
-.footer h3 {
-    color: var(--blanco);
-    font-size: 24px;
-    margin-bottom: 20px;
-}
-
-/* Lista de contacto */
-.footer ul {
-    list-style: none;
-}
-
-.footer li {
-    color: var(--gris-claro);
-    margin-bottom: 15px;
-}
-
-.footer a {
-    color: var(--azul-claro);
-    text-decoration: none;
-}
-
-/* Copyright */
-.footer-copy {
-    width: 90%;
-    max-width: 1200px;
-    margin: 50px auto 0;
-    padding-top: 30px;
-
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 20px;
-
-    border-top: 1px solid var(--azul-claro);
-    font-size: 14px;
-}
-
-/*========================================
 =            BOTÓN WHATSAPP              =
 ========================================*/
 
@@ -678,38 +576,6 @@ header {
         max-width: 100%;
     }
 
-    /*========================================
-    =                FOOTER                  =
-    ========================================*/
-
-    /* Organizar contenido en columna */
-    .footer-contenido {
-        flex-direction: column;
-        gap: 30px;
-    }
-
-    /* Reducir tamaño del logo */
-    .footer-marca img {
-        width: 150px;
-    }
-
-    /* Reducir tamaño de títulos */
-    .footer h3 {
-        font-size: 20px;
-    }
-
-    /* Organizar copyright en columna */
-    .footer-copy {
-        flex-direction: column;
-        text-align: center;
-        gap: 10px;
-    }
-
-    /* Reducir tamaño del texto */
-    .footer-copy p {
-        font-size: 13px;
-    }
-
 }
 
 /*========================================
@@ -834,23 +700,6 @@ header {
         max-width: 100%;
     }
 
-    /*========================================
-    =                FOOTER                  =
-    ========================================*/
-
-    /* Organizar contenido en columna */
-    .footer-contenido {
-        flex-direction: column;
-        gap: 35px;
-    }
-
-    /* Organizar copyright en columna */
-    .footer-copy {
-        flex-direction: column;
-        text-align: center;
-        gap: 10px;
-    }
-
 }
 
 /*========================================
@@ -955,15 +804,6 @@ header {
     /* Reducir ancho de la tarjeta lateral */
     .cta-accion {
         max-width: 300px;
-    }
-
-    /*========================================
-    =                FOOTER                  =
-    ========================================*/
-
-    /* Ajustar separación entre columnas */
-    .footer-contenido {
-        gap: 40px;
     }
 
 }

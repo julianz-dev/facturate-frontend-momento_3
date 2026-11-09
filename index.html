@@ -2,262 +2,222 @@
 <html lang="es">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Facturate | Gestión digital para pequeños negocios</title>
-  <link rel="icon" type="image/png" href="Imagenes/favicon.png">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-  <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Facturate: gestión digital simple para pequeños negocios y microempresas.">
+    <title>Facturate | Gestión digital para pequeños negocios</title>
+
+    <link rel="icon" type="image/png" href="Imagenes/favicon.png">
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+
+    <!-- Estilos globales, propios de index y del footer compartido -->
+    <link rel="stylesheet" href="base.css">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="footer.css">
 </head>
 
 <body id="inicio">
 
-  <!-- Header -->
-  <header>
+    <!-- Header -->
+    <header>
+        <nav class="navbar navbar-expand-lg">
+            <section class="container">
 
-    <nav class="navbar navbar-expand-lg">
+                <a class="navbar-brand" href="#inicio">
+                    <img src="Imagenes/logo-facturate.png" alt="Logo de Facturate">
+                </a>
 
-      <section class="container">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#menuFacturate" aria-controls="menuFacturate" aria-expanded="false"
+                    aria-label="Abrir menú de navegación">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
 
-        <a class="navbar-brand" href="#inicio">
-          <img src="Imagenes/logo-facturate.png" alt="Logo de Facturate">
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuFacturate">
-          <span class="navbar-toggler-icon"></span>
-        </button>
+                <section class="collapse navbar-collapse" id="menuFacturate">
+                    <ul class="navbar-nav mx-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#inicio">Inicio</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#funcionalidades">Funcionalidades</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="nosotros.html">Nosotros</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="registro.html">Regístrate</a>
+                        </li>
+                        <li class="nav-item d-lg-none">
+                            <a class="nav-link" href="login.html">Iniciar sesión</a>
+                        </li>
+                    </ul>
 
-        <section class="collapse navbar-collapse" id="menuFacturate">
+                    <!-- El botón se muestra únicamente en escritorio. -->
+                    <a class="login d-none d-lg-inline-block" href="login.html">Iniciar sesión</a>
+                </section>
 
-          <ul class="navbar-nav mx-auto">
-            <li class="nav-item">
-              <a class="nav-link" href="#inicio">Inicio</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#funcionalidades">Funcionalidades</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="nosotros.html">Nosotros</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="registro.html">Regístrate</a>
-            </li>
-            <li class="nav-item d-lg-none">
-              <a class="nav-link" href="login.html">Iniciar sesión</a>
-            </li>
-          </ul>
-          <!-- Oculta el botón en móviles y lo muestra únicamente en escritorio -->
-          <a class="login d-none d-lg-inline-block" href="login.html">Iniciar sesión</a>
+            </section>
+        </nav>
+    </header>
 
+    <!-- Contenido principal -->
+    <main>
+
+        <!-- Hero: presentación principal -->
+        <section class="hero">
+            <section class="hero-texto">
+                <p class="hero-slogan">"Digitalízate, no te confíes"</p>
+                <h1>Gestión digital simple para pequeños negocios</h1>
+                <p class="hero-descripcion">
+                    Facturate es una herramienta de recaudo digital diseñada para
+                    microempresas y negocios minoristas. Registra ventas, genera
+                    facturas PDF, controla inventario y gestiona clientes desde
+                    tu computador, incluso con conexión limitada a internet.
+                </p>
+
+                <section class="hero-botones">
+                    <a class="boton-primario" href="registro.html">Crear cuenta</a>
+                    <a class="boton-secundario" href="#funcionalidades">Ver módulos</a>
+                </section>
+
+                <section class="hero-estadisticas">
+                    <article class="estadistica">
+                        <strong>Trabajo continuo</strong>
+                        <p>Funciona sin conexión permanente a internet</p>
+                    </article>
+                    <article class="estadistica">
+                        <strong>Simple</strong>
+                        <p>Fácil de usar</p>
+                    </article>
+                    <article class="estadistica">
+                        <strong>Local</strong>
+                        <p>Datos seguros</p>
+                    </article>
+                </section>
+            </section>
+
+            <section class="hero-imagen">
+                <img src="Imagenes/Monitor-Interfaz.png"
+                    alt="Interfaz principal de Facturate en monitor de computador">
+            </section>
         </section>
 
-      </section>
-
-    </nav>
-
-  </header>
-
-  <!-- Main -->
-  <main>
-    <!--Hero (Parte principal y mas visible de la pagina)-->
-    <section class="hero">
-
-      <section class="hero-texto">
-
-        <p class="hero-slogan">"Digitalízate, no te confíes"</p>
-        <h1>Gestión digital simple para pequeños negocios</h1>
-        <p class="hero-descripcion">
-          Facturate es una herramienta de recaudo digital diseñada para
-          microempresas y negocios minoristas. Registra ventas, genera
-          facturas PDF, controla inventario y gestiona clientes desde
-          tu computador, incluso con conexión limitada a internet.
-        </p>
-
-        <section class="hero-botones">
-          <a class="boton-primario" href="registro.html">Crear cuenta</a> <!--Boton para el formulario de registro-->
-          <a class="boton-secundario" href="#funcionalidades">Ver
-            módulos</a><!--Boton para conocer funcionalidades del software-->
-        </section>
-
-        <section class="hero-estadisticas">
-          <article class="estadistica">
-            <strong>Trabajo continuo</strong>
-            <p>Funciona sin conexión permanente a internet</p>
-          </article>
-          <article class="estadistica">
-            <strong>Simple</strong>
-            <p>Fácil de usar</p>
-          </article>
-          <article class="estadistica">
-            <strong>Local</strong>
-            <p>Datos seguros</p>
-          </article>
-        </section>
-
-      </section>
-
-      <section class="hero-imagen">
-        <img src="Imagenes/Monitor-Interfaz.png" alt="Interfaz principal de Facturate en monitor de computador">
-      </section>
-
-    </section>
-
-    <!-- Funcionalidades -->
-    <section class="funcionalidades" id="funcionalidades">
-
-      <h2>Todo lo que necesitas para gestionar tu negocio</h2>
-      <p>
-        Digitaliza procesos que tradicionalmente se realizan
-        en papel o de forma manual mediante una solución
-        accesible, sencilla y eficiente.
-      </p>
-
-      <section class="funcionalidades-cartas">
-        <article class="funcionalidad">
-          <h3>Facturación digital</h3>
-          <p>
-            Genera facturas en formato PDF, imprímelas
-            o almacénalas en la base de datos.
-          </p>
-        </article>
-        <article class="funcionalidad">
-          <h3>Gestión de inventario</h3>
-          <p>
-            Controla productos y servicios, consulta cantidades
-            disponibles y mantén actualizado el inventario.
-          </p>
-        </article>
-        <article class="funcionalidad">
-          <h3>Clientes y Reportes</h3>
-          <p>
-            Registra clientes y consulta reportes para
-            tomar decisiones estratégicas.
-          </p>
-        </article>
-
-      </section>
-
-    </section>
-
-    <!-- Modulos -->
-    <section class="modulos" id="modulos">
-
-      <section class="modulos-texto">
-
-        <h2>Pensado para el día a día del negocio</h2>
-        <p>
-          Menos papeles sueltos y más control
-          sobre lo que entra y sale.
-        </p>
-
-        <section class="modulos-lista">
-
-          <article class="modulo">
-            <h3>Ventas rápidas</h3>
+        <!-- Funcionalidades -->
+        <section class="funcionalidades" id="funcionalidades">
+            <h2>Todo lo que necesitas para gestionar tu negocio</h2>
             <p>
-              Registra operaciones frecuentes mediante
-              campos simples y fáciles de completar.
+                Digitaliza procesos que tradicionalmente se realizan
+                en papel o de forma manual mediante una solución
+                accesible, sencilla y eficiente.
             </p>
-          </article>
-          <article class="modulo">
-            <h3>Acceso a la información</h3>
-            <p>
-              Consulta información importante incluso
-              con conexión inestable.
-            </p>
-          </article>
-          <article class="modulo">
-            <h3>Control preciso</h3>
-            <p>
-              Lleva un control preciso de cuentas,
-              clientes e inventario.
-            </p>
-          </article>
 
+            <section class="funcionalidades-cartas">
+                <article class="funcionalidad">
+                    <h3>Facturación digital</h3>
+                    <p>
+                        Genera facturas en formato PDF, imprímelas
+                        o almacénalas en la base de datos.
+                    </p>
+                </article>
+                <article class="funcionalidad">
+                    <h3>Gestión de inventario</h3>
+                    <p>
+                        Controla productos y servicios, consulta cantidades
+                        disponibles y mantén actualizado el inventario.
+                    </p>
+                </article>
+                <article class="funcionalidad">
+                    <h3>Clientes y Reportes</h3>
+                    <p>
+                        Registra clientes y consulta reportes para
+                        tomar decisiones estratégicas.
+                    </p>
+                </article>
+            </section>
         </section>
 
-      </section>
+        <!-- Módulos -->
+        <section class="modulos" id="modulos">
+            <section class="modulos-texto">
+                <h2>Pensado para el día a día del negocio</h2>
+                <p>
+                    Menos papeles sueltos y más control
+                    sobre lo que entra y sale.
+                </p>
 
-      <section class="modulos-manual">
-        <img src="Imagenes/Papel_Calculadora.png" alt="Imagen de recibos manuales y calculadora simple">
-      </section>
+                <section class="modulos-lista">
+                    <article class="modulo">
+                        <h3>Ventas rápidas</h3>
+                        <p>
+                            Registra operaciones frecuentes mediante
+                            campos simples y fáciles de completar.
+                        </p>
+                    </article>
+                    <article class="modulo">
+                        <h3>Acceso a la información</h3>
+                        <p>
+                            Consulta información importante incluso
+                            con conexión inestable.
+                        </p>
+                    </article>
+                    <article class="modulo">
+                        <h3>Control preciso</h3>
+                        <p>
+                            Lleva un control preciso de cuentas,
+                            clientes e inventario.
+                        </p>
+                    </article>
+                </section>
+            </section>
 
-    </section>
+            <section class="modulos-manual">
+                <img src="Imagenes/Papel_Calculadora.png"
+                    alt="Imagen de recibos manuales y calculadora simple">
+            </section>
+        </section>
 
-    <!--CTA Section (invitación final)-->
-    <section class="cta">
+        <!-- Llamada a la acción -->
+        <section class="cta">
+            <section class="cta-texto">
+                <h2>Comienza a digitalizar tu negocio hoy mismo.</h2>
+                <p>
+                    Deja atrás los registros en papel y las hojas de cálculo desorganizadas.
+                    Facturate te ayuda a llevar un control profesional de tu negocio desde un solo lugar.
+                </p>
+                <ul>
+                    <li>Genera facturas en PDF listas para imprimir o guardar</li>
+                    <li>Realiza cuadres de caja precisos y rápidos</li>
+                    <li>Consulta ventas y productos en cualquier momento</li>
+                    <li>Funciona sin conexión permanente a internet</li>
+                </ul>
+            </section>
 
-      <section class="cta-texto">
-        <h2>Comienza a digitalizar tu negocio hoy mismo.</h2>
-        <p>
-          Deja atrás los registros en papel y las hojas de cálculo desorganizadas.
-          Facturate te ayuda a llevar un control profesional de tu negocio desde un solo lugar.
-        </p>
-        <ul>
-          <li>Genera facturas en PDF listas para imprimir o guardar</li>
-          <li>Realiza cuadres de caja precisos y rápidos</li>
-          <li>Consulta ventas y productos en cualquier momento</li>
-          <li>Funciona sin conexión permanente a internet</li>
-        </ul>
-      </section>
+            <article class="cta-accion">
+                <h2>¿Listo para empezar?</h2>
+                <p>
+                    Únete a cientos de pequeños negocios que ya están gestionando sus operaciones con Facturate.
+                </p>
+                <a class="boton-cta" href="registro.html">Crear cuenta</a>
+            </article>
+        </section>
 
-      <article class="cta-accion">
-        <h2>¿Listo para empezar?</h2>
-        <p>
-          Únete a cientos de pequeños negocios que ya están gestionando sus operaciones con Facturate.
-        </p>
-        <a class="boton-cta" href="registro.html">Crear cuenta</a>
-      </article>
+    </main>
 
-    </section>
+    <!-- Footer compartido: el contenido se carga desde componentes/footer.html. -->
+    <facturate-footer></facturate-footer>
 
-  </main>
+    <!-- Botón flotante de WhatsApp de la página principal. -->
+    <a href="https://wa.me/573136800080" class="btn-whatsapp" target="_blank"
+        rel="noopener noreferrer" aria-label="Contactar por WhatsApp">
+        <img src="Imagenes/icon-whatsapp.png" alt="">
+    </a>
 
-  <!--Footer-->
-  <footer class="footer">
+    <!-- JavaScript de Bootstrap y del componente de footer. -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="module" src="js/footer.js"></script>
 
-    <section class="footer-contenido">
-
-      <article class="footer-marca">
-        <img src="Imagenes/logo-facturate.png" alt="Logo de Facturate">
-        <p>
-          Herramienta de recaudo digital simple
-          para pequeños negocios y microempresas.
-        </p>
-      </article>
-      <article class="footer-contacto">
-        <h3>Contáctanos</h3>
-        <ul>
-          <li>Correo electrónico:
-            <a href="mailto:julian.zapata.munera@gmail.com"> soporte@facturate.com</a>
-          </li>
-          <li>WhatsApp:
-            <a href="https://wa.me/573136800080">(+57) 3136800080</a>
-          </li>
-        </ul>
-      </article>
-
-      <article class="footer-ubicacion">
-        <p>Bello, Antioquia - Colombia</p>
-      </article>
-
-    </section>
-
-    <!--Copyrigth de proyecto Facturate-->
-    <section class="footer-copy">
-      <p>© 2026 Facturate. Todos los derechos reservados.</p>
-      <p>Proyecto Integrador CESDE</p>
-      <p>Sistema de Recaudo Digital</p>
-    </section>
-
-  </footer>
-  <a href="https://wa.me/573136800080" class="btn-whatsapp" target="_blank" aria-label="Contactar por WhatsApp">
-    <img src="Imagenes/icon-whatsapp.png" alt="icono-wpp">
-  </a>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
-  <!--Se agrega script para crear menu tipo hamburguesa-->
-  
 </body>
-
 </html>
