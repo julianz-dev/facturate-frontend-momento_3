@@ -31,7 +31,7 @@ let gco_productosActivos = [];
 let gco_carrito = [];
 
 // Los indicadores permanecen pendientes hasta que cada API responda.
-let gco_totalClientesActivos = null;
+let gco_totalClientesRegistrados = null;
 let gco_totalProductosActivos = null;
 
 // Temporizador para ocultar el mensaje de producto agregado.
@@ -64,9 +64,9 @@ if (gco_accesoAutorizado) {
     // ========================================
 
     function gco_refrescarIndicadoresDashboard() {
-        const gco_clientesTexto = gco_totalClientesActivos === null
+        const gco_clientesTexto = gco_totalClientesRegistrados === null
             ? "—"
-            : gco_totalClientesActivos;
+            : gco_totalClientesRegistrados;
 
         const gco_productosTexto = gco_totalProductosActivos === null
             ? "—"
@@ -289,7 +289,7 @@ if (gco_accesoAutorizado) {
 
         // Consultar clientes y productos de manera simultánea.
         await Promise.all([
-            gco_cargarClientesActivos(),
+            gco_cargarClientesDashboard(),
             gco_cargarProductosActivos(),
         ]);
     }
@@ -298,33 +298,54 @@ if (gco_accesoAutorizado) {
     // CONSULTAR CLIENTES ACTIVOS PARA VENTAS
     // ========================================
 
-    async function gco_cargarClientesActivos() {
+    async function gco_cargarClientesDashboard() {
         try {
-            // Consultar los clientes registrados en MockAPI.
-            const gco_clientes = await gco_consultarAPI(gco_apiClientes);
+            // Consultar todos los clientes registrados en MockAPI.
+            const gco_clientesRegistrados = await gco_consultarAPI(gco_apiClientes);
 
-            // Conservar únicamente los clientes activos.
-            gco_clientesActivos = gco_clientes.filter(
+            // Conservar únicamente los clientes activos para nuevas ventas.
+            gco_clientesActivos = gco_clientesRegistrados.filter(
                 (gco_cliente) => gco_cliente.activo === true,
             );
 
-            // Mostrar los clientes activos en el selector de venta.
+            // Recordar la selección actual, si el cliente sigue activo.
+            const gco_selectorCliente = document.querySelector("#selectorCliente");
+            const gco_clienteSeleccionado = gco_selectorCliente?.value ?? "";
+
+            // Mostrar únicamente clientes activos en el selector de venta.
             gco_mostrarClientes(gco_clientesActivos);
 
-            // Actualizar el indicador general de clientes.
-            gco_totalClientesActivos = gco_clientesActivos.length;
+            // Restaurar la selección solo si el cliente continúa activo.
+            const gco_seleccionSigueActiva = gco_clientesActivos.some(
+                (gco_cliente) =>
+                    String(gco_cliente.cliente_id ?? gco_cliente.id) ===
+                    String(gco_clienteSeleccionado),
+            );
+
+            if (gco_seleccionSigueActiva && gco_selectorCliente) {
+                gco_selectorCliente.value = gco_clienteSeleccionado;
+            }
+
+            // El indicador "Clientes registrados" cuenta activos e inactivos.
+            gco_totalClientesRegistrados = gco_clientesRegistrados.length;
             gco_refrescarIndicadoresDashboard();
 
+            console.log(
+                "Total de clientes registrados:",
+                gco_totalClientesRegistrados,
+            );
             console.log(
                 "Clientes activos disponibles para ventas:",
                 gco_clientesActivos.length,
             );
         } catch (gco_error) {
             console.error(
-                "No se pudieron cargar los clientes para ventas:",
+                "No se pudieron cargar los clientes para el Dashboard:",
                 gco_error.message,
             );
 
+            gco_totalClientesRegistrados = null;
+            gco_refrescarIndicadoresDashboard();
             gco_mostrarErrorClientes();
         }
     }
@@ -366,4 +387,12 @@ if (gco_accesoAutorizado) {
 
     // Ejecutar la carga inicial del Dashboard.
     gco_inicializarDashboard();
+
+    // Si el navegador restaura esta página desde BFCache (por ejemplo,
+    // al volver desde Clientes), consultar nuevamente los clientes.
+    window.addEventListener("pageshow", (gco_evento) => {
+        if (gco_evento.persisted) {
+            gco_cargarClientesDashboard();
+        }
+    });
 }

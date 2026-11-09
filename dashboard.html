@@ -160,12 +160,16 @@
                                 <p id="mensajeProductoAgregado" class="product-feedback" role="status"
                                     aria-live="polite" hidden></p>
 
-                                <section id="contenedorCatalogoProductos" hidden>
+                                <!-- Buscador siempre visible, aunque se oculte el catálogo -->
+                                <section class="product-search-field">
                                     <label for="buscarProducto">Buscar producto</label>
 
                                     <input type="search" id="buscarProducto" placeholder="Buscar por nombre o código..."
                                         autocomplete="off" />
+                                </section>
 
+                                <!-- Esta sección contiene únicamente las tarjetas del catálogo -->
+                                <section id="contenedorCatalogoProductos" hidden>
                                     <section id="listaProductos" class="product-list" aria-live="polite">
                                         <p class="empty-state">
                                             Los productos aparecerán aquí cuando
@@ -333,29 +337,20 @@
 
                     <p class="sidebar-label">MENÚ PRINCIPAL</p>
 
-                    <a href="dashboard.html#resumen" class="sidebar-link active" aria-current="page"
-                        data-bs-dismiss="offcanvas">
-                        Resumen general
-                    </a>
-
-                    <a href="dashboard.html#nueva-venta" class="sidebar-link" data-bs-dismiss="offcanvas">
-                        Nueva venta
-                    </a>
-
-                    <a href="clientes.html" class="sidebar-link" data-bs-dismiss="offcanvas">
+                    <!-- Navegación hacia otras páginas -->
+                    <a href="clientes.html" class="sidebar-link">
                         Clientes
                     </a>
 
-                    <a href="productos.html" class="sidebar-link" data-bs-dismiss="offcanvas">
+                    <a href="productos.html" class="sidebar-link">
                         Productos
                     </a>
 
-                    <a href="historial.html" class="sidebar-link" data-bs-dismiss="offcanvas">
+                    <a href="historial.html" class="sidebar-link">
                         Historial de ventas
                     </a>
 
                 </nav>
-
             </section>
 
             <!-- Pie del menú -->
