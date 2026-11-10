@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Consulta el historial de ventas de Facturate" />
+    <meta name="generator" content="handcoded" />
+
+    <title>Historial de ventas | Facturate</title>
+
+    <link rel="icon" type="image/png" href="Imagenes/favicon.png" />
+
+    <!-- Bootstrap 5.3.8 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- Hojas de estilo compartidas y específicas -->
+    <link rel="stylesheet" href="base.css" />
+    <link rel="stylesheet" href="navegacion.css" />
+    <link rel="stylesheet" href="historial.css" />
+    <link rel="stylesheet" href="footer.css" />
+</head>
+
+<body>
+
+    <!-- Página de consulta del historial de ventas -->
+    <section class="dashboard-layout">
+
+        <!-- Encabezado superior -->
+        <header class="topbar">
+
+            <section class="topbar-left">
+
+                <button type="button" class="btn-menu-hamburguesa" data-bs-toggle="offcanvas"
+                    data-bs-target="#menuPrincipal" aria-controls="menuPrincipal"
+                    aria-label="Abrir menú de navegación">
+                    <span aria-hidden="true">&#9776;</span>
+                </button>
+
+                <section class="topbar-heading">
+                    <p class="topbar-subtitle">FACTURATE / GESTIÓN COMERCIAL</p>
+                    <h1>Historial de ventas</h1>
+                </section>
+
+            </section>
+
+            <section class="user-profile">
+                <span class="user-avatar" aria-hidden="true">JD</span>
+
+                <section class="user-details">
+                    <strong>Administrador</strong>
+                    <span>Sesión de prueba</span>
+
+                    <button id="btnCerrarSesion" class="btn-cerrar-sesion" type="button">
+                        Cerrar sesión
+                    </button>
+                </section>
+            </section>
+
+        </header>
+
+        <!-- Contenido principal -->
+        <main class="dashboard-main">
+
+            <section class="dashboard-content">
+
+                <!-- Introducción -->
+                <header class="page-intro">
+                    <section>
+                        <h2>Ventas registradas</h2>
+                        <p>
+                            Consulta las ventas del negocio y revisa los productos
+                            incluidos en cada operación.
+                        </p>
+                    </section>
+                </header>
+
+                <!-- Sección principal del historial -->
+                <section class="dashboard-card history-admin-section" aria-labelledby="tituloSeccionHistorial">
+
+                    <header class="history-admin-heading">
+                        <section>
+                            <h2 id="tituloSeccionHistorial">Listado de ventas</h2>
+                            <p>Utiliza la búsqueda y los filtros para localizar una venta.</p>
+                        </section>
+                    </header>
+
+                    <!-- Búsqueda y filtros -->
+                    <section class="sales-history-filters" aria-label="Búsqueda y filtros de ventas">
+
+                        <article class="history-filter-field history-search-field">
+                            <label for="buscarVenta">Buscar venta</label>
+                            <input type="search" id="buscarVenta"
+                                placeholder="Buscar por ID o nombre del cliente..."
+                                autocomplete="off" />
+                        </article>
+
+                        <article class="history-filter-field">
+                            <label for="fechaDesde">Desde</label>
+                            <input type="date" id="fechaDesde" />
+                        </article>
+
+                        <article class="history-filter-field">
+                            <label for="fechaHasta">Hasta</label>
+                            <input type="date" id="fechaHasta" />
+                        </article>
+
+                        <article class="history-filter-field">
+                            <label for="filtroEstadoVenta">Estado</label>
+                            <select id="filtroEstadoVenta">
+                                <option value="TODOS" selected>Todos los estados</option>
+                                <option value="CONFIRMADA">Confirmada</option>
+                                <option value="BORRADOR">Borrador</option>
+                                <option value="ANULADA">Anulada</option>
+                            </select>
+                        </article>
+
+                        <article class="history-filter-field history-sort-field">
+                            <label for="ordenVentas">Ordenar por fecha</label>
+                            <select id="ordenVentas">
+                                <option value="RECIENTES" selected>Más recientes</option>
+                                <option value="ANTIGUAS">Más antiguas</option>
+                            </select>
+                        </article>
+
+                        <button type="button" class="btn-limpiar-filtros" id="btnLimpiarFiltros">
+                            Limpiar filtros
+                        </button>
+
+                    </section>
+
+                    <!-- Mensajes de carga, resultado y error -->
+                    <p id="mensajeEstadoHistorial" class="history-feedback" role="status"
+                        aria-live="polite">
+                        Cargando el historial de ventas...
+                    </p>
+
+                    <!-- Tabla de ventas -->
+                    <section class="table-responsive" id="contenedorTablaVentas"
+                        aria-label="Listado de ventas registradas">
+
+                        <table class="history-table sales-history-table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Venta</th>
+                                    <th scope="col">Fecha</th>
+                                    <th scope="col">Cliente</th>
+                                    <th scope="col">Total</th>
+                                    <th scope="col">Método de pago</th>
+                                    <th scope="col">Estado</th>
+                                    <th scope="col">Acciones</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="tablaVentas" aria-live="polite">
+                                <tr>
+                                    <td colspan="7" class="empty-table">
+                                        Las ventas aparecerán aquí cuando se conecte el historial con MockAPI.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </section>
+
+                </section>
+
+            </section>
+
+        </main>
+
+        <!-- Menú de navegación hamburguesa -->
+        <aside class="offcanvas offcanvas-start dashboard-offcanvas" tabindex="-1" id="menuPrincipal"
+            aria-labelledby="tituloMenuPrincipal">
+
+            <header class="offcanvas-header">
+                <a href="dashboard.html" class="dashboard-brand">
+                    <img src="Imagenes/logo-facturate.png" alt="Facturate" />
+                </a>
+
+                <h2 class="visually-hidden" id="tituloMenuPrincipal">Menú principal</h2>
+
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas"
+                    aria-label="Cerrar menú"></button>
+            </header>
+
+            <section class="offcanvas-body">
+                <nav class="sidebar-navigation" aria-label="Navegación principal">
+                    <p class="sidebar-label">MENÚ PRINCIPAL</p>
+
+                    <a href="dashboard.html" class="sidebar-link">Dashboard</a>
+                    <a href="clientes.html" class="sidebar-link">Clientes</a>
+                    <a href="productos.html" class="sidebar-link">Productos</a>
+                    <a href="historial.html" class="sidebar-link active" aria-current="page">
+                        Historial de ventas
+                    </a>
+                </nav>
+            </section>
+
+            <footer class="offcanvas-footer">
+                <p>Facturate · CESDE 2026</p>
+            </footer>
+
+        </aside>
+
+    </section>
+
+    <!-- Footer compartido de Facturate -->
+    <facturate-footer></facturate-footer>
+
+    <!-- Modal para consultar el detalle de una venta -->
+    <section class="modal fade" id="modalDetalleVenta" tabindex="-1"
+        aria-labelledby="tituloModalDetalleVenta" aria-hidden="true">
+
+        <section class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+            <section class="modal-content history-detail-modal">
+
+                <header class="modal-header history-detail-header">
+                    <section>
+                        <span class="history-modal-eyebrow">CONSULTA DE VENTA</span>
+                        <h2 class="modal-title" id="tituloModalDetalleVenta">Detalle de la venta</h2>
+                        <p id="ventaDetalleIdentificador">Selecciona una venta para consultar su información.</p>
+                    </section>
+
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Cerrar ventana"></button>
+                </header>
+
+                <section class="modal-body history-detail-body">
+
+                    <!-- Información general de la venta -->
+                    <section class="history-detail-info" aria-label="Información general de la venta">
+                        <article>
+                            <span>Fecha</span>
+                            <strong id="ventaDetalleFecha">—</strong>
+                        </article>
+
+                        <article>
+                            <span>Cliente</span>
+                            <strong id="ventaDetalleCliente">—</strong>
+                        </article>
+
+                        <article>
+                            <span>Estado</span>
+                            <strong id="ventaDetalleEstado">—</strong>
+                        </article>
+
+                        <article>
+                            <span>Método de pago</span>
+                            <strong id="detalleMetodoPago">—</strong>
+                        </article>
+                    </section>
+
+                    <!-- Productos incluidos en la venta -->
+                    <section class="history-detail-products">
+                        <h3>Productos de la venta</h3>
+
+                        <section class="table-responsive">
+                            <table class="history-table detail-products-table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Producto</th>
+                                        <th scope="col">Cantidad</th>
+                                        <th scope="col">Precio unitario</th>
+                                        <th scope="col">Subtotal</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody id="tablaDetallesVenta" aria-live="polite">
+                                    <tr>
+                                        <td colspan="4" class="empty-table">
+                                            Los productos de la venta aparecerán aquí.
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </section>
+                    </section>
+
+                    <!-- Resumen económico -->
+                    <section class="history-detail-summary" aria-label="Resumen económico de la venta">
+                        <h3>Resumen de la venta</h3>
+
+                        <article class="history-detail-summary-row">
+                            <span>Subtotal</span>
+                            <strong id="detalleSubtotal">$0</strong>
+                        </article>
+
+                        <article class="history-detail-summary-row">
+                            <span>Descuentos</span>
+                            <strong id="detalleDescuento">$0</strong>
+                        </article>
+
+                        <article class="history-detail-summary-row">
+                            <span>Impuestos</span>
+                            <strong id="detalleImpuesto">$0</strong>
+                        </article>
+
+                        <article class="history-detail-summary-row history-detail-total">
+                            <span>Total</span>
+                            <strong id="detalleTotal">$0</strong>
+                        </article>
+
+                        <article class="history-detail-summary-row">
+                            <span>Valor recibido</span>
+                            <strong id="detalleValorRecibido">$0</strong>
+                        </article>
+
+                        <article class="history-detail-summary-row">
+                            <span>Cambio</span>
+                            <strong id="detalleCambio">$0</strong>
+                        </article>
+                    </section>
+
+                </section>
+
+                <footer class="modal-footer history-detail-footer">
+                    <button type="button" class="btn-cerrar-detalle" data-bs-dismiss="modal">
+                        Cerrar
+                    </button>
+                </footer>
+
+            </section>
+        </section>
+    </section>
+
+    <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="module" src="js/historial.js"></script>
+    <script type="module" src="js/footer.js"></script>
+
+</body>
+
+</html>

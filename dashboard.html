@@ -89,15 +89,37 @@
                 <!-- Indicadores -->
                 <section class="metrics-grid" aria-label="Indicadores generales">
                     <article class="metric-card">
-                        <span class="metric-label">Ventas del día</span>
-                        <strong class="metric-value" id="indicadorVentasHoy">—</strong>
-                        <span class="metric-description">Pendiente de conexión</span>
+                        <div class="metric-card-heading">
+                            <span class="metric-label">Ventas del día</span>
+                            <label class="visually-hidden" for="selectorMetricaVentasHoy">
+                                Mostrar ventas del día como
+                            </label>
+                            <select class="metric-mode-select" id="selectorMetricaVentasHoy">
+                                <option value="cantidad" selected>Cantidad</option>
+                                <option value="dinero">Dinero (COP)</option>
+                            </select>
+                        </div>
+                        <strong class="metric-value" id="indicadorVentasHoy" aria-live="polite">—</strong>
+                        <span class="metric-description" id="descripcionVentasHoy">
+                            Consultando ventas confirmadas...
+                        </span>
                     </article>
 
                     <article class="metric-card">
-                        <span class="metric-label">Ventas registradas</span>
-                        <strong class="metric-value" id="indicadorTotalVentas">—</strong>
-                        <span class="metric-description">Pendiente de conexión</span>
+                        <div class="metric-card-heading">
+                            <span class="metric-label">Ventas registradas</span>
+                            <label class="visually-hidden" for="selectorMetricaTotalVentas">
+                                Mostrar ventas registradas como
+                            </label>
+                            <select class="metric-mode-select" id="selectorMetricaTotalVentas">
+                                <option value="cantidad" selected>Cantidad</option>
+                                <option value="dinero">Dinero (COP)</option>
+                            </select>
+                        </div>
+                        <strong class="metric-value" id="indicadorTotalVentas" aria-live="polite">—</strong>
+                        <span class="metric-description" id="descripcionTotalVentas">
+                            Consultando ventas confirmadas...
+                        </span>
                     </article>
 
                     <article class="metric-card">
@@ -268,9 +290,8 @@
                                 Finalizar venta
                             </button>
 
-                            <p class="card-note">
-                                Se habilitará cuando implementemos el
-                                proceso de venta.
+                            <p class="card-note" id="notaEstadoVenta" aria-live="polite">
+                                El registro de ventas se habilitará al completar su configuración y conexión con MockAPI.
                             </p>
                         </aside>
                     </section>

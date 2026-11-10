@@ -104,6 +104,30 @@
     font-size: 12px;
 }
 
+.metric-card-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.metric-mode-select {
+    max-width: 125px;
+    padding: 6px 8px;
+    border: 1px solid var(--gris-claro);
+    border-radius: 7px;
+    background-color: var(--blanco);
+    color: var(--gris-oscuro);
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.metric-mode-select:focus-visible {
+    outline: 3px solid rgba(91, 192, 235, 0.25);
+    outline-offset: 2px;
+    border-color: var(--azul-claro);
+}
+
 /*========================================
 =            ÁREA DE NUEVA VENTA         =
 ========================================*/
@@ -600,11 +624,24 @@
     margin-top: 16px;
 }
 
-.payment-error {
-    color: #dc3545;
+.payment-error,
+.payment-pending,
+.payment-success {
     font-size: 13px;
     font-weight: 600;
     margin: 10px 0;
+}
+
+.payment-error {
+    color: #dc3545;
+}
+
+.payment-pending {
+    color: var(--gris-medio);
+}
+
+.payment-success {
+    color: #17643a;
 }
 
 /*========================================
@@ -668,3 +705,19 @@
     }
 
 }
+
+/*========================================
+=       ESTADO DE VENTAS RECIENTES       =
+========================================*/
+
+.recent-sale-status {
+    display: inline-block;
+    padding: 5px 9px;
+    border-radius: 999px;
+    background-color: var(--gris-fondo);
+    color: var(--azul-oscuro);
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
