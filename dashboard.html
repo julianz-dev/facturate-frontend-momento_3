@@ -154,14 +154,46 @@
                                     <span class="step-number">01</span>
                                 </header>
 
-                                <label for="selectorCliente">Cliente</label>
+                                <label for="busquedaCliente">Buscar cliente</label>
 
-                                <select id="selectorCliente">
-                                    <option value="" selected disabled>
-                                        Los clientes se cargarán desde
-                                        MockAPI
-                                    </option>
-                                </select>
+                                <div class="client-search-controls">
+                                    <input
+                                        type="search"
+                                        id="busquedaCliente"
+                                        placeholder="Cédula o nombre de empresa"
+                                        autocomplete="off"
+                                        aria-controls="listaClientesVenta"
+                                        aria-describedby="ayudaBusquedaCliente"
+                                    />
+
+                                    <button
+                                        type="button"
+                                        class="btn-toggle-catalogo"
+                                        id="btnAlternarListaClientes"
+                                        aria-controls="listaClientesVenta"
+                                        aria-expanded="false"
+                                    >
+                                        Mostrar lista
+                                    </button>
+                                </div>
+
+                                <small id="ayudaBusquedaCliente" class="client-search-help">
+                                    Personas: busca por número de cédula. Empresas: busca por nombre o razón social.
+                                </small>
+
+                                <p id="clienteSeleccionadoTexto" class="selected-client-summary" role="status" aria-live="polite">
+                                    No hay un cliente seleccionado.
+                                </p>
+
+                                <div
+                                    id="listaClientesVenta"
+                                    class="client-selection-list"
+                                    role="group"
+                                    aria-label="Clientes activos disponibles"
+                                    hidden
+                                ></div>
+
+                                <input type="hidden" id="selectorCliente" value="" />
                             </article>
 
                             <!-- Selección de productos -->

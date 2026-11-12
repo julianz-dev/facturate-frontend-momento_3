@@ -13,7 +13,6 @@ import {
 import {
     mostrarCargaClientes,
     mostrarCargaProductos,
-    mostrarClientes,
     mostrarProductos,
     actualizarIndicadores,
     mostrarErrorClientes,
@@ -368,7 +367,17 @@ if (accesoAutorizado) {
     //* VALIDAR EL RECAUDO DE LA VENTA
     //* ========================================
 
+    // Se conserva un campo oculto con el ID del cliente seleccionado para que
+    // el resto del flujo de venta siga utilizando el mismo identificador.
     const selectorClienteVenta = document.querySelector("#selectorCliente");
+    const campoBusquedaCliente = document.querySelector("#busquedaCliente");
+    const botonAlternarListaClientes = document.querySelector(
+        "#btnAlternarListaClientes",
+    );
+    const listaClientesVenta = document.querySelector("#listaClientesVenta");
+    const textoClienteSeleccionado = document.querySelector(
+        "#clienteSeleccionadoTexto",
+    );
     const selectorMetodoPago = document.querySelector("#selectorMetodoPago");
     const campoValorRecibido = document.querySelector("#valorRecibido");
     const elementoValorCambio = document.querySelector("#valorCambio");
@@ -470,6 +479,210 @@ if (accesoAutorizado) {
 
     }
 
+    function normalizarTextoCliente(valor) {
+
+        return String(valor ?? "")
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .toLocaleLowerCase("es-CO")
+            .trim();
+
+    }
+
+    function normalizarDocumentoCliente(valor) {
+
+        return normalizarTextoCliente(valor).replace(/[^a-z0-9]/g, "");
+
+    }
+
+    function esClienteEmpresa(cliente) {
+
+        return String(cliente.tipo_documento ?? "")
+            .trim()
+            .toUpperCase() === "NIT";
+
+    }
+
+    function obtenerNombreVisibleCliente(cliente) {
+
+        return cliente.nombre_razon_social ?? "Cliente sin nombre";
+
+    }
+
+    function obtenerDocumentoVisibleCliente(cliente) {
+
+        if (cliente.es_generico === true) {
+            return "Cliente genérico";
+        }
+
+        const tipoDocumento = String(cliente.tipo_documento ?? "Documento").trim();
+        const numeroDocumento = String(cliente.numero_documento ?? "Sin número").trim();
+
+        return `${tipoDocumento}: ${numeroDocumento}`;
+
+    }
+
+    function obtenerClientesFiltrados(termino) {
+
+        const texto = normalizarTextoCliente(termino);
+
+        if (!texto) {
+            return clientesActivos;
+        }
+
+        const documentoBuscado = normalizarDocumentoCliente(termino);
+
+        return clientesActivos.filter((cliente) => {
+
+            // Las empresas (NIT) se localizan por nombre o razón social.
+            if (esClienteEmpresa(cliente)) {
+                return normalizarTextoCliente(
+                    obtenerNombreVisibleCliente(cliente),
+                ).includes(texto);
+            }
+
+            // El cliente genérico no tiene documento; se puede localizar por su nombre.
+            if (cliente.es_generico === true) {
+                return normalizarTextoCliente(
+                    obtenerNombreVisibleCliente(cliente),
+                ).includes(texto);
+            }
+
+            // Las personas se localizan por número de documento (CC/CE),
+            // ignorando puntos, espacios y guiones.
+            return documentoBuscado !== "" && normalizarDocumentoCliente(
+                cliente.numero_documento,
+            ).includes(documentoBuscado);
+
+        });
+
+    }
+
+    function actualizarBotonListaClientes() {
+
+        if (!botonAlternarListaClientes || !listaClientesVenta) {
+            return;
+        }
+
+        const listaVisible = !listaClientesVenta.hidden;
+
+        botonAlternarListaClientes.textContent = listaVisible
+            ? "Ocultar lista"
+            : "Mostrar lista";
+        botonAlternarListaClientes.setAttribute(
+            "aria-expanded",
+            String(listaVisible),
+        );
+
+    }
+
+    function mostrarMensajeListaClientes(mensaje) {
+
+        if (!listaClientesVenta) {
+            return;
+        }
+
+        listaClientesVenta.replaceChildren();
+
+        const elemento = document.createElement("p");
+        elemento.className = "client-list-message";
+        elemento.textContent = mensaje;
+
+        listaClientesVenta.appendChild(elemento);
+
+    }
+
+    function actualizarTextoClienteSeleccionado() {
+
+        if (!textoClienteSeleccionado) {
+            return;
+        }
+
+        const cliente = obtenerClienteVentaSeleccionado();
+
+        textoClienteSeleccionado.textContent = cliente
+            ? `Cliente seleccionado: ${obtenerNombreVisibleCliente(cliente)} — ${obtenerDocumentoVisibleCliente(cliente)}`
+            : "No hay un cliente seleccionado.";
+
+    }
+
+    function seleccionarClienteVenta(cliente) {
+
+        const clienteId = cliente.cliente_id ?? cliente.id;
+
+        if (clienteId === null || clienteId === undefined || String(clienteId).trim() === "") {
+            return;
+        }
+
+        selectorClienteVenta.value = String(clienteId);
+
+        if (campoBusquedaCliente) {
+            campoBusquedaCliente.value = "";
+        }
+
+        if (listaClientesVenta) {
+            listaClientesVenta.hidden = true;
+        }
+
+        actualizarBotonListaClientes();
+        actualizarTextoClienteSeleccionado();
+        actualizarEstadoRecaudo(true);
+
+    }
+
+    function renderizarListaClientesVenta() {
+
+        if (!listaClientesVenta) {
+            return;
+        }
+
+        const termino = campoBusquedaCliente?.value ?? "";
+        const clientesFiltrados = obtenerClientesFiltrados(termino);
+
+        listaClientesVenta.replaceChildren();
+
+        if (clientesFiltrados.length === 0) {
+            mostrarMensajeListaClientes(
+                termino.trim()
+                    ? "No se encontraron clientes con ese criterio."
+                    : "No hay clientes activos disponibles.",
+            );
+            return;
+        }
+
+        const clienteSeleccionadoId = selectorClienteVenta?.value ?? "";
+
+        clientesFiltrados.forEach((cliente) => {
+
+            const clienteId = cliente.cliente_id ?? cliente.id;
+            const boton = document.createElement("button");
+            const nombre = document.createElement("span");
+            const documento = document.createElement("span");
+
+            boton.type = "button";
+            boton.className = "client-option";
+            boton.setAttribute(
+                "aria-pressed",
+                String(String(clienteId) === String(clienteSeleccionadoId)),
+            );
+
+            nombre.className = "client-option-name";
+            nombre.textContent = obtenerNombreVisibleCliente(cliente);
+
+            documento.className = "client-option-document";
+            documento.textContent = obtenerDocumentoVisibleCliente(cliente);
+
+            boton.append(nombre, documento);
+            boton.addEventListener("click", () => {
+                seleccionarClienteVenta(cliente);
+            });
+
+            listaClientesVenta.appendChild(boton);
+
+        });
+
+    }
+
     function obtenerClienteVentaSeleccionado() {
 
         const clienteId = selectorClienteVenta?.value ?? "";
@@ -483,6 +696,40 @@ if (accesoAutorizado) {
         ) ?? null;
 
     }
+
+    campoBusquedaCliente?.addEventListener("input", () => {
+
+        // Al iniciar una nueva búsqueda se elimina la selección anterior para
+        // evitar que se facture accidentalmente a un cliente distinto del buscado.
+        if (selectorClienteVenta) {
+            selectorClienteVenta.value = "";
+        }
+
+        if (listaClientesVenta) {
+            listaClientesVenta.hidden = false;
+        }
+
+        actualizarBotonListaClientes();
+        actualizarTextoClienteSeleccionado();
+        renderizarListaClientesVenta();
+        actualizarEstadoRecaudo(false);
+
+    });
+
+    botonAlternarListaClientes?.addEventListener("click", () => {
+
+        if (!listaClientesVenta) {
+            return;
+        }
+
+        listaClientesVenta.hidden = !listaClientesVenta.hidden;
+        actualizarBotonListaClientes();
+
+        if (!listaClientesVenta.hidden) {
+            renderizarListaClientesVenta();
+        }
+
+    });
 
     function mostrarMensajeEstadoRecaudo(mensaje, tipo = "error") {
 
@@ -611,10 +858,6 @@ if (accesoAutorizado) {
 
     }
 
-    selectorClienteVenta?.addEventListener("change", () => {
-        actualizarEstadoRecaudo(true);
-    });
-
     selectorMetodoPago?.addEventListener("change", () => {
         actualizarEstadoRecaudo(true);
     });
@@ -660,19 +903,30 @@ if (accesoAutorizado) {
 
     }
 
-    function obtenerUrlRegistroVenta(ventaCreada, ventaId) {
+    function obtenerUrlRegistroVenta(ventaCreada) {
 
-        // MockAPI puede exponer su identificador de recurso como `id`;
-        // si no existe, se utiliza el campo `venta_id` del modelo de Facturate.
-        const idRecurso = ventaCreada.id ?? ventaCreada.venta_id ?? ventaId;
+        // MockAPI actualiza cada recurso mediante su identificador interno `id`.
+        // `venta_id` es el identificador funcional de Facturate y no debe usarse
+        // como sustituto en la ruta del endpoint.
+        const idRecurso = ventaCreada?.id;
+
+        if (
+            idRecurso === null ||
+            idRecurso === undefined ||
+            String(idRecurso).trim() === ""
+        ) {
+            throw new Error(
+                "MockAPI no proporcionó el identificador interno de la venta. No es seguro intentar actualizarla usando venta_id.",
+            );
+        }
 
         return `${apiVentas}/${encodeURIComponent(String(idRecurso))}`;
 
     }
 
-    async function marcarVentaAnulada(ventaCreada, ventaPayload, ventaId) {
+    async function marcarVentaAnulada(ventaCreada, ventaPayload) {
 
-        const urlVenta = obtenerUrlRegistroVenta(ventaCreada, ventaId);
+        const urlVenta = obtenerUrlRegistroVenta(ventaCreada);
 
         await actualizarAPI(urlVenta, {
             ...ventaPayload,
@@ -692,6 +946,35 @@ if (accesoAutorizado) {
 
     }
 
+    async function recuperarVentaConIdRecurso(ventaCreada, uuidLocal) {
+
+        // Algunas respuestas del POST pueden no incluir el objeto completo.
+        // En ese caso se recupera la venta por uuid_local para obtener el `id`
+        // que MockAPI utiliza realmente en las rutas PUT.
+        if (
+            ventaCreada?.id !== null &&
+            ventaCreada?.id !== undefined &&
+            String(ventaCreada.id).trim() !== ""
+        ) {
+            return ventaCreada;
+        }
+
+        const ventaRecuperada = await buscarVentaPorUuid(uuidLocal);
+
+        if (!ventaRecuperada) {
+            throw new Error(
+                "No se encontró la cabecera recién creada al consultar por uuid_local.",
+            );
+        }
+
+        // Valida que la consulta haya devuelto el identificador interno antes
+        // de permitir cualquier PUT o intento de anulación.
+        obtenerUrlRegistroVenta(ventaRecuperada);
+
+        return ventaRecuperada;
+
+    }
+
     function limpiarFormularioVenta() {
 
         carrito = [];
@@ -700,6 +983,17 @@ if (accesoAutorizado) {
         if (selectorClienteVenta) {
             selectorClienteVenta.value = "";
         }
+
+        if (campoBusquedaCliente) {
+            campoBusquedaCliente.value = "";
+        }
+
+        if (listaClientesVenta) {
+            listaClientesVenta.hidden = true;
+        }
+
+        actualizarBotonListaClientes();
+        actualizarTextoClienteSeleccionado();
 
         if (selectorMetodoPago) {
             selectorMetodoPago.value = "";
@@ -798,6 +1092,19 @@ if (accesoAutorizado) {
                 }
             }
 
+            try {
+                ventaCreada = await recuperarVentaConIdRecurso(
+                    ventaCreada,
+                    ventaPayload.uuid_local,
+                );
+            } catch (errorIdentificador) {
+                ventaPendienteVerificacion = true;
+                throw new Error(
+                    "La cabecera fue creada, pero no se pudo recuperar el identificador interno de MockAPI. Revisa el registro antes de repetir la operación.",
+                    { cause: errorIdentificador },
+                );
+            }
+
             ventaId = ventaCreada.venta_id ?? ventaPayload.venta_id;
             const ventaIdDetalle = ventaCreada.venta_id ?? ventaPayload.venta_id;
 
@@ -828,7 +1135,7 @@ if (accesoAutorizado) {
             // fueron creados correctamente.
             try {
                 await actualizarAPI(
-                    obtenerUrlRegistroVenta(ventaCreada, ventaId),
+                    obtenerUrlRegistroVenta(ventaCreada),
                     {
                         ...ventaPayload,
                         ...ventaCreada,
@@ -882,7 +1189,7 @@ if (accesoAutorizado) {
 
             if (ventaCreada && detallesCreados < carrito.length && !ventaPendienteVerificacion) {
                 try {
-                    await marcarVentaAnulada(ventaCreada, ventaPayload, ventaId);
+                    await marcarVentaAnulada(ventaCreada, ventaPayload);
                     mostrarMensajeEstadoRecaudo(
                         `No se pudieron guardar todos los productos. La venta #${ventaId} fue marcada como ANULADA. Se guardaron ${detallesCreados} de ${carrito.length} detalles.`,
                         "error",
@@ -897,6 +1204,12 @@ if (accesoAutorizado) {
                     );
                 }
             } else {
+                // Refrescar la tabla y los indicadores incluso si la confirmación
+                // falla; la venta seguirá excluida de los totales mientras sea BORRADOR.
+                if (ventaCreada && detallesCreados === carrito.length) {
+                    await cargarVentasDashboard();
+                }
+
                 mostrarMensajeEstadoRecaudo(error.message || "Ocurrió un error al registrar la venta.", "error");
             }
 
@@ -949,7 +1262,7 @@ if (accesoAutorizado) {
 
     async function inicializarDashboard() {
 
-        // Mostrar estados de carga en el selector y el catálogo.
+        // Mostrar estados de carga en la lista de clientes y el catálogo.
         mostrarCargaClientes();
         mostrarCargaProductos();
 
@@ -1346,26 +1659,23 @@ if (accesoAutorizado) {
                 (cliente) => cliente.activo === true,
             );
 
-            // Recordar la selección actual, si el cliente sigue activo.
-            const selectorCliente = document.querySelector("#selectorCliente");
+            // Conservar la selección solo si el cliente continúa activo.
+            const clienteSeleccionado = selectorClienteVenta?.value ?? "";
 
-            const clienteSeleccionado = selectorCliente?.value ?? "";
-
-            // Mostrar únicamente clientes activos en el selector de venta.
-            mostrarClientes(clientesActivos);
-
-            // Restaurar la selección solo si el cliente continúa activo.
             const seleccionSigueActiva = clientesActivos.some(
                 (cliente) =>
                     String(cliente.cliente_id ?? cliente.id) ===
                     String(clienteSeleccionado),
             );
 
-            if (seleccionSigueActiva && selectorCliente) {
-
-                selectorCliente.value = clienteSeleccionado;
-
+            if (!seleccionSigueActiva && selectorClienteVenta) {
+                selectorClienteVenta.value = "";
             }
+
+            // Renderizar la lista inicial y actualizar el resumen de selección.
+            renderizarListaClientesVenta();
+            actualizarTextoClienteSeleccionado();
+            actualizarBotonListaClientes();
 
             // El indicador "Clientes registrados" cuenta activos e inactivos.
             totalClientesRegistrados = clientesRegistrados.length;
@@ -1393,6 +1703,11 @@ if (accesoAutorizado) {
 
             totalClientesRegistrados = null;
             clientesPorIdDashboard = new Map();
+            clientesActivos = [];
+            if (selectorClienteVenta) {
+                selectorClienteVenta.value = "";
+            }
+            actualizarTextoClienteSeleccionado();
 
             refrescarIndicadoresDashboard();
             mostrarVentasRecientes();

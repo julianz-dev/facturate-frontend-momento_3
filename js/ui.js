@@ -5,18 +5,19 @@
 // Mostrar carga de clientes
 export function mostrarCargaClientes() {
 
-    const selectorCliente = document.querySelector("#selectorCliente");
+    const listaClientes = document.querySelector("#listaClientesVenta");
 
-    selectorCliente.replaceChildren();
+    if (!listaClientes) {
+        return;
+    }
 
-    const opcion = document.createElement("option");
+    listaClientes.replaceChildren();
 
-    opcion.value = "";
-    opcion.textContent = "Cargando clientes...";
-    opcion.disabled = true;
-    opcion.selected = true;
+    const mensaje = document.createElement("p");
+    mensaje.className = "client-list-message";
+    mensaje.textContent = "Cargando clientes...";
 
-    selectorCliente.appendChild(opcion);
+    listaClientes.appendChild(mensaje);
 
 }
 
@@ -26,62 +27,6 @@ export function mostrarCargaProductos() {
     const listaProductos = document.querySelector("#listaProductos");
 
     listaProductos.textContent = "Cargando productos...";
-
-}
-
-//* ========================================
-//* MOSTRAR CLIENTES
-//* ========================================
-
-export function mostrarClientes(clientes) {
-
-    const selectorCliente = document.querySelector("#selectorCliente");
-
-    selectorCliente.replaceChildren();
-
-    // Opción inicial
-    const opcionInicial = document.createElement("option");
-
-    opcionInicial.value = "";
-    opcionInicial.textContent = "Selecciona un cliente";
-    opcionInicial.disabled = true;
-    opcionInicial.selected = true;
-
-    selectorCliente.appendChild(opcionInicial);
-
-    // Verificar disponibilidad de clientes
-    if (clientes.length === 0) {
-
-        const opcionVacia = document.createElement("option");
-
-        opcionVacia.textContent = "No hay clientes activos disponibles";
-        opcionVacia.disabled = true;
-
-        selectorCliente.appendChild(opcionVacia);
-
-        return;
-
-    }
-
-    // Recorrer clientes y crear opciones
-    clientes.forEach((cliente) => {
-
-        const opcion = document.createElement("option");
-
-        opcion.value = cliente.cliente_id;
-
-        const nombreCliente =
-            cliente.nombre_razon_social ?? "Cliente sin nombre";
-
-        const numeroDocumento =
-            cliente.numero_documento ?? "(Cliente genérico)";
-
-        opcion.textContent =
-            `${nombreCliente} - ${numeroDocumento}`;
-
-        selectorCliente.appendChild(opcion);
-
-    });
 
 }
 
@@ -389,16 +334,19 @@ export function actualizarIndicadores(
 
 export function mostrarErrorClientes() {
 
-    const selectorCliente = document.querySelector("#selectorCliente");
+    const listaClientes = document.querySelector("#listaClientesVenta");
 
-    selectorCliente.replaceChildren();
+    if (!listaClientes) {
+        return;
+    }
 
-    const opcionError = document.createElement("option");
+    listaClientes.replaceChildren();
 
-    opcionError.textContent = "Error al cargar los clientes";
-    opcionError.disabled = true;
+    const mensaje = document.createElement("p");
+    mensaje.className = "client-list-message";
+    mensaje.textContent = "No fue posible cargar los clientes. Intenta nuevamente.";
 
-    selectorCliente.appendChild(opcionError);
+    listaClientes.appendChild(mensaje);
 
 }
 

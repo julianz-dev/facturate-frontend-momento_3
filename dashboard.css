@@ -225,6 +225,115 @@
 }
 
 /*========================================
+=        BÚSQUEDA Y SELECCIÓN CLIENTE    =
+========================================*/
+
+.client-search-controls {
+    display: flex;
+    align-items: stretch;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.client-search-controls input {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.client-search-controls .btn-toggle-catalogo {
+    flex: 0 0 auto;
+    white-space: nowrap;
+}
+
+.client-search-help {
+    display: block;
+    margin: 0 0 12px;
+    color: var(--gris-medio);
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+.selected-client-summary {
+    margin: 0 0 12px;
+    padding: 10px 12px;
+    border: 1px solid var(--gris-claro);
+    border-radius: 8px;
+    background: var(--gris-fondo);
+    color: var(--gris-oscuro);
+    font-size: 13px;
+}
+
+.client-selection-list {
+    display: grid;
+    gap: 8px;
+    max-height: 280px;
+    overflow-y: auto;
+    padding: 8px;
+    border: 1px solid var(--gris-claro);
+    border-radius: 9px;
+    background: var(--blanco);
+}
+
+.client-selection-list[hidden] {
+    display: none !important;
+}
+
+.client-option {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 3px;
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid transparent;
+    border-radius: 7px;
+    background: var(--gris-fondo);
+    color: var(--gris-oscuro);
+    text-align: left;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.client-option:hover,
+.client-option[aria-pressed="true"] {
+    border-color: var(--azul-claro);
+    background: #e8f6fc;
+}
+
+.client-option:focus-visible {
+    outline: 3px solid rgba(91, 192, 235, 0.3);
+    outline-offset: 2px;
+}
+
+.client-option-name {
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.client-option-document {
+    color: var(--gris-medio);
+    font-size: 12px;
+}
+
+.client-list-message {
+    margin: 0;
+    padding: 12px;
+    color: var(--gris-medio);
+    font-size: 13px;
+    text-align: center;
+}
+
+@media (max-width: 480px) {
+    .client-search-controls {
+        flex-direction: column;
+    }
+
+    .client-search-controls .btn-toggle-catalogo {
+        width: 100%;
+    }
+}
+
+/*========================================
 =            CATÁLOGO DE PRODUCTOS       =
 ========================================*/
 
