@@ -905,10 +905,11 @@ if (accesoAutorizado) {
 
     function obtenerUrlRegistroVenta(ventaCreada) {
 
-        // MockAPI actualiza cada recurso mediante su identificador interno `id`.
-        // `venta_id` es el identificador funcional de Facturate y no debe usarse
-        // como sustituto en la ruta del endpoint.
-        const idRecurso = ventaCreada?.id;
+        // En el esquema de este proyecto, `venta_id` está configurado como
+        // Object ID de MockAPI. Por eso es el identificador que debe ir en la
+        // ruta del recurso individual (GET/PUT), aunque no exista una propiedad
+        // adicional llamada `id` en el JSON.
+        const idRecurso = ventaCreada?.venta_id;
 
         if (
             idRecurso === null ||
@@ -916,11 +917,11 @@ if (accesoAutorizado) {
             String(idRecurso).trim() === ""
         ) {
             throw new Error(
-                "MockAPI no proporcionó el identificador interno de la venta. No es seguro intentar actualizarla usando venta_id.",
+                "MockAPI no devolvió venta_id, configurado como Object ID. No se puede actualizar la cabecera sin ese identificador.",
             );
         }
 
-        return `${apiVentas}/${encodeURIComponent(String(idRecurso))}`;
+        return `${apiVentas}/${encodeURIComponent(String(idRecurso).trim())}`;
 
     }
 
@@ -936,40 +937,69 @@ if (accesoAutorizado) {
 
     }
 
-    async function buscarVentaPorUuid(uuidLocal) {
+    async function buscarVentaPorUuid(uuidLocal, ventaId = null) {
 
         const ventasActualizadas = await consultarAPI(apiVentas);
+        const uuidBuscado = String(uuidLocal ?? "").trim();
 
-        return ventasActualizadas.find(
-            (venta) => String(venta.uuid_local ?? "") === String(uuidLocal),
-        ) ?? null;
+        // Primero se utiliza el identificador único local, si el endpoint lo
+        // conserva en la respuesta.
+        const coincidenciaUuid = ventasActualizadas.find((venta) =>
+            uuidBuscado !== "" &&
+            String(venta.uuid_local ?? "").trim() === uuidBuscado
+        );
+
+        if (coincidenciaUuid) {
+            return coincidenciaUuid;
+        }
+
+        // Algunos esquemas o respuestas personalizadas de MockAPI pueden no
+        // devolver uuid_local. Como respaldo, se busca por el venta_id funcional
+        // que acabamos de asignar y que también se guarda en la cabecera.
+        if (ventaId !== null && ventaId !== undefined && String(ventaId).trim() !== "") {
+            return ventasActualizadas.find((venta) =>
+                String(venta.venta_id ?? "").trim() === String(ventaId).trim()
+            ) ?? null;
+        }
+
+        return null;
 
     }
 
-    async function recuperarVentaConIdRecurso(ventaCreada, uuidLocal) {
+    async function recuperarVentaConIdRecurso(ventaCreada, uuidLocal, ventaId = null) {
 
-        // Algunas respuestas del POST pueden no incluir el objeto completo.
-        // En ese caso se recupera la venta por uuid_local para obtener el `id`
-        // que MockAPI utiliza realmente en las rutas PUT.
+        // En el esquema de MockAPI de Facturate, venta_id es el Object ID.
+        // Si el POST ya lo devolvió, podemos usar directamente esa respuesta.
         if (
-            ventaCreada?.id !== null &&
-            ventaCreada?.id !== undefined &&
-            String(ventaCreada.id).trim() !== ""
+            ventaCreada?.venta_id !== null &&
+            ventaCreada?.venta_id !== undefined &&
+            String(ventaCreada.venta_id).trim() !== ""
         ) {
             return ventaCreada;
         }
 
-        const ventaRecuperada = await buscarVentaPorUuid(uuidLocal);
+        // Si POST no devolvió la cabecera completa, se recupera por uuid_local
+        // y como respaldo por venta_id desde el listado de Ventas.
+        const ventaRecuperada = await buscarVentaPorUuid(uuidLocal, ventaId);
 
         if (!ventaRecuperada) {
             throw new Error(
-                "No se encontró la cabecera recién creada al consultar por uuid_local.",
+                `No se encontró la cabecera por uuid_local ni por venta_id (${ventaId ?? "no disponible"}).`,
             );
         }
 
-        // Valida que la consulta haya devuelto el identificador interno antes
-        // de permitir cualquier PUT o intento de anulación.
-        obtenerUrlRegistroVenta(ventaRecuperada);
+        // No se exige una propiedad `id`: el Object ID de este recurso es
+        // `venta_id`, tal como está configurado en su esquema.
+        if (
+            ventaRecuperada.venta_id === null ||
+            ventaRecuperada.venta_id === undefined ||
+            String(ventaRecuperada.venta_id).trim() === ""
+        ) {
+            const camposDevueltos = Object.keys(ventaRecuperada).join(", ") || "ninguno";
+            throw new Error(
+                `La cabecera se encontró, pero no incluye venta_id (Object ID). Campos recibidos: ${camposDevueltos}.`,
+            );
+        }
 
         return ventaRecuperada;
 
@@ -1072,7 +1102,7 @@ if (accesoAutorizado) {
                 // Si la respuesta del POST se pierde, consultar por uuid_local
                 // evita crear una segunda cabecera a ciegas.
                 try {
-                    ventaCreada = await buscarVentaPorUuid(ventaPayload.uuid_local);
+                    ventaCreada = await buscarVentaPorUuid(ventaPayload.uuid_local, ventaPayload.venta_id);
                 } catch (errorVerificacion) {
                     ventaPendienteVerificacion = true;
                     throw new Error(
@@ -1096,6 +1126,7 @@ if (accesoAutorizado) {
                 ventaCreada = await recuperarVentaConIdRecurso(
                     ventaCreada,
                     ventaPayload.uuid_local,
+                    ventaPayload.venta_id,
                 );
             } catch (errorIdentificador) {
                 ventaPendienteVerificacion = true;
@@ -1146,7 +1177,7 @@ if (accesoAutorizado) {
                 // La petición podría haberse aplicado aunque la respuesta se
                 // haya perdido. Se consulta antes de permitir otro intento.
                 try {
-                    const ventaVerificada = await buscarVentaPorUuid(ventaPayload.uuid_local);
+                    const ventaVerificada = await buscarVentaPorUuid(ventaPayload.uuid_local, ventaPayload.venta_id);
 
                     if (ventaVerificada?.estado_venta === "CONFIRMADA") {
                         ventaCreada = ventaVerificada;
